@@ -9,16 +9,16 @@ export default function ARViewer({ product, onBack }) {
   }, [])
 
   const getModelUrl = () => {
-    // Placeholder models — in production, use product.model_3d_url from DB
+    // Gunakan file lokal dari public/models/
     const models = {
-      'MCB': 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      'Fitting': 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb',
-      'Saklar': 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
-      'Kabel': 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-      'Panel': 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb',
-      'Lampu': 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
+      'MCB': '/models/Astronaut.glb',
+      'Fitting': '/models/NeilArmstrong.glb',
+      'Saklar': '/models/RobotExpressive.glb',
+      'Kabel': '/models/Astronaut.glb',
+      'Panel': '/models/NeilArmstrong.glb',
+      'Lampu': '/models/RobotExpressive.glb',
     }
-    return product.model_3d_url || models[product.category] || 'https://modelviewer.dev/shared-assets/models/Astronaut.glb'
+    return product.model_3d_url || models[product.category] || '/models/Astronaut.glb'
   }
 
   const specs = product.specifications ? Object.entries(product.specifications).map(([k, v]) => ({ label: k, value: v })) : []
