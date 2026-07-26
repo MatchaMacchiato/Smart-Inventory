@@ -5,6 +5,8 @@ import Dashboard from '@/components/Dashboard'
 import ProductList from '@/components/ProductList'
 import ARViewer from '@/components/ARViewer'
 import ShelfScanner from '@/components/ShelfScanner'
+import StockPage from '@/components/StockPage'
+import Reports from '@/components/Reports'
 import ScanPage from '@/components/ScanPage'
 
 function MainApp() {
@@ -19,6 +21,8 @@ function MainApp() {
         {page === 'produk' && <ProductList onSelect={(p) => { setSelectedProduct(p); setPage('ar') }} />}
         {page === 'ar' && selectedProduct && <ARViewer product={selectedProduct} onBack={() => setPage('produk')} />}
         {page === 'scan' && <ShelfScanner />}
+        {page === 'stok' && <StockPage />}
+        {page === 'laporan' && <Reports />}
       </main>
     </div>
   )
@@ -28,9 +32,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Scan page tanpa navbar — full-screen AR buat HP */}
         <Route path="/scan/:id" element={<ScanPage />} />
-        {/* Main app dengan navbar */}
         <Route path="*" element={<MainApp />} />
       </Routes>
     </BrowserRouter>
