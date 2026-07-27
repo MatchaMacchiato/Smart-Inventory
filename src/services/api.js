@@ -8,7 +8,6 @@ const api = axios.create({
   timeout: 15000,
 })
 
-// Attach token if available
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('auth_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
@@ -28,6 +27,7 @@ export const productApi = {
 export const dashboardApi = {
   stats: () => api.get('/dashboard/stats'),
   topProducts: () => api.get('/dashboard/top-products'),
+  stockMovement: (params) => api.get('/dashboard/stock-movement', { params }),
   recentSales: () => api.get('/dashboard/recent-sales'),
 }
 
