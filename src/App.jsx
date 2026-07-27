@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Navbar from '@/components/Navbar'
+import Sidebar from '@/components/Sidebar'
+import Topbar from '@/components/Topbar'
 import Dashboard from '@/components/Dashboard'
 import ProductList from '@/components/ProductList'
 import ARViewer from '@/components/ARViewer'
@@ -13,17 +14,37 @@ function MainApp() {
   const [page, setPage] = useState('dashboard')
   const [selectedProduct, setSelectedProduct] = useState(null)
 
+  const navigate = (key) => {
+    if (key === 'ar' && !selectedProduct) {
+      setPage('produk')
+      return
+    }
+    setPage(key)
+  }
+
   return (
-    <div>
-      <Navbar page={page} onNavigate={setPage} />
-      <main style={{ padding: '28px', marginTop: '60px' }}>
-        {page === 'dashboard' && <Dashboard onNavigate={setPage} />}
-        {page === 'produk' && <ProductList onSelect={(p) => { setSelectedProduct(p); setPage('ar') }} />}
-        {page === 'ar' && selectedProduct && <ARViewer product={selectedProduct} onBack={() => setPage('produk')} />}
-        {page === 'scan' && <ShelfScanner />}
-        {page === 'stok' && <StockPage />}
-        {page === 'laporan' && <Reports />}
-      </main>
+    <div className="app-shell">
+      <Sidebar page={page} onNavigate={navigate} />
+      <div className="main-area">
+        <Topbar page={page} />
+        <main className="content-wrap">
+          {page === 'dashboard' && <Dashboard onNavigate={navigate} />}
+          {page === 'produk' && (
+            <ProductList
+              onSelect={(p) => {
+                setSelectedProduct(p)
+                setPage('ar')
+              }}
+            />
+          )}
+          {page === 'ar' && selectedProduct && (
+            <ARViewer product={selectedProduct} onBack={() => setPage('produk')} />
+          )}
+          {page === 'scan' && <ShelfScanner />}
+          {page === 'stok' && <StockPage />}
+          {page === 'laporan' && <Reports onNavigate={navigate} />}
+        </main>
+      </div>
     </div>
   )
 }
