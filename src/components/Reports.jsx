@@ -1,164 +1,257 @@
-import { useState, useEffect } from 'react'
-import { stockApi, dashboardApi } from '../services/api'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { useInventory } from '../context/InventoryContext'
+import { REASON_LABEL, formatDateTimeFull } from '../data/products'
 
-const MOCK_ANALYTICS = {
-  total_products: 18, total_stock: 962, low_stock_count: 7, out_of_stock: 0,
-  categories: [
-    { category: 'MCB', count: 4, total_stock: 88 },
-    { category: 'Kabel', count: 4, total_stock: 55 },
-    { category: 'Fitting', count: 2, total_stock: 185 },
-    { category: 'Saklar', count: 3, total_stock: 135 },
-    { category: 'Panel', count: 2, total_stock: 11 },
-    { category: 'Lampu', count: 2, total_stock: 147 },
-    { category: 'Aksesoris', count: 1, total_stock: 200 },
-  ]
-}
+export default function Reports({ onNavigate, initialFilter }) {
+  const { stats, daily, history, products, lowStock, getHistoryFiltered } = useInventory()
 
-const MOCK_MOVEMENT = {
-  stock_in: 245, stock_out: 189, net: 56, period_days: 30,
-  by_reason: [
-    { reason: 'purchase', total_in: 180, total_out: 0, count: 12 },
-    { reason: 'sale', total_in: 0, total_out: 140, count: 14 },
-    { reason: 'manual', total_in: 40, total_out: 30, count: 6 },
-    { reason: 'ai_scan', total_in: 25, total_out: 0, count: 3 },
-    { reason: 'adjustment', total_in: 0, total_out: 19, count: 5 },
-  ],
-  daily: [
-    { date: '2026-07-18', stock_in: 30, stock_out: 15 },
-    { date: '2026-07-19', stock_in: 20, stock_out: 25 },
-    { date: '2026-07-20', stock_in: 45, stock_out: 18 },
-    { date: '2026-07-21', stock_in: 12, stock_out: 30 },
-    { date: '2026-07-22', stock_in: 35, stock_out: 22 },
-    { date: '2026-07-23', stock_in: 50, stock_out: 40 },
-    { date: '2026-07-24', stock_in: 53, stock_out: 39 },
-  ],
-  recent: [
-    { id: 1, product_name: 'MCB Schneider 20A', change: 10, type: 'masuk', reason: 'purchase', stock_before: 35, stock_after: 45, created_at: '2026-07-24T08:00:00', notes: 'Barang masuk' },
-  ]
-}
+  const [tab, setTab] = useState(initialFilter ? 'riwayat' : 'ringkasan')
+  const [filterType, setFilterType] = useState(initialFilter || 'all')
+  const [filterReason, setFilterReason] = useState('all')
+  const [filterCategory, setFilterCategory] = useState('all')
+  const [searchText, setSearchText] = useState('')
+  const printRef = useRef(null)
 
-const MOCK_TOP = [
-  { id: 7, name: 'Fitting E27 Porselen', category: 'Fitting', stock: 120, price: 8500 },
-  { id: 16, name: 'Isolasi Listrik 3M', category: 'Aksesoris', stock: 200, price: 12000 },
-  { id: 14, name: 'Lampu LED Philips 10W', category: 'Lampu', stock: 85, price: 35000 },
-  { id: 1, name: 'MCB Schneider 20A', category: 'MCB', stock: 45, price: 85000 },
-  { id: 9, name: 'Saklar Broco 1G', category: 'Saklar', stock: 55, price: 18000 },
-]
-
-export default function Reports({ onNavigate }) {
-  const [tab, setTab] = useState('ringkasan')
-  const [analytics, setAnalytics] = useState(MOCK_ANALYTICS)
-  const [top, setTop] = useState(MOCK_TOP)
-  const [movement, setMovement] = useState(MOCK_MOVEMENT)
-
+  // Update tab jika initialFilter berubah dari luar (KPI click)
   useEffect(() => {
-    stockApi.analytics().then(res => setAnalytics(res.data)).catch(() => {})
-    dashboardApi.topProducts().then(res => setTop(res.data)).catch(() => {})
-    dashboardApi.stockMovement({ limit: 50, days: 30 }).then(res => setMovement(res.data)).catch(() => {})
-  }, [])
+    if (initialFilter) {
+      setTab('riwayat')
+      setFilterType(initialFilter)
+    }
+  }, [initialFilter])
 
-  const barColors = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-  const reasonLabel = { purchase: 'Pembelian', sale: 'Penjualan', manual: 'Manual', ai_scan: 'AI Scan', adjustment: 'Penyesuaian' }
+  const barColors = ['#2563eb', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9', '#4f46e5']
 
-  const maxDaily = Math.max(...(movement.daily?.map(d => Math.max(d.stock_in, d.stock_out)) || [1]))
-  const totalNilaiStok = top.reduce((a, b) => a + (b.stock * b.price), 0)
+  // Top products by stock value
+  const topByValue = useMemo(() =>
+    [...products].sort((a, b) => (Number(b.stock) * Number(b.price)) - (Number(a.stock) * Number(a.price))).slice(0, 10),
+    [products]
+  )
+
+  const filteredHistory = useMemo(() => {
+    let rows = history
+    if (filterType === 'masuk') rows = rows.filter(h => h.change > 0)
+    else if (filterType === 'keluar') rows = rows.filter(h => h.change < 0)
+    else if (filterType === 'today') {
+      const t = new Date().toDateString()
+      rows = rows.filter(h => new Date(h.created_at).toDateString() === t)
+    } else if (filterType === 'low') {
+      const ids = new Set(lowStock.map(p => String(p.id)))
+      rows = rows.filter(h => ids.has(String(h.product_id)))
+    }
+    if (filterReason !== 'all') rows = rows.filter(h => h.reason === filterReason)
+    if (filterCategory !== 'all') rows = rows.filter(h => h.category === filterCategory)
+    if (searchText.trim()) {
+      const q = searchText.trim().toLowerCase()
+      rows = rows.filter(h => (h.product_name || '').toLowerCase().includes(q) || (h.sku || '').toLowerCase().includes(q))
+    }
+    return rows
+  }, [history, filterType, filterReason, filterCategory, searchText, lowStock])
+
+  const totalInFilter = filteredHistory.filter(h => h.change > 0).reduce((s, h) => s + h.change, 0)
+  const totalOutFilter = Math.abs(filteredHistory.filter(h => h.change < 0).reduce((s, h) => s + h.change, 0))
+
+  const downloadCSV = () => {
+    const header = 'ID,Waktu,Produk,Kategori,SKU,Stok Sebelum,Stok Sesudah,Perubahan,Alasan,Catatan'
+    const rows = filteredHistory.slice(0, 1000).map(h => {
+      const dt = h.created_at ? new Date(h.created_at).toLocaleString('id-ID') : '-'
+      return `${h.id},"${dt}","${h.product_name}","${h.category || ''}","${h.sku || ''}",${h.stock_before},${h.stock_after},${h.change},"${REASON_LABEL[h.reason] || h.reason}","${(h.notes || '').replace(/"/g, '""')}"`
+    })
+    const csv = '\uFEFF' + header + '\n' + rows.join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = `laporan-inventaris-${new Date().toISOString().slice(0,10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const downloadPDF = () => {
+    const w = window.open('', '_blank')
+    if (!w) { alert('Izinkan popup untuk unduh PDF'); return }
+    const d = w.document
+    const style = `
+      body { font-family: 'Segoe UI', sans-serif; padding: 30px; color: #0f172a; }
+      h1 { font-size: 20px; margin-bottom: 4px; }
+      .sub { color: #475569; font-size: 13px; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; font-size: 11px; }
+      th { background: #2563eb; color: #fff; padding: 8px 6px; text-align: left; }
+      td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+      .in { color: #16a34a; font-weight: 700; }
+      .out { color: #ef4444; font-weight: 700; }
+      .summary { display: flex; gap: 20px; margin-bottom: 10px; }
+      .summary div { padding: 10px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    `
+    d.write(`<html><head><meta charset="utf-8"><title>Laporan Inventaris</title><style>${style}</style></head><body>`)
+    d.write('<h1>Laporan Inventaris Toko Listrik</h1>')
+    d.write(`<p class="sub">${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · ${filteredHistory.length} transaksi · Produk: ${products.length}</p>`)
+    d.write('<div class="summary"><div><strong>Total Masuk</strong><br>+' + totalInFilter + '</div><div><strong>Total Keluar</strong><br>-' + totalOutFilter + '</div><div><strong>Produk</strong><br>' + products.length + '</div></div>')
+    d.write('<table><thead><tr><th>Waktu</th><th>Produk</th><th>Kategori</th><th>Sebelum</th><th>Sesudah</th><th>Perubahan</th><th>Alasan</th></tr></thead><tbody>')
+    filteredHistory.slice(0, 500).forEach(h => {
+      const dt = h.created_at ? new Date(h.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'
+      d.write(`<tr><td>${dt}</td><td>${h.product_name}</td><td>${h.category || '-'}</td><td>${h.stock_before}</td><td>${h.stock_after}</td><td class="${h.change > 0 ? 'in' : 'out'}">${h.change > 0 ? '+' : ''}${h.change}</td><td>${REASON_LABEL[h.reason] || h.reason}</td></tr>`)
+    })
+    d.write('</tbody></table><p style="margin-top:16px;color:#94a3b8;font-size:10px;">Dicetak dari Smart Inventory Pro System</p></body></html>')
+    d.close()
+    w.focus()
+    setTimeout(() => w.print(), 300)
+  }
+
+  const categories = useMemo(() => {
+    const set = new Set(history.map(h => h.category).filter(Boolean))
+    return Array.from(set)
+  }, [history])
+
+  const maxDaily = Math.max(1, ...daily.map(d => Math.max(Number(d.stock_in || 0), Number(d.stock_out || 0))))
+  const totalIn = Number(stats.stock_in || 0)
+  const totalOut = Number(stats.stock_out || 0)
+  const totalNilaiStok = topByValue.reduce((a, p) => a + (Number(p.stock) * Number(p.price)), 0)
 
   return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Plus Jakarta Sans','Inter',sans-serif" }}>
-          <i className="fas fa-chart-bar" style={{ color: '#6366f1', marginRight: 8 }}></i>Laporan
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', marginTop: 4 }}>
-          <i className="fas fa-home"></i><span>Home / Laporan</span>
+    <div ref={printRef}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
+        <div>
+          <div className="page-title">Laporan Stok</div>
+          <div className="page-subtitle" style={{ marginBottom: 0 }}>
+            Semua data real-time dari server &middot; {filteredHistory.length} transaksi termuat
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={downloadCSV} style={s.btn}>
+            <i className="fas fa-download"></i> CSV
+          </button>
+          <button type="button" onClick={downloadPDF} style={{ ...s.btn, background: '#ef4444', color: '#fff' }}>
+            <i className="fas fa-file-pdf"></i> PDF
+          </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[
-          { key: 'ringkasan', label: 'Ringkasan' },
-          { key: 'pergerakan', label: 'Pergerakan Stok' },
-          { key: 'riwayat', label: 'Riwayat Lengkap' },
-        ].map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)}
-            style={{ padding: '8px 18px', borderRadius: 8, border: tab === t.key ? '1px solid #6366f1' : '1px solid #eef2f6',
-              background: tab === t.key ? 'rgba(99,102,241,0.1)' : '#fff', color: tab === t.key ? '#6366f1' : '#475569',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            {t.label}
-          </button>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {[{ key: 'ringkasan', label: 'Ringkasan' }, { key: 'pergerakan', label: 'Pergerakan' }, { key: 'riwayat', label: 'Riwayat' }].map(t => (
+          <button key={t.key} type="button" onClick={() => setTab(t.key)}
+            style={{ padding: '7px 16px', borderRadius: 8, border: tab === t.key ? '1px solid #2563eb' : '1px solid #e2e8f0',
+              background: tab === t.key ? 'rgba(37,99,235,0.1)' : '#fff', color: tab === t.key ? '#1d4ed8' : '#475569',
+              fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{t.label}</button>
         ))}
       </div>
 
-      {/* Tab Ringkasan */}
+      {/* Ringkasan */}
       {tab === 'ringkasan' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
+          <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
             {[
-              { label: 'Total Produk', value: analytics.total_products, icon: 'fa-box', color: '#6366f1' },
-              { label: 'Total Stok', value: analytics.total_stock?.toLocaleString() || '0', icon: 'fa-warehouse', color: '#06b6d4' },
-              { label: 'Stok Menipis', value: analytics.low_stock_count, icon: 'fa-exclamation-triangle', color: '#f59e0b' },
-              { label: 'Total Nilai Stok', value: `Rp ${(totalNilaiStok / 1000000).toFixed(1)}jt`, icon: 'fa-coins', color: '#10b981' },
-              { label: 'Barang Masuk ({movement.period_days} hr)'.replace('{movement.period_days}', movement.period_days), value: movement.stock_in?.toLocaleString(), icon: 'fa-arrow-down', color: '#10b981' },
-              { label: 'Barang Keluar ({movement.period_days} hr)'.replace('{movement.period_days}', movement.period_days), value: movement.stock_out?.toLocaleString(), icon: 'fa-arrow-up', color: '#f59e0b' },
+              { label: 'Total Produk', value: stats.total_products, icon: 'fa-cube', color: '#2563eb' },
+              { label: 'Total Stok', value: Number(stats.total_stock || 0).toLocaleString('id-ID'), icon: 'fa-boxes', color: '#7c3aed' },
+              { label: 'Stok Menipis', value: lowStock.length, icon: 'fa-exclamation-triangle', color: '#ef4444' },
+              { label: 'Nilai Stok', value: `Rp ${(totalNilaiStok / 1000000).toFixed(1)}jt`, icon: 'fa-coins', color: '#10b981' },
+              { label: 'Barang Masuk', value: totalIn.toLocaleString('id-ID'), icon: 'fa-arrow-down', color: '#16a34a' },
+              { label: 'Barang Keluar', value: totalOut.toLocaleString('id-ID'), icon: 'fa-arrow-up', color: '#f97316' },
+              { label: 'Total Transaksi', value: history.length, icon: 'fa-exchange-alt', color: '#8b5cf6' },
+              { label: 'Kategori', value: stats.categories_count, icon: 'fa-tags', color: '#0ea5e9' },
             ].map((s, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 16, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${s.color}15`, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+              <div key={i} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: `${s.color}15`, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
                   <i className={`fas ${s.icon}`}></i>
                 </div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 800 }}>{s.value}</div>
-                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>{s.label}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800 }}>{s.value}</div>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>{s.label}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-            {/* Distribusi kategori */}
-            <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 20 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-                <i className="fas fa-chart-pie" style={{ color: '#6366f1', marginRight: 8 }}></i>Distribusi Kategori
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {analytics.categories.map((cat, i) => {
-                  const pct = analytics.total_products > 0 ? ((cat.count / analytics.total_products) * 100).toFixed(0) : 0
-                  return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: 3, background: barColors[i % barColors.length] }}></div>
-                      <span style={{ flex: 1, fontSize: 13, fontWeight: 500 }}>{cat.category}</span>
-                      <span style={{ fontSize: 12, color: '#94a3b8' }}>{cat.count} produk</span>
-                      <span style={{ fontSize: 12, fontWeight: 700 }}>{pct}%</span>
-                    </div>
-                  )
-                })}
+          <div className="panel-grid" style={{ marginTop: 14 }}>
+            <div className="panel">
+              <div className="panel-head"><h3>Stok Tertinggi (nilai)</h3></div>
+              <div className="panel-body">
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                  <thead><tr>
+                    {['#', 'Produk', 'Stok', 'Nilai Stok'].map(h => (
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', textAlign: 'left', padding: '7px 4px', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {topByValue.slice(0, 8).map((p, i) => (
+                      <tr key={p.id}>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', fontWeight: 600, fontSize: 10, color: '#94a3b8' }}>#{i + 1}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{p.name}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9' }}>{p.stock}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', color: '#2563eb', fontWeight: 700, fontSize: 11 }}>
+                          Rp {(Number(p.stock) * Number(p.price)).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* Stok Tertinggi */}
-            <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 20 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-                <i className="fas fa-arrow-up" style={{ color: '#10b981', marginRight: 8 }}></i>Stok Tertinggi
-              </h3>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['#', 'Produk', 'Stok', 'Nilai'].map(h => (
-                      <th key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '8px 0', borderBottom: '1px solid #eef2f6', textAlign: 'left' }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {top.map((p, i) => (
-                    <tr key={p.id}>
-                      <td style={{ fontSize: 13, padding: '10px 0', borderBottom: '1px solid #eef2f6' }}>
-                        <span style={{ padding: '3px 9px', borderRadius: 6, fontSize: 10, fontWeight: 600, background: i < 3 ? 'rgba(16,185,129,0.1)' : '#f1f5f9', color: i < 3 ? '#059669' : '#64748b' }}>#{i+1}</span>
-                      </td>
-                      <td style={{ fontSize: 13, padding: '10px 0', borderBottom: '1px solid #eef2f6', fontWeight: 500 }}>{p.name}</td>
-                      <td style={{ fontSize: 13, padding: '10px 0', borderBottom: '1px solid #eef2f6', fontWeight: 700 }}>{p.stock}</td>
-                      <td style={{ fontSize: 13, padding: '10px 0', borderBottom: '1px solid #eef2f6', color: '#6366f1', fontWeight: 600 }}>Rp {Number(p.stock * p.price).toLocaleString()}</td>
-                    </tr>
+            <div className="panel">
+              <div className="panel-head"><h3>Distribusi per Kategori</h3></div>
+              <div className="panel-body">
+                {(stats.categories || []).map((c, i) => (
+                  <div key={c.category} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 3, background: barColors[i % barColors.length] }}></div>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{c.category}</span>
+                    <span style={{ fontSize: 12, color: '#94a3b8' }}>{c.count} SKU</span>
+                    <span style={{ fontSize: 12, fontWeight: 700 }}>{c.total_stock}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Pergerakan */}
+      {tab === 'pergerakan' && (
+        <>
+          <div className="panel" style={{ marginBottom: 14 }}>
+            <div className="panel-head"><h3>Grafik Harian</h3></div>
+            <div className="panel-body">
+              <div className="bar-chart" style={{ height: 160 }}>
+                {daily.map((d, i) => (
+                  <div className="bar-col" key={d.date || i}>
+                    <div className="bar-pair">
+                      <div className="bar in" style={{ height: `${(Number(d.stock_in || 0) / maxDaily) * 100}%` }} />
+                      <div className="bar out" style={{ height: `${(Number(d.stock_out || 0) / maxDaily) * 100}%` }} />
+                    </div>
+                    <div className="bar-label">{d.date ? new Date(d.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : ''}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="legend-row">
+                <span><span className="legend-dot" style={{ background: '#2563eb' }}></span>Masuk ({totalIn})</span>
+                <span><span className="legend-dot" style={{ background: '#f97316' }}></span>Keluar ({totalOut})</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel">
+            <div className="panel-head"><h3>Berdasarkan Alasan</h3></div>
+            <div className="panel-body">
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead><tr>
+                  {['Alasan', 'Masuk', 'Keluar', 'Transaksi'].map(h => (
+                    <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '8px 10px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', textAlign: 'left' }}>{h}</th>
                   ))}
+                </tr></thead>
+                <tbody>
+                  {Object.entries(REASON_LABEL).map(([k, v]) => {
+                    const masuk = history.filter(h => h.reason === k && h.change > 0).reduce((s, h) => s + h.change, 0)
+                    const keluar = Math.abs(history.filter(h => h.reason === k && h.change < 0).reduce((s, h) => s + h.change, 0))
+                    const count = history.filter(h => h.reason === k).length
+                    if (count === 0) return null
+                    return (
+                      <tr key={k}>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{v}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', color: '#16a34a', fontWeight: 600 }}>{masuk > 0 ? `+${masuk}` : '-'}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', color: '#ef4444', fontWeight: 600 }}>{keluar > 0 ? `-${keluar}` : '-'}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9' }}>{count}x</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -166,134 +259,86 @@ export default function Reports({ onNavigate }) {
         </>
       )}
 
-      {/* Tab Pergerakan Stok */}
-      {tab === 'pergerakan' && (
-        <div>
-          {/* Stat */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
-            {[
-              { label: 'Barang Masuk ({r} hr)'.replace('{r}', movement.period_days || 30), value: movement.stock_in, icon: 'fa-arrow-down', color: '#10b981' },
-              { label: 'Barang Keluar', value: movement.stock_out, icon: 'fa-arrow-up', color: '#f59e0b' },
-              { label: 'Net Movement', value: movement.net >= 0 ? `+${movement.net}` : movement.net, icon: 'fa-balance-scale', color: (movement.net || 0) >= 0 ? '#10b981' : '#ef4444' },
-            ].map((s, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 10, background: `${s.color}15`, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>
-                  <i className={`fas ${s.icon}`}></i>
-                </div>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: s.color }}>{s.value}</div>
-                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>{s.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Chart harian */}
-          <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 20, marginBottom: 16 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-              <i className="fas fa-chart-line" style={{ color: '#6366f1', marginRight: 8 }}></i>Grafik Stok 7 Hari Terakhir
-            </h3>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', minHeight: 200, padding: '0 10px' }}>
-              {(movement.daily || []).map((d, i) => (
-                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                  <div style={{ display: 'flex', gap: 3, width: '100%', justifyContent: 'center', alignItems: 'flex-end', height: 160 }}>
-                    <div style={{ width: '35%', background: '#10b981', borderRadius: '4px 4px 0 0', height: `${(d.stock_in / maxDaily) * 140}px`, minHeight: d.stock_in > 0 ? 10 : 0 }} title={`Masuk: ${d.stock_in}`}></div>
-                    <div style={{ width: '35%', background: '#f59e0b', borderRadius: '4px 4px 0 0', height: `${(d.stock_out / maxDaily) * 140}px`, minHeight: d.stock_out > 0 ? 10 : 0 }} title={`Keluar: ${d.stock_out}`}></div>
-                  </div>
-                  {d.stock_in > 0 && <span style={{ fontSize: 9, fontWeight: 600, color: '#10b981' }}>{d.stock_in}</span>}
-                  {d.stock_out > 0 && <span style={{ fontSize: 9, fontWeight: 600, color: '#f59e0b' }}>{d.stock_out}</span>}
-                  <span style={{ fontSize: 9, color: '#94a3b8', marginTop: 4 }}>
-                    {new Date(d.date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: 12, fontSize: 12 }}>
-              <span><span style={{ color: '#10b981', fontWeight: 600 }}>■</span> Masuk</span>
-              <span><span style={{ color: '#f59e0b', fontWeight: 600 }}>■</span> Keluar</span>
-            </div>
-          </div>
-
-          {/* By Reason */}
-          <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 20 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-              <i className="fas fa-tags" style={{ color: '#6366f1', marginRight: 8 }}></i>Berdasarkan Alasan
-            </h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  {['Alasan', 'Masuk', 'Keluar', 'Transaksi'].map(h => (
-                    <th key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '10px 12px', borderBottom: '1px solid #eef2f6', textAlign: 'left', background: '#f6f8fc' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(movement.by_reason || []).map((r, i) => (
-                  <tr key={i}>
-                    <td style={{ fontSize: 13, padding: '12px', borderBottom: '1px solid #eef2f6', fontWeight: 600 }}>{reasonLabel[r.reason] || r.reason}</td>
-                    <td style={{ fontSize: 13, padding: '12px', borderBottom: '1px solid #eef2f6', color: '#10b981', fontWeight: 600 }}>{r.total_in > 0 ? `+${r.total_in}` : '-'}</td>
-                    <td style={{ fontSize: 13, padding: '12px', borderBottom: '1px solid #eef2f6', color: '#ef4444', fontWeight: 600 }}>{r.total_out > 0 ? `-${r.total_out}` : '-'}</td>
-                    <td style={{ fontSize: 13, padding: '12px', borderBottom: '1px solid #eef2f6' }}>{r.count}x</td>
-                  </tr>
-                ))}
-                <tr>
-                  <td style={{ fontWeight: 700, padding: '12px' }}>Total</td>
-                  <td style={{ fontWeight: 700, padding: '12px', color: '#10b981' }}>+{movement.stock_in}</td>
-                  <td style={{ fontWeight: 700, padding: '12px', color: '#ef4444' }}>-{movement.stock_out}</td>
-                  <td style={{ fontWeight: 700, padding: '12px' }}></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Tab Riwayat Lengkap */}
+      {/* Riwayat */}
       {tab === 'riwayat' && (
-        <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, overflow: 'hidden' }}>
-          {(movement.recent || []).length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
-              <i className="fas fa-inbox" style={{ fontSize: 36, marginBottom: 12, color: '#94a3b8' }}></i>
-              <p>Belum ada riwayat pergerakan stok</p>
+        <div className="panel">
+          <div className="panel-head" style={{ flexWrap: 'wrap', gap: 8 }}>
+            <h3>Riwayat Transaksi (filtered)</h3>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+              <select value={filterType} onChange={e => setFilterType(e.target.value)} style={s.sel}>
+                <option value="all">Semua</option>
+                <option value="masuk">Barang Masuk</option>
+                <option value="keluar">Barang Keluar</option>
+                <option value="today">Hari Ini</option>
+                <option value="low">Stok Menipis</option>
+              </select>
+              <select value={filterReason} onChange={e => setFilterReason(e.target.value)} style={s.sel}>
+                <option value="all">Semua Alasan</option>
+                {Object.entries(REASON_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+              {categories.length > 0 && (
+                <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} style={s.sel}>
+                  <option value="all">Semua Kategori</option>
+                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              )}
+              <input value={searchText} onChange={e => setSearchText(e.target.value)}
+                placeholder="Cari produk, SKU..." style={{ ...s.sel, width: 160 }} />
             </div>
-          ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          </div>
+          <div className="panel-body" style={{ padding: 0 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
                 <tr>
-                  {['Waktu', 'Produk', 'Kategori', 'Stok Sebelum', 'Stok Akhir', 'Perubahan', 'Alasan', 'Catatan'].map(h => (
-                    <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94a3b8', borderBottom: '1px solid #eef2f6', padding: '10px 12px', background: '#f6f8fc', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                  {['Waktu', 'Produk', 'Kategori', 'Sebelum', 'Sesudah', 'Perubahan', 'Alasan', 'Catatan'].map(h => (
+                    <th key={h} style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', padding: '8px 6px', background: '#f8fafc', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {(movement.recent || []).map((m, i) => (
-                  <tr key={m.id || i}>
-                    <td style={{ fontSize: 12, padding: '10px 12px', borderBottom: '1px solid #eef2f6', whiteSpace: 'nowrap', color: '#64748b' }}>
-                      {new Date(m.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                    <td style={{ fontSize: 13, padding: '10px 12px', borderBottom: '1px solid #eef2f6', fontWeight: 600 }}>{m.product_name}</td>
-                    <td style={{ fontSize: 12, padding: '10px 12px', borderBottom: '1px solid #eef2f6', color: '#6366f1', fontWeight: 600 }}>{m.category}</td>
-                    <td style={{ fontSize: 13, padding: '10px 12px', borderBottom: '1px solid #eef2f6', textAlign: 'center' }}>{m.stock_before}</td>
-                    <td style={{ fontSize: 13, padding: '10px 12px', borderBottom: '1px solid #eef2f6', textAlign: 'center', fontWeight: 600 }}>{m.stock_after}</td>
-                    <td style={{ fontSize: 13, padding: '10px 12px', borderBottom: '1px solid #eef2f6', textAlign: 'center' }}>
-                      <span style={{ fontWeight: 700, color: m.type === 'masuk' ? '#10b981' : '#ef4444', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                        <i className={`fas ${m.type === 'masuk' ? 'fa-arrow-down' : 'fa-arrow-up'}`} style={{ fontSize: 10 }}></i>
-                        {m.type === 'masuk' ? '+' : ''}{m.change}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: 12, padding: '10px 12px', borderBottom: '1px solid #eef2f6', color: '#64748b' }}>
-                      {reasonLabel[m.reason] || m.reason}
-                    </td>
-                    <td style={{ fontSize: 12, padding: '10px 12px', borderBottom: '1px solid #eef2f6', color: '#94a3b8' }}>
-                      {m.notes || '-'}
-                    </td>
-                  </tr>
-                ))}
+                {filteredHistory.slice(0, 500).map((h, i) => {
+                  const dt = h.created_at ? formatDateTimeFull(h.created_at) : { hari: '-', tanggal: '-', jam: '-', full: '-' }
+                  return (
+                    <tr key={h.id || i}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, whiteSpace: 'nowrap', color: '#64748b' }}>
+                        {dt.hari.slice(0, 3)}, {dt.tanggal}<br /><span style={{ fontSize: 10, color: '#94a3b8' }}>{dt.jam}</span>
+                      </td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600, fontSize: 11.5 }}>{h.product_name}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5 }}>{h.category || '-'}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>{h.stock_before}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center', fontWeight: 600 }}>{h.stock_after}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>
+                        <span style={{ fontWeight: 700, color: h.change > 0 ? '#16a34a' : '#ef4444' }}>
+                          {h.change > 0 ? '+' : ''}{h.change}
+                        </span>
+                      </td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, color: '#64748b' }}>
+                        {REASON_LABEL[h.reason] || h.reason}
+                      </td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10, color: '#94a3b8', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {h.notes || '-'}
+                      </td>
+                    </tr>
+                  )
+                })}
+                {filteredHistory.length > 500 && (
+                  <tr><td colSpan={8} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
+                    Menampilkan 500 dari {filteredHistory.length} transaksi. Download CSV/PDF untuk semua data.
+                  </td></tr>
+                )}
+                {filteredHistory.length === 0 && (
+                  <tr><td colSpan={8} style={{ padding: 20, textAlign: 'center', color: '#94a3b8' }}>Tidak ada data</td></tr>
+                )}
               </tbody>
             </table>
-          )}
+          </div>
         </div>
       )}
     </div>
   )
+}
+
+const s = {
+  btn: { padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff', color: '#475569', fontWeight: 700, fontSize: 11.5, cursor: 'pointer' },
+  sel: { padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 12, background: '#fff', color: '#0f172a' },
 }

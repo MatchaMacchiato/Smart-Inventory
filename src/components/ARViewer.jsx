@@ -1,27 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
+import { resolveModelUrl } from '../data/products'
 
 export default function ARViewer({ product, onBack }) {
   const modelRef = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [modelError, setModelError] = useState(false)
 
   useEffect(() => {
     setIsMobile(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent))
-  }, [])
+    setModelError(false)
+  }, [product?.id])
 
-  const getModelUrl = () => {
-    // Gunakan file lokal dari public/models/
-    const models = {
-      'MCB': '/models/Astronaut.glb',
-      'Fitting': '/models/NeilArmstrong.glb',
-      'Saklar': '/models/RobotExpressive.glb',
-      'Kabel': '/models/Astronaut.glb',
-      'Panel': '/models/NeilArmstrong.glb',
-      'Lampu': '/models/RobotExpressive.glb',
-    }
-    return product.model_3d_url || models[product.category] || '/models/Astronaut.glb'
-  }
-
-  const specs = product.specifications ? Object.entries(product.specifications).map(([k, v]) => ({ label: k, value: v })) : []
+  const modelUrl = resolveModelUrl(product)
+  const fileName = modelUrl.split('/').pop()
+  const specs = product.specifications
+    ? Object.entries(product.specifications).map(([k, v]) => ({ label: k, value: v }))
+    : []
 
   return (
     <div>
@@ -32,6 +26,8 @@ export default function ARViewer({ product, onBack }) {
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', marginTop: 4 }}>
             <span>{product.category}</span>
+            <span>·</span>
+            <span style={{ color: '#6366f1', fontWeight: 600 }}>3D: {fileName}</span>
           </div>
         </div>
         <button onClick={onBack}
@@ -42,13 +38,28 @@ export default function ARViewer({ product, onBack }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 16, padding: 20, minHeight: 400 }}>
-          <model-viewer ref={modelRef} src={getModelUrl()} alt={product.name}
-            ar={isMobile} ar-modes="webxr scene-viewer quick-look"
-            camera-controls shadow-intensity="1" auto-rotate
-            style={{ width: '100%', height: '400px', background: 'linear-gradient(135deg, #f6f8fc 0%, #eef2f6 100%)', borderRadius: 12 }}
-          ></model-viewer>
+          {modelError ? (
+            <div style={{ height: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12, color: '#94a3b8' }}>
+              <i className="fas fa-cube" style={{ fontSize: 48, marginBottom: 12 }}></i>
+              <div>Model 3D gagal dimuat</div>
+              <div style={{ fontSize: 12, marginTop: 4 }}>{modelUrl}</div>
+            </div>
+          ) : (
+            <model-viewer
+              ref={modelRef}
+              src={modelUrl}
+              alt={product.name}
+              ar={isMobile}
+              ar-modes="webxr scene-viewer quick-look"
+              camera-controls
+              shadow-intensity="1"
+              auto-rotate
+              style={{ width: '100%', height: '400px', background: 'linear-gradient(135deg, #f6f8fc 0%, #eef2f6 100%)', borderRadius: 12 }}
+              onError={() => setModelError(true)}
+            ></model-viewer>
+          )}
           {isMobile && (
-            <button onClick={() => modelRef.current?.activateAR()}
+            <button onClick={() => modelRef.current?.activateAR?.()}
               style={{ marginTop: 16, width: '100%', padding: '12px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#06b6d4)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(99,102,241,0.25)' }}>
               <i className="fas fa-camera"></i> Lihat di AR
             </button>
@@ -68,12 +79,14 @@ export default function ARViewer({ product, onBack }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { label: 'Kategori', value: product.category },
+                { label: 'SKU', value: product.sku || '-' },
                 ...specs.map(s => ({ label: s.label.charAt(0).toUpperCase() + s.label.slice(1), value: s.value })),
                 { label: 'Harga', value: `Rp ${Number(product.price).toLocaleString()}` },
                 { label: 'Stok', value: `${product.stock} unit`, color: product.stock <= product.min_stock ? '#ef4444' : '#10b981' },
                 { label: 'Min. Stok', value: product.min_stock },
+                { label: 'Model 3D', value: fileName },
               ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i < (specs.length + 3) ? '1px solid #eef2f6' : 'none' }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #eef2f6' }}>
                   <span style={{ fontSize: 13, color: '#475569' }}>{item.label}</span>
                   <span style={{ fontSize: 13, fontWeight: 600, color: item.color || '#0f172a' }}>{item.value}</span>
                 </div>
