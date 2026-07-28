@@ -203,7 +203,7 @@ export function InventoryProvider({ children }) {
   /**
    * Transaksi stok — update produk + history (semua menu ikut berubah)
    */
-  const applyStockChange = useCallback(async ({ productId, qty, mode, reason, notes }) => {
+  const applyStockChange = useCallback(async ({ productId, qty, mode, reason, notes, supplier, customer }) => {
     const product = products.find((p) => String(p.id) === String(productId))
     if (!product) throw new Error('Produk tidak ditemukan')
     const n = Number(qty)
@@ -213,6 +213,13 @@ export function InventoryProvider({ children }) {
     const change = mode === 'in' ? n : -n
     const after = before + change
     if (after < 0) throw new Error(`Stok tidak cukup. Stok saat ini: ${before}`)
+
+    const supplierName = mode === 'in'
+      ? (String(supplier || product.supplier || '').trim() || '-')
+      : (product.supplier || '-')
+    const customerName = mode === 'out'
+      ? (String(customer || '').trim() || '-')
+      : null
 
     const row = {
       id: `local-${Date.now()}`,
@@ -226,10 +233,18 @@ export function InventoryProvider({ children }) {
       type: mode === 'in' ? 'masuk' : 'keluar',
       reason: reason || (mode === 'in' ? 'purchase' : 'sale'),
       notes: notes || (mode === 'in' ? 'Barang masuk' : 'Barang keluar'),
+      supplier: supplierName,
+      customer: customerName,
       created_at: new Date().toISOString(),
     }
 
-    setProducts((prev) => prev.map((p) => (String(p.id) === String(productId) ? { ...p, stock: after } : p)))
+    // Barang masuk: update supplier default produk kalau diisi
+    setProducts((prev) => prev.map((p) => {
+      if (String(p.id) !== String(productId)) return p
+      const next = { ...p, stock: after }
+      if (mode === 'in' && supplierName && supplierName !== '-') next.supplier = supplierName
+      return next
+    }))
     setHistory((prev) => [row, ...prev])
 
     try {
@@ -237,6 +252,8 @@ export function InventoryProvider({ children }) {
         stock: after,
         reason: row.reason,
         notes: row.notes,
+        supplier: mode === 'in' ? supplierName : undefined,
+        customer: mode === 'out' ? customerName : undefined,
       })
     } catch {
       // offline ok — state lokal tetap master

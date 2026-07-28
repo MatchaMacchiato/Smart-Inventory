@@ -200,8 +200,12 @@ export default function ProductList({ onSelect }) {
               <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600, marginBottom: 4 }}>{p.category}</div>
               <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{p.name}</div>
               {p.sku && (
-                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>SKU: {p.sku}</div>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>SKU: {p.sku}</div>
               )}
+              <div style={{ fontSize: 11, color: '#64748b', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <i className="fas fa-truck" style={{ fontSize: 10, color: '#6366f1' }}></i>
+                <span style={{ fontWeight: 600 }}>{p.supplier || 'Supplier belum diisi'}</span>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 700, fontSize: 15 }}>Rp {Number(p.price).toLocaleString()}</span>
                 <span

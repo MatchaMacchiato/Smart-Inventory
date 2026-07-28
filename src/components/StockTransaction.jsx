@@ -12,6 +12,8 @@ export default function StockTransaction({ mode = 'in' }) {
   const [selectedId, setSelectedId] = useState('')
   const [qty, setQty] = useState(1)
   const [notes, setNotes] = useState('')
+  const [supplier, setSupplier] = useState('')
+  const [customer, setCustomer] = useState('')
   const [barcodeInput, setBarcodeInput] = useState('')
   const [msg, setMsg] = useState(null)
   const [historyLocal, setHistoryLocal] = useState([])
@@ -45,6 +47,17 @@ export default function StockTransaction({ mode = 'in' }) {
   }, [category, filtered, selectedId])
 
   const selected = filtered.find((p) => String(p.id) === String(selectedId)) || null
+
+  // Auto-isi supplier dari data produk saat pilih produk (Barang Masuk)
+  useEffect(() => {
+    if (!isIn) return
+    if (selected?.supplier) setSupplier(selected.supplier)
+  }, [selectedId, selected?.supplier, isIn])
+
+  const supplierOptions = useMemo(() => {
+    const set = new Set(products.map((p) => p.supplier).filter(Boolean))
+    return Array.from(set).sort()
+  }, [products])
 
   const show = (type, text) => {
     setMsg({ type, text })
@@ -100,12 +113,23 @@ export default function StockTransaction({ mode = 'in' }) {
     }
     const q = Number(qty)
     if (!q || q <= 0) return show('err', 'Qty harus > 0')
+    if (isIn && !String(supplier || '').trim()) return show('err', 'Isi sumber supplier dulu')
+    if (!isIn && !String(customer || '').trim()) return show('err', 'Isi nama customer dulu')
     try {
-      const row = await applyStockChange({ productId: selected.id, qty: q, mode, reason: isIn ? 'purchase' : 'sale', notes: notes || (isIn ? 'Barang masuk' : 'Barang keluar') })
+      const row = await applyStockChange({
+        productId: selected.id,
+        qty: q,
+        mode,
+        reason: isIn ? 'purchase' : 'sale',
+        notes: notes || (isIn ? 'Barang masuk' : 'Barang keluar'),
+        supplier: isIn ? supplier : undefined,
+        customer: !isIn ? customer : undefined,
+      })
       setHistoryLocal(prev => [row, ...prev].slice(0, 20))
       show('ok', `${isIn ? 'Barang masuk' : 'Barang keluar'} tersimpan: ${selected.name} (${q})`)
       setQty(1)
       setNotes('')
+      if (!isIn) setCustomer('')
       inputRef.current?.focus()
     } catch (e) {
       show('err', e.message || 'Gagal menyimpan')
@@ -225,10 +249,40 @@ export default function StockTransaction({ mode = 'in' }) {
             </div>
 
             {selected && (
-              <div style={{ padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 12 }}>
+              <div style={{ padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, fontSize: 12 }}>
                 <div><span style={{ color: '#94a3b8' }}>Stok</span><br /><strong>{selected.stock}</strong></div>
                 <div><span style={{ color: '#94a3b8' }}>Min</span><br /><strong>{selected.min_stock ?? '-'}</strong></div>
                 <div><span style={{ color: '#94a3b8' }}>SKU</span><br /><strong>{selected.sku || selected.id}</strong></div>
+                <div><span style={{ color: '#94a3b8' }}>Supplier</span><br /><strong>{selected.supplier || '-'}</strong></div>
+              </div>
+            )}
+
+            {isIn ? (
+              <div>
+                <label style={s.label}>Sumber Supplier <span style={{ color: '#ef4444' }}>*</span></label>
+                <input
+                  list="supplier-list"
+                  value={supplier}
+                  onChange={e => setSupplier(e.target.value)}
+                  placeholder="Contoh: PT Schneider, PT Broco..."
+                  style={s.input}
+                />
+                <datalist id="supplier-list">
+                  {supplierOptions.map(sp => <option key={sp} value={sp} />)}
+                </datalist>
+                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+                  Otomatis terisi dari data produk, bisa diganti.
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label style={s.label}>Customer <span style={{ color: '#ef4444' }}>*</span></label>
+                <input
+                  value={customer}
+                  onChange={e => setCustomer(e.target.value)}
+                  placeholder="Nama customer / toko / teknisi..."
+                  style={s.input}
+                />
               </div>
             )}
 
@@ -240,7 +294,7 @@ export default function StockTransaction({ mode = 'in' }) {
               <div>
                 <label style={s.label}>Catatan</label>
                 <input value={notes} onChange={e => setNotes(e.target.value)}
-                  placeholder={isIn ? 'Restock supplier...' : 'Penjualan...'} style={s.input} />
+                  placeholder={isIn ? 'No. PO / keterangan restock...' : 'Keterangan penjualan...'} style={s.input} />
               </div>
             </div>
 
@@ -280,7 +334,11 @@ export default function StockTransaction({ mode = 'in' }) {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 12.5, fontWeight: 700 }}>{h.product_name}</div>
-                        <div style={{ fontSize: 11, color: '#94a3b8' }}>{h.stock_before} → {h.stock_after}</div>
+                        <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                          {h.stock_before} → {h.stock_after}
+                          {h.change > 0 && h.supplier ? ` · ${h.supplier}` : ''}
+                          {h.change < 0 && h.customer ? ` · ${h.customer}` : ''}
+                        </div>
                       </div>
                       <div style={{ fontWeight: 800, fontSize: 13, color: h.change > 0 ? '#16a34a' : '#ef4444' }}>
                         {h.change > 0 ? '+' : ''}{h.change}

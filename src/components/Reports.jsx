@@ -9,6 +9,7 @@ export default function Reports({ onNavigate, initialFilter }) {
   const [filterType, setFilterType] = useState(initialFilter || 'all')
   const [filterReason, setFilterReason] = useState('all')
   const [filterCategory, setFilterCategory] = useState('all')
+  const [filterParty, setFilterParty] = useState('all') // all | supplier | customer | specific name
   const [searchText, setSearchText] = useState('')
   const printRef = useRef(null)
 
@@ -41,21 +42,58 @@ export default function Reports({ onNavigate, initialFilter }) {
     }
     if (filterReason !== 'all') rows = rows.filter(h => h.reason === filterReason)
     if (filterCategory !== 'all') rows = rows.filter(h => h.category === filterCategory)
+    if (filterParty === 'supplier') rows = rows.filter(h => h.change > 0 && h.supplier && h.supplier !== '-')
+    else if (filterParty === 'customer') rows = rows.filter(h => h.change < 0 && h.customer && h.customer !== '-')
+    else if (filterParty.startsWith('sup:')) {
+      const name = filterParty.slice(4)
+      rows = rows.filter(h => String(h.supplier || '') === name)
+    } else if (filterParty.startsWith('cus:')) {
+      const name = filterParty.slice(4)
+      rows = rows.filter(h => String(h.customer || '') === name)
+    }
     if (searchText.trim()) {
       const q = searchText.trim().toLowerCase()
-      rows = rows.filter(h => (h.product_name || '').toLowerCase().includes(q) || (h.sku || '').toLowerCase().includes(q))
+      rows = rows.filter(h =>
+        (h.product_name || '').toLowerCase().includes(q) ||
+        (h.sku || '').toLowerCase().includes(q) ||
+        (h.supplier || '').toLowerCase().includes(q) ||
+        (h.customer || '').toLowerCase().includes(q) ||
+        (h.notes || '').toLowerCase().includes(q)
+      )
     }
     return rows
-  }, [history, filterType, filterReason, filterCategory, searchText, lowStock])
+  }, [history, filterType, filterReason, filterCategory, filterParty, searchText, lowStock])
 
   const totalInFilter = filteredHistory.filter(h => h.change > 0).reduce((s, h) => s + h.change, 0)
   const totalOutFilter = Math.abs(filteredHistory.filter(h => h.change < 0).reduce((s, h) => s + h.change, 0))
 
+  const partyOf = (h) => {
+    if (h.change > 0) return h.supplier && h.supplier !== '-' ? h.supplier : '-'
+    if (h.change < 0) return h.customer && h.customer !== '-' ? h.customer : '-'
+    return h.supplier || h.customer || '-'
+  }
+  const partyLabelOf = (h) => (h.change > 0 ? 'Supplier' : h.change < 0 ? 'Customer' : 'Pihak')
+
   const downloadCSV = () => {
-    const header = 'ID,Waktu,Produk,Kategori,SKU,Stok Sebelum,Stok Sesudah,Perubahan,Alasan,Catatan'
+    const header = 'ID,Waktu,Produk,Kategori,SKU,Stok Sebelum,Stok Sesudah,Perubahan,Alasan,Supplier,Customer,Pihak,Catatan'
     const rows = filteredHistory.slice(0, 1000).map(h => {
       const dt = h.created_at ? new Date(h.created_at).toLocaleString('id-ID') : '-'
-      return `${h.id},"${dt}","${h.product_name}","${h.category || ''}","${h.sku || ''}",${h.stock_before},${h.stock_after},${h.change},"${REASON_LABEL[h.reason] || h.reason}","${(h.notes || '').replace(/"/g, '""')}"`
+      const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`
+      return [
+        h.id,
+        esc(dt),
+        esc(h.product_name),
+        esc(h.category || ''),
+        esc(h.sku || ''),
+        h.stock_before,
+        h.stock_after,
+        h.change,
+        esc(REASON_LABEL[h.reason] || h.reason),
+        esc(h.supplier || ''),
+        esc(h.customer || ''),
+        esc(partyOf(h)),
+        esc(h.notes || ''),
+      ].join(',')
     })
     const csv = '\uFEFF' + header + '\n' + rows.join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
@@ -74,22 +112,22 @@ export default function Reports({ onNavigate, initialFilter }) {
       body { font-family: 'Segoe UI', sans-serif; padding: 30px; color: #0f172a; }
       h1 { font-size: 20px; margin-bottom: 4px; }
       .sub { color: #475569; font-size: 13px; margin-bottom: 20px; }
-      table { width: 100%; border-collapse: collapse; font-size: 11px; }
-      th { background: #2563eb; color: #fff; padding: 8px 6px; text-align: left; }
-      td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+      table { width: 100%; border-collapse: collapse; font-size: 10px; }
+      th { background: #2563eb; color: #fff; padding: 7px 5px; text-align: left; }
+      td { padding: 5px; border-bottom: 1px solid #e2e8f0; }
       .in { color: #16a34a; font-weight: 700; }
       .out { color: #ef4444; font-weight: 700; }
-      .summary { display: flex; gap: 20px; margin-bottom: 10px; }
+      .summary { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
       .summary div { padding: 10px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; }
     `
     d.write(`<html><head><meta charset="utf-8"><title>Laporan Inventaris</title><style>${style}</style></head><body>`)
     d.write('<h1>Laporan Inventaris Toko Listrik</h1>')
     d.write(`<p class="sub">${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · ${filteredHistory.length} transaksi · Produk: ${products.length}</p>`)
     d.write('<div class="summary"><div><strong>Total Masuk</strong><br>+' + totalInFilter + '</div><div><strong>Total Keluar</strong><br>-' + totalOutFilter + '</div><div><strong>Produk</strong><br>' + products.length + '</div></div>')
-    d.write('<table><thead><tr><th>Waktu</th><th>Produk</th><th>Kategori</th><th>Sebelum</th><th>Sesudah</th><th>Perubahan</th><th>Alasan</th></tr></thead><tbody>')
+    d.write('<table><thead><tr><th>Waktu</th><th>Produk</th><th>Kategori</th><th>Perubahan</th><th>Alasan</th><th>Supplier</th><th>Customer</th></tr></thead><tbody>')
     filteredHistory.slice(0, 500).forEach(h => {
       const dt = h.created_at ? new Date(h.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'
-      d.write(`<tr><td>${dt}</td><td>${h.product_name}</td><td>${h.category || '-'}</td><td>${h.stock_before}</td><td>${h.stock_after}</td><td class="${h.change > 0 ? 'in' : 'out'}">${h.change > 0 ? '+' : ''}${h.change}</td><td>${REASON_LABEL[h.reason] || h.reason}</td></tr>`)
+      d.write(`<tr><td>${dt}</td><td>${h.product_name}</td><td>${h.category || '-'}</td><td class="${h.change > 0 ? 'in' : 'out'}">${h.change > 0 ? '+' : ''}${h.change}</td><td>${REASON_LABEL[h.reason] || h.reason}</td><td>${h.supplier || '-'}</td><td>${h.customer || '-'}</td></tr>`)
     })
     d.write('</tbody></table><p style="margin-top:16px;color:#94a3b8;font-size:10px;">Dicetak dari Smart Inventory Pro System</p></body></html>')
     d.close()
@@ -100,6 +138,17 @@ export default function Reports({ onNavigate, initialFilter }) {
   const categories = useMemo(() => {
     const set = new Set(history.map(h => h.category).filter(Boolean))
     return Array.from(set)
+  }, [history])
+
+  const supplierList = useMemo(() => {
+    const set = new Set(history.map(h => h.supplier).filter(s => s && s !== '-'))
+    products.forEach(p => { if (p.supplier) set.add(p.supplier) })
+    return Array.from(set).sort()
+  }, [history, products])
+
+  const customerList = useMemo(() => {
+    const set = new Set(history.map(h => h.customer).filter(c => c && c !== '-'))
+    return Array.from(set).sort()
   }, [history])
 
   const maxDaily = Math.max(1, ...daily.map(d => Math.max(Number(d.stock_in || 0), Number(d.stock_out || 0))))
@@ -282,15 +331,22 @@ export default function Reports({ onNavigate, initialFilter }) {
                   {categories.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               )}
+              <select value={filterParty} onChange={e => setFilterParty(e.target.value)} style={s.sel}>
+                <option value="all">Semua Pihak</option>
+                <option value="supplier">Hanya Supplier</option>
+                <option value="customer">Hanya Customer</option>
+                {supplierList.map(sp => <option key={`sup-${sp}`} value={`sup:${sp}`}>Supplier: {sp}</option>)}
+                {customerList.map(cu => <option key={`cus-${cu}`} value={`cus:${cu}`}>Customer: {cu}</option>)}
+              </select>
               <input value={searchText} onChange={e => setSearchText(e.target.value)}
-                placeholder="Cari produk, SKU..." style={{ ...s.sel, width: 160 }} />
+                placeholder="Cari produk, SKU, supplier, customer..." style={{ ...s.sel, width: 220 }} />
             </div>
           </div>
-          <div className="panel-body" style={{ padding: 0 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+          <div className="panel-body" style={{ padding: 0, overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
               <thead>
                 <tr>
-                  {['Waktu', 'Produk', 'Kategori', 'Sebelum', 'Sesudah', 'Perubahan', 'Alasan', 'Catatan'].map(h => (
+                  {['Waktu', 'Produk', 'Kategori', 'Sebelum', 'Sesudah', 'Perubahan', 'Alasan', 'Supplier', 'Customer', 'Catatan'].map(h => (
                     <th key={h} style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', padding: '8px 6px', background: '#f8fafc', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -315,6 +371,12 @@ export default function Reports({ onNavigate, initialFilter }) {
                       <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, color: '#64748b' }}>
                         {REASON_LABEL[h.reason] || h.reason}
                       </td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, fontWeight: 600, color: h.change > 0 ? '#16a34a' : '#94a3b8' }}>
+                        {h.supplier && h.supplier !== '-' ? h.supplier : (h.change > 0 ? '-' : '—')}
+                      </td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, fontWeight: 600, color: h.change < 0 ? '#f97316' : '#94a3b8' }}>
+                        {h.customer && h.customer !== '-' ? h.customer : (h.change < 0 ? '-' : '—')}
+                      </td>
                       <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10, color: '#94a3b8', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {h.notes || '-'}
                       </td>
@@ -322,12 +384,12 @@ export default function Reports({ onNavigate, initialFilter }) {
                   )
                 })}
                 {filteredHistory.length > 500 && (
-                  <tr><td colSpan={8} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
+                  <tr><td colSpan={10} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
                     Menampilkan 500 dari {filteredHistory.length} transaksi. Download CSV/PDF untuk semua data.
                   </td></tr>
                 )}
                 {filteredHistory.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: 20, textAlign: 'center', color: '#94a3b8' }}>Tidak ada data</td></tr>
+                  <tr><td colSpan={10} style={{ padding: 20, textAlign: 'center', color: '#94a3b8' }}>Tidak ada data</td></tr>
                 )}
               </tbody>
             </table>
