@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { resolveModelUrl } from '../data/products'
 
 export default function ARViewer({ product, onBack }) {
@@ -13,6 +13,18 @@ export default function ARViewer({ product, onBack }) {
 
   const modelUrl = resolveModelUrl(product)
   const fileName = modelUrl.split('/').pop()
+
+  // Scale model per kategori biar proporsional di AR
+  const modelScale = useMemo(() => {
+    const cat = product?.category || ''
+    if (cat === 'MCB') return '0.5 0.5 0.5'
+    if (cat === 'Kabel') return '0.3 0.3 0.3'
+    if (cat === 'Fitting') return '0.4 0.4 0.4'
+    if (cat === 'Saklar' || cat === 'Stop Kontak' || cat === 'Steker') return '0.6 0.6 0.6'
+    if (cat === 'Panel') return '0.8 0.8 0.8'
+    if (cat === 'Lampu') return '0.5 0.5 0.5'
+    return '0.5 0.5 0.5'
+  }, [product?.category])
   const specs = product.specifications
     ? Object.entries(product.specifications).map(([k, v]) => ({ label: k, value: v }))
     : []
@@ -51,9 +63,19 @@ export default function ARViewer({ product, onBack }) {
               alt={product.name}
               ar={isMobile}
               ar-modes="webxr scene-viewer quick-look"
+              ar-scale="auto"
+              ar-placement="floor"
               camera-controls
+              camera-orbit="0deg 75deg 2m"
+              min-camera-orbit="auto auto 0.5m"
+              max-camera-orbit="auto auto 5m"
               shadow-intensity="1"
               auto-rotate
+              auto-rotate-delay="500"
+              rotation-per-second="30deg"
+              scale={modelScale}
+              touch-action="pan-y"
+              interaction-prompt="auto"
               style={{ width: '100%', height: '400px', background: 'linear-gradient(135deg, #f6f8fc 0%, #eef2f6 100%)', borderRadius: 12 }}
               onError={() => setModelError(true)}
             ></model-viewer>
