@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useInventory } from '../context/InventoryContext'
 
 const SUGGESTIONS = [
+  { id: 'predictions', title: '🔮 Prediksi Stok AI', desc: 'Perkiraan kapan stok habis + saran restock per produk', icon: 'fa-chart-line', color: '#2563eb' },
   { id: 'low-stock', title: 'Cek stok menipis', desc: 'Lihat produk di bawah min stok + rekomendasi restock', icon: 'fa-exclamation-triangle', color: '#ef4444' },
   { id: 'restock-plan', title: 'Rencana restock', desc: 'Prioritas barang yang harus dibeli', icon: 'fa-cart-plus', color: '#16a34a' },
   { id: 'movement-summary', title: 'Ringkas masuk/keluar', desc: 'Total pergerakan stok + analitik', icon: 'fa-exchange-alt', color: '#2563eb' },
@@ -10,11 +11,58 @@ const SUGGESTIONS = [
 ]
 
 export default function AIAsisten({ onNavigate }) {
-  const { products, history, stats, lowStock, daily } = useInventory()
+  const { products, history, stats, lowStock, daily, predictions, predictionSummary } = useInventory()
   const [active, setActive] = useState(null)
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [chat, setChat] = useState('')
+
+  // Local prediction fallback (moving average 14 hari dari history)
+  const localPredictions = useMemo(() => {
+    const since = Date.now() - 14 * 24 * 60 * 60 * 1000
+    const outMap = {}
+    history.forEach(h => {
+      if (h.change >= 0) return
+      const t = new Date(h.created_at).getTime()
+      if (t < since) return
+      const id = String(h.product_id)
+      outMap[id] = (outMap[id] || 0) + Math.abs(Number(h.change || 0))
+    })
+    return products.map(p => {
+      const totalOut = outMap[String(p.id)] || 0
+      const avgDaily = totalOut / 14
+      const stock = Number(p.stock || 0)
+      const min = Number(p.min_stock || 0)
+      const daysLeft = avgDaily > 0 ? Math.round((stock / avgDaily) * 10) / 10 : (stock <= min ? 0 : null)
+      let urgency = 'aman'
+      if (stock <= 0) urgency = 'habis'
+      else if (stock <= min || (daysLeft !== null && daysLeft <= 3)) urgency = 'kritis'
+      else if (daysLeft !== null && daysLeft <= 7) urgency = 'waspada'
+      else if (daysLeft !== null && daysLeft <= 14) urgency = 'pantau'
+      const suggest = Math.max(
+        Math.max(0, Math.ceil(min * 1.5) - stock),
+        avgDaily > 0 ? Math.ceil(avgDaily * 14) : 0
+      )
+      return {
+        product_id: p.id,
+        name: p.name,
+        category: p.category,
+        stock,
+        min_stock: min,
+        avg_daily_out: Math.round(avgDaily * 100) / 100,
+        days_left: daysLeft,
+        days_left_label: daysLeft === null ? 'Stabil' : (daysLeft <= 0 ? 'Segera habis' : `~${daysLeft} hari`),
+        urgency,
+        suggest_restock: suggest,
+        confidence: totalOut > 0 ? (totalOut >= 10 ? 'tinggi' : 'sedang') : 'rendah',
+      }
+    }).sort((a, b) => {
+      const order = { habis: 0, kritis: 1, waspada: 2, pantau: 3, aman: 4 }
+      return (order[a.urgency] - order[b.urgency]) * 1000 + ((a.days_left ?? 999) - (b.days_left ?? 999))
+    })
+  }, [products, history])
+
+  const predRows = predictions?.length ? predictions : localPredictions
 
   const run = (id) => {
     setActive(id)
@@ -22,6 +70,29 @@ export default function AIAsisten({ onNavigate }) {
     setResult(null)
     setTimeout(() => {
       try {
+        if (id === 'predictions') {
+          const critical = predRows.filter(r => ['habis', 'kritis', 'waspada'].includes(r.urgency))
+          const totalSuggest = predRows.reduce((s, r) => s + (r.suggest_restock || 0), 0)
+          setResult({
+            type: 'predictions',
+            title: 'Prediksi Stok AI (Moving Average 14 hari)',
+            summary: critical.length
+              ? `${critical.length} produk berisiko habis ≤7 hari. Total saran restock: ${totalSuggest} unit. Metode: rata-rata keluar harian.`
+              : `Semua stok relatif aman. ${predRows.length} SKU dianalisis. Saran preventif: ${totalSuggest} unit.`,
+            rows: predRows.slice(0, 20),
+            metrics: [
+              { label: 'Kritis/Habis', value: predRows.filter(r => r.urgency === 'kritis' || r.urgency === 'habis').length, color: '#ef4444' },
+              { label: 'Waspada', value: predRows.filter(r => r.urgency === 'waspada').length, color: '#f59e0b' },
+              { label: 'Pantau', value: predRows.filter(r => r.urgency === 'pantau').length, color: '#0ea5e9' },
+              { label: 'Aman', value: predRows.filter(r => r.urgency === 'aman').length, color: '#16a34a' },
+              { label: 'Saran Restock', value: totalSuggest, color: '#7c3aed' },
+            ],
+            actions: [
+              { label: 'Barang Masuk', go: 'barang-masuk' },
+              { label: 'Data Produk', go: 'produk' },
+            ],
+          })
+        }
         if (id === 'low-stock' || id === 'restock-plan') {
           const rows = [...lowStock].sort((a, b) => b.gap - a.gap)
           setResult({
@@ -112,6 +183,7 @@ export default function AIAsisten({ onNavigate }) {
   const freeTextHint = useMemo(() => {
     const q = chat.trim().toLowerCase()
     if (!q) return null
+    if (q.includes('prediksi') || q.includes('forecast') || q.includes('habis kapan') || q.includes('berapa hari')) return 'predictions'
     if (q.includes('menipis') || q.includes('habis') || q.includes('low') || q.includes('kurang')) return 'low-stock'
     if (q.includes('restock') || q.includes('beli') || q.includes('order') || q.includes('stok')) return 'restock-plan'
     if (q.includes('masuk') || q.includes('keluar') || q.includes('mutasi') || q.includes('ringkas')) return 'movement-summary'
@@ -178,7 +250,34 @@ export default function AIAsisten({ onNavigate }) {
                 </div>
               )}
 
-              {result.rows?.length > 0 && result.type !== 'category-health' && (
+              {result.rows?.length > 0 && result.type === 'predictions' && (
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, fontSize: 12 }}>
+                  <thead><tr>
+                    {['Produk', 'Stok', 'Avg/hari', 'Sisa', 'Urgensi', 'Saran'].map(h => (
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '7px 6px', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {result.rows.map((r, i) => {
+                      const color = r.urgency === 'habis' || r.urgency === 'kritis' ? '#ef4444'
+                        : r.urgency === 'waspada' ? '#f59e0b'
+                        : r.urgency === 'pantau' ? '#0ea5e9' : '#16a34a'
+                      return (
+                        <tr key={i}>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{r.name}<div style={{ fontSize: 10, color: '#94a3b8' }}>{r.category}</div></td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.stock}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.avg_daily_out ?? 0}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color }}>{r.days_left_label || (r.days_left != null ? `~${r.days_left} hari` : 'Stabil')}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color, textTransform: 'capitalize' }}>{r.urgency}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color: '#7c3aed' }}>{r.suggest_restock > 0 ? `+${r.suggest_restock}` : '-'}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+
+              {result.rows?.length > 0 && result.type !== 'category-health' && result.type !== 'predictions' && (
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, fontSize: 12 }}>
                   <thead><tr>
                     {['Produk', 'Kategori', 'Stok', 'Min', 'Keterangan'].map(h => (

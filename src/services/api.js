@@ -8,11 +8,20 @@ const api = axios.create({
   timeout: 15000,
 })
 
+// Token di-set dari AuthContext setelah login
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('auth_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
+
+export const authApi = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  logout: () => api.post('/auth/logout'),
+  me: () => api.get('/auth/me'),
+  users: () => api.get('/auth/users'),
+  updateRole: (id, role) => api.put(`/auth/users/${id}/role`, { role }),
+}
 
 export const productApi = {
   list: (params) => api.get('/products', { params }),
@@ -35,6 +44,7 @@ export const stockApi = {
   update: (id, data) => api.put(`/products/${id}/stock`, data),
   lowStock: () => api.get('/stock/low'),
   analytics: () => api.get('/stock/analytics'),
+  predictions: () => api.get('/stock/predictions'),
 }
 
 export const aiApi = {

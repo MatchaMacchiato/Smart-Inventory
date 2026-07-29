@@ -42,6 +42,8 @@ export function InventoryProvider({ children }) {
   const [history, setHistory] = useState(() => buildInitialHistory(INITIAL_PRODUCTS))
   const [source, setSource] = useState('local')
   const [loading, setLoading] = useState(true)
+  const [predictions, setPredictions] = useState([])
+  const [predictionSummary, setPredictionSummary] = useState(null)
 
   // Load dari API jika ada, tetap jaga data lokal lengkap
   useEffect(() => {
@@ -86,6 +88,13 @@ export function InventoryProvider({ children }) {
       setSource(got ? 'api+local' : 'local')
       setLoading(false)
     })
+    // Fetch predictions jika API tersedia
+    stockApi.predictions().then(res => {
+      if (res?.data?.predictions) {
+        setPredictions(res.data.predictions)
+        setPredictionSummary(res.data.summary)
+      }
+    }).catch(() => {})
     return () => { alive = false }
   }, [])
 
@@ -293,6 +302,8 @@ export function InventoryProvider({ children }) {
     applyStockChange,
     getHistoryFiltered,
     setProducts,
+    predictions,
+    predictionSummary,
   }
 
   return (

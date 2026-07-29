@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { InventoryProvider } from '@/context/InventoryContext'
 import Sidebar from '@/components/Sidebar'
 import Topbar from '@/components/Topbar'
@@ -10,11 +11,21 @@ import StockTransaction from '@/components/StockTransaction'
 import AIAsisten from '@/components/AIAsisten'
 import Reports from '@/components/Reports'
 import ScanPage from '@/components/ScanPage'
+import LoginPage from '@/components/LoginPage'
 
 function MainApp() {
+  const { user, loading: authLoading } = useAuth()
   const [page, setPage] = useState('dashboard')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [historyFilter, setHistoryFilter] = useState(null)
+
+  if (authLoading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#94a3b8' }}>
+      <i className="fas fa-spinner fa-spin" style={{ marginRight: 10 }}></i>Memuat...
+    </div>
+  }
+
+  if (!user) return <LoginPage />
 
   const navigate = (key) => {
     setHistoryFilter(null)
@@ -33,7 +44,6 @@ function MainApp() {
     setPage(key)
   }
 
-  /** KPI dashboard → history detail */
   const showHistory = (filter) => {
     setHistoryFilter(filter)
     navigate('laporan')
@@ -48,10 +58,7 @@ function MainApp() {
           {page === 'dashboard' && <Dashboard onNavigate={navigate} showHistory={showHistory} />}
           {page === 'produk' && (
             <ProductList
-              onSelect={(p) => {
-                setSelectedProduct(p)
-                setPage('ar')
-              }}
+              onSelect={(p) => { setSelectedProduct(p); setPage('ar') }}
             />
           )}
           {page === 'ar' && selectedProduct && (
@@ -70,12 +77,14 @@ function MainApp() {
 export default function App() {
   return (
     <BrowserRouter>
-      <InventoryProvider>
-        <Routes>
-          <Route path="/scan/:id" element={<ScanPage />} />
-          <Route path="*" element={<MainApp />} />
-        </Routes>
-      </InventoryProvider>
+      <AuthProvider>
+        <InventoryProvider>
+          <Routes>
+            <Route path="/scan/:id" element={<AuthProvider><InventoryProvider><ScanPage /></InventoryProvider></AuthProvider>} />
+            <Route path="*" element={<MainApp />} />
+          </Routes>
+        </InventoryProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
