@@ -14,16 +14,16 @@ export default function ARViewer({ product, onBack }) {
   const modelUrl = resolveModelUrl(product)
   const fileName = modelUrl.split('/').pop()
 
-  // Scale model per kategori biar proporsional di AR
+  // Scale model biar keliatan full
   const modelScale = useMemo(() => {
     const cat = product?.category || ''
-    if (cat === 'MCB') return '0.5 0.5 0.5'
-    if (cat === 'Kabel') return '0.3 0.3 0.3'
-    if (cat === 'Fitting') return '0.4 0.4 0.4'
-    if (cat === 'Saklar' || cat === 'Stop Kontak' || cat === 'Steker') return '0.6 0.6 0.6'
-    if (cat === 'Panel') return '0.8 0.8 0.8'
-    if (cat === 'Lampu') return '0.5 0.5 0.5'
-    return '0.5 0.5 0.5'
+    if (cat === 'MCB') return '1.5 1.5 1.5'
+    if (cat === 'Kabel') return '1.8 1.8 1.8'
+    if (cat === 'Fitting') return '1.5 1.5 1.5'
+    if (cat === 'Saklar' || cat === 'Stop Kontak' || cat === 'Steker') return '1.8 1.8 1.8'
+    if (cat === 'Panel') return '1.2 1.2 1.2'
+    if (cat === 'Lampu') return '1.5 1.5 1.5'
+    return '1.8 1.8 1.8'
   }, [product?.category])
   const specs = product.specifications
     ? Object.entries(product.specifications).map(([k, v]) => ({ label: k, value: v }))
@@ -66,13 +66,13 @@ export default function ARViewer({ product, onBack }) {
               ar-scale="auto"
               ar-placement="floor"
               camera-controls
-              camera-orbit="0deg 75deg 2m"
-              min-camera-orbit="auto auto 0.5m"
-              max-camera-orbit="auto auto 5m"
+              camera-orbit="0deg 75deg auto"
+              min-camera-orbit="auto auto 0.3m"
+              max-camera-orbit="auto auto 20m"
               shadow-intensity="1"
               auto-rotate
               auto-rotate-delay="500"
-              rotation-per-second="30deg"
+              rotation-per-second="15deg"
               scale={modelScale}
               touch-action="pan-y"
               interaction-prompt="auto"

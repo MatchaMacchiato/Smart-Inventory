@@ -5,6 +5,7 @@ const GROUPS = [
       { key: 'dashboard', label: 'Dashboard', icon: 'fa-th-large', roles: ['admin', 'kasir', 'gudang'] },
       { key: 'produk', label: 'Data Produk', icon: 'fa-box', roles: ['admin', 'kasir', 'gudang'] },
       { key: 'laporan', label: 'Laporan Stok', icon: 'fa-chart-bar', roles: ['admin', 'kasir', 'gudang'] },
+      { key: 'keuangan', label: 'Keuangan', icon: 'fa-file-invoice-dollar', roles: ['admin', 'kasir'] },
     ],
   },
   {

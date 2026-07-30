@@ -12,6 +12,7 @@ import AIAsisten from '@/components/AIAsisten'
 import Reports from '@/components/Reports'
 import ScanPage from '@/components/ScanPage'
 import LoginPage from '@/components/LoginPage'
+import Finance from '@/components/Finance'
 
 function MainApp() {
   const { user, loading: authLoading } = useAuth()
@@ -68,6 +69,7 @@ function MainApp() {
           {page === 'barang-keluar' && <StockTransaction mode="out" />}
           {page === 'ai-asisten' && <AIAsisten onNavigate={navigate} />}
           {page === 'laporan' && <Reports onNavigate={navigate} initialFilter={historyFilter} />}
+          {page === 'keuangan' && <Finance />}
         </main>
       </div>
     </div>
