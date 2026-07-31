@@ -1,4 +1,5 @@
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, useCallback, useEffect } from 'react'
+import { financeApi } from '../services/api'
 import {
   SEED_INVOICES,
   COMPANY,
@@ -22,6 +23,32 @@ function deriveStatus(nilai, terutang) {
   if (t <= 0) return { status: 'lunas', dibayar: n }
   if (dibayar > 0) return { status: 'sebagian', dibayar }
   return { status: 'belum', dibayar: 0 }
+}
+
+function normalizeApiInvoices(list) {
+  if (!Array.isArray(list) || !list.length) return null
+  return list
+    .map((r) => ({
+      id: r.id,
+      no_faktur: r.no_faktur || '',
+      tgl: String(r.tgl || '').slice(0, 10),
+      no_pelanggan: r.no_pelanggan || '-',
+      nama: r.nama,
+      nilai: Number(r.nilai || 0),
+      terutang: Number(r.terutang || 0),
+      dibayar: Number(r.dibayar || 0),
+      status: r.status || 'belum',
+      keterangan: r.keterangan || '',
+      payments: (r.payments || []).map((p) => ({
+        id: p.id,
+        amount: Number(p.amount || 0),
+        at: p.paid_at || p.created_at || new Date().toISOString(),
+        note: p.note || '',
+        type: p.type || 'bayar',
+        source: p.source || 'user',
+      })),
+    }))
+    .sort((a, b) => b.tgl.localeCompare(a.tgl) || String(b.no_faktur).localeCompare(String(a.no_faktur)))
 }
 
 function withSeedHistory(list) {
@@ -78,6 +105,28 @@ export default function Finance() {
   const [payAmount, setPayAmount] = useState('')
   const [payNote, setPayNote] = useState('')
   const [historyModal, setHistoryModal] = useState(null) // invoice row
+  const [apiConnected, setApiConnected] = useState(false)
+
+  // Load dari backend Laravel; fallback seed lokal kalau API off
+  useEffect(() => {
+    let alive = true
+    financeApi
+      .list()
+      .then((res) => {
+        if (!alive) return
+        const normalized = normalizeApiInvoices(res?.data?.invoices)
+        if (normalized) {
+          setRows(normalized)
+          setApiConnected(true)
+        }
+      })
+      .catch(() => {
+        // offline — seed lokal tetap dipakai
+      })
+    return () => {
+      alive = false
+    }
+  }, [])
 
   const showToast = (msg, type = 'ok') => {
     setToast({ msg, type })
@@ -153,6 +202,15 @@ export default function Finance() {
       }
 
       pushUndo({ id, label, before, paymentId: payment.id })
+
+      // Push ke backend (fire & forget, jangan blokir UI)
+      try {
+        if (payType === 'lunas') {
+          financeApi.markPaid(target.id).catch(() => {})
+        } else {
+          financeApi.pay(target.id, amt, note).catch(() => {})
+        }
+      } catch {}
 
       return prev.map((r) =>
         r.id === id
@@ -250,6 +308,9 @@ export default function Finance() {
     )
     // Also drop matching undo stack entries for this payment
     setUndoStack((stack) => stack.filter((u) => u.paymentId !== last.id))
+    try {
+      financeApi.undoPayment(invoiceId).catch(() => {})
+    } catch {}
     showToast(`Pembayaran ${formatRp(last.amount)} dibatalkan`, 'undo')
   }
 
@@ -278,6 +339,9 @@ export default function Finance() {
         }
       })
     )
+    try {
+      financeApi.reset(invoiceId).catch(() => {})
+    } catch {}
     showToast(`FP ${row.no_faktur} di-reset ke belum bayar`, 'undo')
   }
 
@@ -315,6 +379,20 @@ export default function Finance() {
       },
       ...prev,
     ])
+    // Push ke backend
+    try {
+      financeApi
+        .create({
+          no_faktur: form.no_faktur || null,
+          tgl: form.tgl,
+          no_pelanggan: form.no_pelanggan || null,
+          nama: form.nama || 'Pelanggan Baru',
+          nilai,
+          terutang,
+          keterangan: form.keterangan || COMPANY.bank,
+        })
+        .catch(() => {})
+    } catch {}
     setShowForm(false)
     setForm({
       no_faktur: '',
@@ -426,6 +504,11 @@ export default function Finance() {
           <div className="page-title">Keuangan · Faktur Penjualan</div>
           <div className="page-subtitle">
             {COMPANY.name} · {COMPANY.reportTitle} · Undo & history pembayaran
+            {apiConnected ? (
+              <span style={{ color: '#16a34a', fontWeight: 700 }}> · <i className="fas fa-database"></i> tersimpan di server</span>
+            ) : (
+              <span style={{ color: '#f59e0b', fontWeight: 700 }}> · mode lokal (server off)</span>
+            )}
           </div>
         </div>
         <button

@@ -19,6 +19,8 @@ const GROUPS = [
     title: 'SCANNER & TOOLS',
     items: [
       { key: 'ai-asisten', label: 'Asisten AI', icon: 'fa-robot', roles: ['admin', 'kasir', 'gudang'] },
+      { key: 'bom-ai', label: 'BOM AI Material', icon: 'fa-magic', roles: ['admin', 'kasir', 'gudang'] },
+      { key: 'ai-scan', label: 'AI Scan Rak', icon: 'fa-camera', roles: ['admin', 'gudang'] },
       { key: 'ar', label: 'AR 3D Viewer', icon: 'fa-cube', roles: ['admin', 'kasir', 'gudang'] },
     ],
   },

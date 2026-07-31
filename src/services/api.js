@@ -47,14 +47,27 @@ export const stockApi = {
   predictions: () => api.get('/stock/predictions'),
 }
 
+export const financeApi = {
+  list: () => api.get('/finance/invoices'),
+  create: (data) => api.post('/finance/invoices', data),
+  pay: (id, amount, note) => api.post(`/finance/invoices/${id}/pay`, { amount, note }),
+  markPaid: (id) => api.post(`/finance/invoices/${id}/mark-paid`),
+  undoPayment: (id) => api.post(`/finance/invoices/${id}/undo-payment`),
+  reset: (id) => api.post(`/finance/invoices/${id}/reset`),
+  destroy: (id) => api.delete(`/finance/invoices/${id}`),
+}
+
 export const aiApi = {
   scanShelf: (formData) => api.post('/ai/shelf-scan', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 90000,
   }),
   detectProduct: (formData) => api.post('/ai/detect-product', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
   }),
   modelInfo: () => api.get('/ai/models/info'),
+  health: () => api.get('/ai/health'),
 }
 
 export default api

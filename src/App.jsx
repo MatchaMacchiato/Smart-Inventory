@@ -13,6 +13,8 @@ import Reports from '@/components/Reports'
 import ScanPage from '@/components/ScanPage'
 import LoginPage from '@/components/LoginPage'
 import Finance from '@/components/Finance'
+import BomAI from '@/components/BomAI'
+import AIScan from '@/components/AIScan'
 
 function MainApp() {
   const { user, loading: authLoading } = useAuth()
@@ -70,6 +72,8 @@ function MainApp() {
           {page === 'ai-asisten' && <AIAsisten onNavigate={navigate} />}
           {page === 'laporan' && <Reports onNavigate={navigate} initialFilter={historyFilter} />}
           {page === 'keuangan' && <Finance />}
+          {page === 'bom-ai' && <BomAI onNavigate={navigate} />}
+          {page === 'ai-scan' && <AIScan />}
         </main>
       </div>
     </div>

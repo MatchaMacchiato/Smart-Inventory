@@ -9,7 +9,9 @@ const TITLES = {
   'barang-keluar': 'Barang Keluar',
   laporan: 'Laporan Stok',
   'ai-asisten': 'Asisten AI',
-  keuangan: 'Keuangan · Faktur',
+  'bom-ai': 'BOM AI Material',
+  'ai-scan': 'AI Scan Rak (YOLOv8)',
+  keuangan: 'Keuangan',
 }
 
 const ROLE_ICONS = { admin: '🚀', kasir: '💰', gudang: '📦' }
