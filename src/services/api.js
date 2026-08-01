@@ -70,4 +70,10 @@ export const aiApi = {
   health: () => api.get('/ai/health'),
 }
 
+export const aiIntelApi = {
+  apriori: (params) => api.get('/ai-intel/apriori', { params }),
+  eoq: (params) => api.get('/ai-intel/eoq', { params }),
+  summary: (params) => api.get('/ai-intel/summary', { params }),
+}
+
 export default api

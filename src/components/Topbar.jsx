@@ -11,6 +11,7 @@ const TITLES = {
   'ai-asisten': 'Asisten AI',
   'bom-ai': 'BOM AI Material',
   'ai-scan': 'AI Scan Rak (YOLOv8)',
+  'ai-intel': 'AI Intelligence',
   keuangan: 'Keuangan',
 }
 

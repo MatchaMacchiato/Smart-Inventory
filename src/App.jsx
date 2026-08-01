@@ -15,6 +15,7 @@ import LoginPage from '@/components/LoginPage'
 import Finance from '@/components/Finance'
 import BomAI from '@/components/BomAI'
 import AIScan from '@/components/AIScan'
+import AIIntelligence from '@/components/AIIntelligence'
 
 function MainApp() {
   const { user, loading: authLoading } = useAuth()
@@ -74,6 +75,7 @@ function MainApp() {
           {page === 'keuangan' && <Finance />}
           {page === 'bom-ai' && <BomAI onNavigate={navigate} />}
           {page === 'ai-scan' && <AIScan />}
+          {page === 'ai-intel' && <AIIntelligence onNavigate={navigate} />}
         </main>
       </div>
     </div>
