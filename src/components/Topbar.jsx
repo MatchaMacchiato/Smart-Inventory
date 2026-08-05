@@ -15,7 +15,7 @@ const TITLES = {
   keuangan: 'Keuangan',
 }
 
-const ROLE_ICONS = { admin: '🚀', kasir: '💰', gudang: '📦' }
+const ROLE_ICONS = { admin: 'fa-shield-halved', kasir: 'fa-cash-register', gudang: 'fa-warehouse' }
 
 export default function Topbar({ page }) {
   const { user, logout, can } = useAuth()
@@ -50,21 +50,21 @@ export default function Topbar({ page }) {
       <div className="topbar-right">
         <button className="icon-btn" title="Notifikasi" type="button" style={{ position: 'relative' }}>
           <i className="fas fa-bell"></i>
-          {user?.role === 'admin' && <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }}></span>}
+          {user?.role === 'admin' && <span style={{ position: 'absolute', top: 4, right: 4, width: 8, height: 8, borderRadius: '50%', background: 'var(--danger)', border: '2px solid #fff' }}></span>}
         </button>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginRight: 8, lineHeight: 1.3 }}>
-          <span style={{ fontSize: 11.5, color: '#2563eb', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 11.5, color: 'var(--success)', fontWeight: 700, fontFamily: "'Nunito Sans', sans-serif" }}>
             <i className="fas fa-clock" style={{ marginRight: 4, fontSize: 10 }}></i>{now}
           </span>
-          <span style={{ fontSize: 10, color: '#94a3b8' }}>{dateStr}</span>
+          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{dateStr}</span>
         </div>
         <div className="user-chip" title="Logout" onClick={logout} style={{ cursor: 'pointer' }}>
-          <div className="user-avatar" style={{ fontSize: 18, background: 'linear-gradient(135deg,#2563eb,#7c3aed)' }}>
-            {ROLE_ICONS[user?.role] || 'S'}
+          <div className="user-avatar" style={{ fontSize: 13 }}>
+            <i className={`fas ${ROLE_ICONS[user?.role] || 'fa-user'}`}></i>
           </div>
           <div className="user-meta">
             <span style={{ textTransform: 'capitalize' }}>{user?.name || 'User'}</span>
-            <span style={{ textTransform: 'capitalize' }}>{user?.role || '-'} <span style={{ color: '#94a3b8' }}>· Klik logout</span></span>
+            <span style={{ textTransform: 'capitalize' }}>{user?.role || '-'} <span style={{ color: '#64748B' }}>· Klik logout</span></span>
           </div>
         </div>
       </div>

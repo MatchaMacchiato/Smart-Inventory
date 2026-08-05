@@ -5,7 +5,7 @@ import { financeApi } from '../services/api'
 
 const sel = {
   height: 38,
-  border: '1px solid #e2e8f0',
+  border: '1px solid #E6E8EA',
   borderRadius: 10,
   padding: '0 12px',
   fontSize: 13,
@@ -70,8 +70,8 @@ export default function BomAI({ onNavigate }) {
     if (!w) return
     w.document.write(`<!DOCTYPE html><html><head><title>Rencana Material</title>
       <style>body{font-family:system-ui;padding:24px}table{width:100%;border-collapse:collapse;font-size:12px}
-      th,td{border:1px solid #ddd;padding:6px 8px}th{background:#f8fafc}.r{text-align:right}
-      .ok{color:#16a34a}.bad{color:#ef4444}</style></head><body>
+      th,td{border:1px solid #ddd;padding:6px 8px}th{background:#F1F5F9}.r{text-align:right}
+      .ok{color:#059669}.bad{color:#DC2626}</style></head><body>
       <h2>BOM AI · Rencana Material</h2>
       <p>${result.summary}</p>
       <p>Customer: ${customer || '-'} · ${new Date(result.generated_at).toLocaleString('id-ID')}</p>
@@ -124,13 +124,13 @@ export default function BomAI({ onNavigate }) {
       {toast && (
         <div style={{
           marginBottom: 12, padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-          background: toast.type === 'ok' ? 'rgba(22,163,74,0.1)' : 'rgba(245,158,11,0.12)',
-          color: toast.type === 'ok' ? '#15803d' : '#c2410c',
+          background: toast.type === 'ok' ? 'rgba(5,150,105,0.1)' : 'rgba(180,83,9,0.12)',
+          color: toast.type === 'ok' ? '#059669' : '#B45309',
         }}>
           {toast.msg}
           {toast.type === 'ok' && onNavigate && (
             <button type="button" onClick={() => onNavigate('keuangan')}
-              style={{ marginLeft: 10, border: 'none', background: 'transparent', color: '#2563eb', fontWeight: 800, cursor: 'pointer' }}>
+              style={{ marginLeft: 10, border: 'none', background: 'transparent', color: '#334155', fontWeight: 800, cursor: 'pointer' }}>
               Buka Keuangan →
             </button>
           )}
@@ -146,13 +146,13 @@ export default function BomAI({ onNavigate }) {
             onClick={() => switchTemplate(t.id)}
             style={{
               textAlign: 'left', padding: 14, borderRadius: 14, cursor: 'pointer',
-              border: templateId === t.id ? '2px solid #2563eb' : '1px solid #e2e8f0',
-              background: templateId === t.id ? 'linear-gradient(135deg,rgba(37,99,235,0.08),rgba(124,58,237,0.06))' : '#fff',
+              border: templateId === t.id ? '2px solid #334155' : '1px solid #E6E8EA',
+              background: templateId === t.id ? 'rgba(51,65,85,0.09)' : '#fff',
             }}
           >
             <div style={{ fontSize: 22 }}>{t.icon}</div>
             <div style={{ fontWeight: 800, fontSize: 13, marginTop: 4 }}>{t.label}</div>
-            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{t.desc}</div>
+            <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{t.desc}</div>
           </button>
         ))}
       </div>
@@ -163,7 +163,7 @@ export default function BomAI({ onNavigate }) {
           <div className="panel-head"><h3>Parameter · {template.label}</h3></div>
           <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {template.fields.map((f) => (
-              <label key={f.key} style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label key={f.key} style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 {f.label}
                 {f.type === 'number' && (
                   <input
@@ -182,9 +182,9 @@ export default function BomAI({ onNavigate }) {
                       onClick={() => setParams((p) => ({ ...p, [f.key]: !p[f.key] }))}
                       style={{
                         height: 36, padding: '0 14px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer',
-                        border: params[f.key] ? '1px solid #16a34a' : '1px solid #e2e8f0',
-                        background: params[f.key] ? 'rgba(22,163,74,0.1)' : '#fff',
-                        color: params[f.key] ? '#15803d' : '#64748b',
+                        border: params[f.key] ? '1px solid #059669' : '1px solid #E6E8EA',
+                        background: params[f.key] ? 'rgba(5,150,105,0.1)' : '#fff',
+                        color: params[f.key] ? '#059669' : '#94A3B8',
                       }}
                     >
                       {params[f.key] ? '✓ Ya' : 'Tidak'}
@@ -211,7 +211,7 @@ export default function BomAI({ onNavigate }) {
               </label>
             ))}
 
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
               Nama customer (opsional, untuk draft faktur)
               <input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="cth. Pak Budi / AMIN ELECTRIC"
                 style={{ ...sel, marginTop: 6 }} />
@@ -223,7 +223,7 @@ export default function BomAI({ onNavigate }) {
               disabled={busy}
               style={{
                 height: 44, border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer',
-                background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff',
+                background: '#334155', color: '#fff',
                 opacity: busy ? 0.7 : 1,
               }}
             >
@@ -240,22 +240,22 @@ export default function BomAI({ onNavigate }) {
           </div>
           <div className="panel-body" style={{ padding: result ? 0 : 20 }}>
             {!result && (
-              <div style={{ textAlign: 'center', color: '#94a3b8', padding: 40 }}>
+              <div style={{ textAlign: 'center', color: '#64748B', padding: 40 }}>
                 <div style={{ fontSize: 40, marginBottom: 8 }}>🧮</div>
                 Pilih template & isi parameter, lalu klik <b>Hitung Material</b>
               </div>
             )}
             {result && (
               <>
-                <div style={{ padding: '12px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontSize: 13 }}>
+                <div style={{ padding: '12px 16px', background: '#F1F5F9', borderBottom: '1px solid #E6E8EA', fontSize: 13 }}>
                   <b>{result.summary}</b>
-                  <div style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}>
+                  <div style={{ color: '#94A3B8', fontSize: 11, marginTop: 2 }}>
                     Generated {new Date(result.generated_at).toLocaleString('id-ID')} · safety factor ~10–15%
                   </div>
                 </div>
 
                 {result.warnings?.length > 0 && (
-                  <div style={{ padding: '8px 16px', background: 'rgba(245,158,11,0.1)', color: '#b45309', fontSize: 12 }}>
+                  <div style={{ padding: '8px 16px', background: 'rgba(180,83,9,0.12)', color: '#B45309', fontSize: 12 }}>
                     {result.warnings.join(' · ')}
                   </div>
                 )}
@@ -263,18 +263,18 @@ export default function BomAI({ onNavigate }) {
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                     <thead>
-                      <tr style={{ background: '#f8fafc' }}>
+                      <tr style={{ background: '#F1F5F9' }}>
                         {['Produk', 'Qty', 'Harga', 'Subtotal', 'Stok'].map((h) => (
-                          <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                          <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', borderBottom: '1px solid #E6E8EA' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {result.lines.map((r) => (
-                        <tr key={r.sku} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <tr key={r.sku} style={{ borderBottom: '1px solid #F8FAFC' }}>
                           <td style={{ padding: '10px 12px' }}>
                             <div style={{ fontWeight: 700 }}>{r.name}</div>
-                            <div style={{ fontSize: 10, color: '#94a3b8' }}>{r.sku} · {r.note}</div>
+                            <div style={{ fontSize: 10, color: '#64748B' }}>{r.sku} · {r.note}</div>
                           </td>
                           <td style={{ padding: '10px 12px', whiteSpace: 'nowrap', fontWeight: 700 }}>{r.qty} {r.unit}</td>
                           <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{formatRp(r.price)}</td>
@@ -282,8 +282,8 @@ export default function BomAI({ onNavigate }) {
                           <td style={{ padding: '10px 12px' }}>
                             <span style={{
                               padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700,
-                              background: r.stock_ok ? 'rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.1)',
-                              color: r.stock_ok ? '#16a34a' : '#ef4444',
+                              background: r.stock_ok ? 'rgba(5,150,105,0.1)' : 'rgba(220,38,38,0.1)',
+                              color: r.stock_ok ? '#059669' : '#DC2626',
                             }}>
                               {r.stock_ok ? `✓ ${r.stock}` : `⚠ butuh ${r.qty} (stok ${r.stock})`}
                             </span>
@@ -295,22 +295,22 @@ export default function BomAI({ onNavigate }) {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, padding: 16 }}>
-                  <div style={{ padding: 12, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                    <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>MATERIAL</div>
+                  <div style={{ padding: 12, borderRadius: 12, background: '#F1F5F9', border: '1px solid #E6E8EA' }}>
+                    <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>MATERIAL</div>
                     <div style={{ fontWeight: 800, fontSize: 16 }}>{formatRp(result.total_material)}</div>
                   </div>
-                  <div style={{ padding: 12, borderRadius: 12, background: 'rgba(124,58,237,0.06)', border: '1px solid #e9d5ff' }}>
-                    <div style={{ fontSize: 10, color: '#7c3aed', fontWeight: 700 }}>JASA ±15%</div>
-                    <div style={{ fontWeight: 800, fontSize: 16, color: '#7c3aed' }}>{formatRp(result.jasa_estimasi)}</div>
+                  <div style={{ padding: 12, borderRadius: 12, background: 'rgba(124,58,237,0.08)', border: '1px solid #e9d5ff' }}>
+                    <div style={{ fontSize: 10, color: '#7C3AED', fontWeight: 700 }}>JASA ±15%</div>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: '#7C3AED' }}>{formatRp(result.jasa_estimasi)}</div>
                   </div>
-                  <div style={{ padding: 12, borderRadius: 12, background: 'rgba(37,99,235,0.08)', border: '1px solid #bfdbfe' }}>
-                    <div style={{ fontSize: 10, color: '#2563eb', fontWeight: 700 }}>GRAND TOTAL</div>
-                    <div style={{ fontWeight: 800, fontSize: 16, color: '#1d4ed8' }}>{formatRp(result.grand_total)}</div>
+                  <div style={{ padding: 12, borderRadius: 12, background: 'rgba(51,65,85,0.09)', border: '1px solid #DBEAFE' }}>
+                    <div style={{ fontSize: 10, color: '#334155', fontWeight: 700 }}>GRAND TOTAL</div>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: '#1E293B' }}>{formatRp(result.grand_total)}</div>
                   </div>
                 </div>
 
                 {shortageLines.length > 0 && (
-                  <div style={{ margin: '0 16px 12px', padding: 12, borderRadius: 12, background: 'rgba(239,68,68,0.06)', border: '1px solid #fecaca', fontSize: 12, color: '#b91c1c' }}>
+                  <div style={{ margin: '0 16px 12px', padding: 12, borderRadius: 12, background: 'rgba(220,38,38,0.08)', border: '1px solid #FECACA', fontSize: 12, color: '#B91C1C' }}>
                     <b>⚠ {shortageLines.length} item stok kurang</b> — sarankan restock dulu atau ganti ke brand lain.
                     <div style={{ marginTop: 6 }}>{shortageLines.map((r) => `${r.sku} (−${r.shortage})`).join(' · ')}</div>
                   </div>
@@ -318,20 +318,20 @@ export default function BomAI({ onNavigate }) {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 16px 16px' }}>
                   <button type="button" onClick={toInvoice}
-                    style={{ height: 40, padding: '0 14px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#16a34a,#059669)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+                    style={{ height: 40, padding: '0 14px', border: 'none', borderRadius: 10, background: '#059669', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
                     <i className="fas fa-file-invoice" style={{ marginRight: 6 }}></i>Jadikan Draft Faktur
                   </button>
                   <button type="button" onClick={exportCSV}
-                    style={{ height: 40, padding: '0 14px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', fontWeight: 600, cursor: 'pointer' }}>
+                    style={{ height: 40, padding: '0 14px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', fontWeight: 600, cursor: 'pointer' }}>
                     CSV
                   </button>
                   <button type="button" onClick={printBOM}
-                    style={{ height: 40, padding: '0 14px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', fontWeight: 600, cursor: 'pointer' }}>
+                    style={{ height: 40, padding: '0 14px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', fontWeight: 600, cursor: 'pointer' }}>
                     Print / PDF
                   </button>
                   {onNavigate && (
                     <button type="button" onClick={() => onNavigate('barang-masuk')}
-                      style={{ height: 40, padding: '0 14px', border: '1px solid #f59e0b', borderRadius: 10, background: 'rgba(245,158,11,0.08)', color: '#b45309', fontWeight: 700, cursor: 'pointer' }}>
+                      style={{ height: 40, padding: '0 14px', border: '1px solid #B45309', borderRadius: 10, background: 'rgba(180,83,9,0.12)', color: '#B45309', fontWeight: 700, cursor: 'pointer' }}>
                       Restock item kurang
                     </button>
                   )}

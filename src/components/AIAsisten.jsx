@@ -2,12 +2,12 @@ import { useState, useMemo } from 'react'
 import { useInventory } from '../context/InventoryContext'
 
 const SUGGESTIONS = [
-  { id: 'predictions', title: '🔮 Prediksi Stok AI', desc: 'Perkiraan kapan stok habis + saran restock per produk', icon: 'fa-chart-line', color: '#2563eb' },
-  { id: 'low-stock', title: 'Cek stok menipis', desc: 'Lihat produk di bawah min stok + rekomendasi restock', icon: 'fa-exclamation-triangle', color: '#ef4444' },
-  { id: 'restock-plan', title: 'Rencana restock', desc: 'Prioritas barang yang harus dibeli', icon: 'fa-cart-plus', color: '#16a34a' },
-  { id: 'movement-summary', title: 'Ringkas masuk/keluar', desc: 'Total pergerakan stok + analitik', icon: 'fa-exchange-alt', color: '#2563eb' },
-  { id: 'category-health', title: 'Kesehatan per kategori', desc: 'Kategori rawan habis berdasarkan data real', icon: 'fa-chart-pie', color: '#7c3aed' },
-  { id: 'overview', title: 'Ikhtisar cepat', desc: 'Ringkasan semua aspek stok toko', icon: 'fa-chart-simple', color: '#0ea5e9' },
+  { id: 'predictions', title: '🔮 Prediksi Stok AI', desc: 'Perkiraan kapan stok habis + saran restock per produk', icon: 'fa-chart-line', color: '#334155' },
+  { id: 'low-stock', title: 'Cek stok menipis', desc: 'Lihat produk di bawah min stok + rekomendasi restock', icon: 'fa-exclamation-triangle', color: '#DC2626' },
+  { id: 'restock-plan', title: 'Rencana restock', desc: 'Prioritas barang yang harus dibeli', icon: 'fa-cart-plus', color: '#059669' },
+  { id: 'movement-summary', title: 'Ringkas masuk/keluar', desc: 'Total pergerakan stok + analitik', icon: 'fa-exchange-alt', color: '#334155' },
+  { id: 'category-health', title: 'Kesehatan per kategori', desc: 'Kategori rawan habis berdasarkan data real', icon: 'fa-chart-pie', color: '#7C3AED' },
+  { id: 'overview', title: 'Ikhtisar cepat', desc: 'Ringkasan semua aspek stok toko', icon: 'fa-chart-simple', color: '#0EA5E9' },
 ]
 
 export default function AIAsisten({ onNavigate }) {
@@ -81,11 +81,11 @@ export default function AIAsisten({ onNavigate }) {
               : `Semua stok relatif aman. ${predRows.length} SKU dianalisis. Saran preventif: ${totalSuggest} unit.`,
             rows: predRows.slice(0, 20),
             metrics: [
-              { label: 'Kritis/Habis', value: predRows.filter(r => r.urgency === 'kritis' || r.urgency === 'habis').length, color: '#ef4444' },
-              { label: 'Waspada', value: predRows.filter(r => r.urgency === 'waspada').length, color: '#f59e0b' },
-              { label: 'Pantau', value: predRows.filter(r => r.urgency === 'pantau').length, color: '#0ea5e9' },
-              { label: 'Aman', value: predRows.filter(r => r.urgency === 'aman').length, color: '#16a34a' },
-              { label: 'Saran Restock', value: totalSuggest, color: '#7c3aed' },
+              { label: 'Kritis/Habis', value: predRows.filter(r => r.urgency === 'kritis' || r.urgency === 'habis').length, color: '#DC2626' },
+              { label: 'Waspada', value: predRows.filter(r => r.urgency === 'waspada').length, color: '#B45309' },
+              { label: 'Pantau', value: predRows.filter(r => r.urgency === 'pantau').length, color: '#0EA5E9' },
+              { label: 'Aman', value: predRows.filter(r => r.urgency === 'aman').length, color: '#059669' },
+              { label: 'Saran Restock', value: totalSuggest, color: '#7C3AED' },
             ],
             actions: [
               { label: 'Barang Masuk', go: 'barang-masuk' },
@@ -116,11 +116,11 @@ export default function AIAsisten({ onNavigate }) {
             title: 'Ringkasan Pergerakan Stok',
             summary: `30 hari terakhir: masuk ${totalIn} unit, keluar ${totalOut} unit, net ${totalIn - totalOut >= 0 ? '+' : ''}${totalIn - totalOut} unit.`,
             metrics: [
-              { label: 'Barang Masuk', value: totalIn.toLocaleString(), color: '#16a34a' },
-              { label: 'Barang Keluar', value: totalOut.toLocaleString(), color: '#f97316' },
-              { label: 'Net', value: (totalIn - totalOut) >= 0 ? `+${totalIn - totalOut}` : totalIn - totalOut, color: '#2563eb' },
-              { label: 'Total Transaksi', value: history.length, color: '#7c3aed' },
-              { label: 'Produk', value: products.length, color: '#0ea5e9' },
+              { label: 'Barang Masuk', value: totalIn.toLocaleString(), color: '#059669' },
+              { label: 'Barang Keluar', value: totalOut.toLocaleString(), color: '#EA580C' },
+              { label: 'Net', value: (totalIn - totalOut) >= 0 ? `+${totalIn - totalOut}` : totalIn - totalOut, color: '#334155' },
+              { label: 'Total Transaksi', value: history.length, color: '#7C3AED' },
+              { label: 'Produk', value: products.length, color: '#0EA5E9' },
             ],
             actions: [
               { label: 'Barang Masuk', go: 'barang-masuk' },
@@ -164,11 +164,11 @@ export default function AIAsisten({ onNavigate }) {
             title: 'Ikhtisar Cepat',
             summary: `${products.length} produk, ${stats.categories_count} kategori, ${history.length} transaksi stok tercatat. Stok menipis: ${lowStock.length}.`,
             metrics: [
-              { label: 'Produk', value: products.length, color: '#2563eb' },
-              { label: 'Kategori', value: stats.categories_count, color: '#7c3aed' },
-              { label: 'Total Stok', value: Number(stats.total_stock || 0).toLocaleString(), color: '#10b981' },
-              { label: 'Stok Menipis', value: lowStock.length, color: '#ef4444' },
-              { label: 'Transaksi', value: history.length, color: '#f59e0b' },
+              { label: 'Produk', value: products.length, color: '#334155' },
+              { label: 'Kategori', value: stats.categories_count, color: '#7C3AED' },
+              { label: 'Total Stok', value: Number(stats.total_stock || 0).toLocaleString(), color: '#059669' },
+              { label: 'Stok Menipis', value: lowStock.length, color: '#DC2626' },
+              { label: 'Transaksi', value: history.length, color: '#B45309' },
             ],
             actions: [
               { label: 'Dashboard', go: 'dashboard' },
@@ -219,12 +219,12 @@ export default function AIAsisten({ onNavigate }) {
           <input value={chat} onChange={e => setChat(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && freeTextHint) run(freeTextHint) }}
             placeholder='Contoh: "stok menipis", "rencana restock", "ringkas masuk keluar"'
-            style={{ flex: 1, height: 42, border: '1px solid #e2e8f0', borderRadius: 10, padding: '0 12px', fontSize: 13, outline: 'none' }} />
+            style={{ flex: 1, height: 42, border: '1px solid #E6E8EA', borderRadius: 10, padding: '0 12px', fontSize: 13, outline: 'none' }} />
           <button type="button" disabled={!freeTextHint || loading}
             onClick={() => freeTextHint && run(freeTextHint)}
             style={{ height: 42, padding: '0 16px', border: 'none', borderRadius: 10,
-              background: freeTextHint ? 'linear-gradient(135deg,#2563eb,#7c3aed)' : '#e2e8f0',
-              color: freeTextHint ? '#fff' : '#94a3b8', fontWeight: 700, cursor: freeTextHint ? 'pointer' : 'not-allowed' }}>
+              background: freeTextHint ? '#334155' : '#E6E8EA',
+              color: freeTextHint ? '#fff' : '#64748B', fontWeight: 700, cursor: freeTextHint ? 'pointer' : 'not-allowed' }}>
             Analisis
           </button>
         </div>
@@ -233,17 +233,17 @@ export default function AIAsisten({ onNavigate }) {
       <div className="panel">
         <div className="panel-head"><h3>{result?.title || 'Hasil Asisten'}</h3>{loading && <span className="badge-pill">Memproses...</span>}</div>
         <div className="panel-body">
-          {!result && !loading && <div style={{ color: '#94a3b8', fontSize: 13 }}>Pilih salah satu kartu di atas, atau ketik pertanyaan.</div>}
-          {loading && <div style={{ color: '#2563eb', fontWeight: 600, fontSize: 13 }}><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }}></i>Menganalisis data...</div>}
+          {!result && !loading && <div style={{ color: '#64748B', fontSize: 13 }}>Pilih salah satu kartu di atas, atau ketik pertanyaan.</div>}
+          {loading && <div style={{ color: '#334155', fontWeight: 600, fontSize: 13 }}><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }}></i>Menganalisis data...</div>}
           {result && !loading && (
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginBottom: 14 }}>{result.summary}</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 14 }}>{result.summary}</p>
 
               {result.metrics && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10, marginBottom: 16 }}>
                   {result.metrics.map(m => (
-                    <div key={m.label} style={{ padding: 12, borderRadius: 10, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                      <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>{m.label}</div>
+                    <div key={m.label} style={{ padding: 12, borderRadius: 10, border: '1px solid #E6E8EA', background: '#F1F5F9' }}>
+                      <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>{m.label}</div>
                       <div style={{ fontSize: 20, fontWeight: 800, color: m.color }}>{m.value}</div>
                     </div>
                   ))}
@@ -254,22 +254,22 @@ export default function AIAsisten({ onNavigate }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, fontSize: 12 }}>
                   <thead><tr>
                     {['Produk', 'Stok', 'Avg/hari', 'Sisa', 'Urgensi', 'Saran'].map(h => (
-                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '7px 6px', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>{h}</th>
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', padding: '7px 6px', borderBottom: '1px solid #E6E8EA', textAlign: 'left' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {result.rows.map((r, i) => {
-                      const color = r.urgency === 'habis' || r.urgency === 'kritis' ? '#ef4444'
-                        : r.urgency === 'waspada' ? '#f59e0b'
-                        : r.urgency === 'pantau' ? '#0ea5e9' : '#16a34a'
+                      const color = r.urgency === 'habis' || r.urgency === 'kritis' ? '#DC2626'
+                        : r.urgency === 'waspada' ? '#B45309'
+                        : r.urgency === 'pantau' ? '#0EA5E9' : '#059669'
                       return (
                         <tr key={i}>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{r.name}<div style={{ fontSize: 10, color: '#94a3b8' }}>{r.category}</div></td>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.stock}</td>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.avg_daily_out ?? 0}</td>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color }}>{r.days_left_label || (r.days_left != null ? `~${r.days_left} hari` : 'Stabil')}</td>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color, textTransform: 'capitalize' }}>{r.urgency}</td>
-                          <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color: '#7c3aed' }}>{r.suggest_restock > 0 ? `+${r.suggest_restock}` : '-'}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 600 }}>{r.name}<div style={{ fontSize: 10, color: '#64748B' }}>{r.category}</div></td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.stock}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.avg_daily_out ?? 0}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 700, color }}>{r.days_left_label || (r.days_left != null ? `~${r.days_left} hari` : 'Stabil')}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 700, color, textTransform: 'capitalize' }}>{r.urgency}</td>
+                          <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 700, color: '#7C3AED' }}>{r.suggest_restock > 0 ? `+${r.suggest_restock}` : '-'}</td>
                         </tr>
                       )
                     })}
@@ -281,17 +281,17 @@ export default function AIAsisten({ onNavigate }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, fontSize: 12 }}>
                   <thead><tr>
                     {['Produk', 'Kategori', 'Stok', 'Min', 'Keterangan'].map(h => (
-                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '7px 6px', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>{h}</th>
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', padding: '7px 6px', borderBottom: '1px solid #E6E8EA', textAlign: 'left' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {result.rows.map((r, i) => (
                       <tr key={i}>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{r.name || r.category}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.category || '-'}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', color: r.gap > 0 ? '#ef4444' : '#16a34a', fontWeight: 700 }}>{r.stock ?? '-'}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.min_stock ?? '-'}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', color: r.gap > 0 ? '#ef4444' : '#16a34a', fontWeight: 700 }}>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 600 }}>{r.name || r.category}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.category || '-'}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', color: r.gap > 0 ? '#DC2626' : '#059669', fontWeight: 700 }}>{r.stock ?? '-'}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.min_stock ?? '-'}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', color: r.gap > 0 ? '#DC2626' : '#059669', fontWeight: 700 }}>
                           {r.gap > 0 ? `Kurang ${r.gap}` : 'Aman'}
                         </td>
                       </tr>
@@ -304,17 +304,17 @@ export default function AIAsisten({ onNavigate }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, fontSize: 12 }}>
                   <thead><tr>
                     {['Kategori', 'SKU', 'Total Stok', 'Rata-rata', 'Status'].map(h => (
-                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '7px 6px', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>{h}</th>
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', padding: '7px 6px', borderBottom: '1px solid #E6E8EA', textAlign: 'left' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {result.rows.map((r, i) => (
                       <tr key={i}>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{r.category}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.count}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.total_stock}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9' }}>{r.avg}</td>
-                        <td style={{ padding: '6px', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color: r.health === 'Aman' ? '#16a34a' : r.health === 'Perlu pantau' ? '#f59e0b' : '#ef4444' }}>{r.health}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 600 }}>{r.category}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.count}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.total_stock}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC' }}>{r.avg}</td>
+                        <td style={{ padding: '6px', borderBottom: '1px solid #F8FAFC', fontWeight: 700, color: r.health === 'Aman' ? '#059669' : r.health === 'Perlu pantau' ? '#B45309' : '#DC2626' }}>{r.health}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -325,7 +325,7 @@ export default function AIAsisten({ onNavigate }) {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {result.actions.map(a => (
                     <button key={a.go + a.label} type="button" onClick={() => onNavigate?.(a.go)}
-                      style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #2563eb', background: 'rgba(37,99,235,0.08)', color: '#1d4ed8', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                      style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #334155', background: 'rgba(51,65,85,0.09)', color: '#1E293B', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                       {a.label} →
                     </button>
                   ))}

@@ -9,9 +9,9 @@ import {
 } from '../data/invoices'
 
 const STATUS_META = {
-  lunas: { label: 'Lunas', color: '#16a34a', bg: 'rgba(22,163,74,0.1)' },
-  belum: { label: 'Belum Bayar', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-  sebagian: { label: 'Sebagian', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  lunas: { label: 'Lunas', color: '#059669', bg: 'rgba(5,150,105,0.1)' },
+  belum: { label: 'Belum Bayar', color: '#DC2626', bg: 'rgba(220,38,38,0.1)' },
+  sebagian: { label: 'Sebagian', color: '#B45309', bg: 'rgba(180,83,9,0.12)' },
 }
 
 const MAX_UNDO = 30
@@ -437,11 +437,11 @@ export default function Finance() {
     if (!w) return
     w.document.write(`<!DOCTYPE html><html><head><title>${COMPANY.reportTitle}</title>
       <style>
-        body{font-family:system-ui,sans-serif;padding:24px;color:#0f172a}
+        body{font-family:system-ui,sans-serif;padding:24px;color:#0F172A}
         h1{font-size:18px;margin:0 0 4px} h2{font-size:14px;margin:0 0 12px;color:#475569}
         table{width:100%;border-collapse:collapse;font-size:11px}
-        th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:left}
-        th{background:#f8fafc} .r{text-align:right}
+        th,td{border:1px solid #E6E8EA;padding:6px 8px;text-align:left}
+        th{background:#F1F5F9} .r{text-align:right}
         .sum{margin-top:16px;font-size:12px}
       </style></head><body>
       <h1>${COMPANY.name}</h1>
@@ -474,7 +474,7 @@ export default function Finance() {
 
   const sel = {
     height: 36,
-    border: '1px solid #e2e8f0',
+    border: '1px solid #E6E8EA',
     borderRadius: 10,
     padding: '0 10px',
     fontSize: 12,
@@ -505,9 +505,9 @@ export default function Finance() {
           <div className="page-subtitle">
             {COMPANY.name} · {COMPANY.reportTitle} · Undo & history pembayaran
             {apiConnected ? (
-              <span style={{ color: '#16a34a', fontWeight: 700 }}> · <i className="fas fa-database"></i> tersimpan di server</span>
+              <span style={{ color: '#059669', fontWeight: 700 }}> · <i className="fas fa-database"></i> tersimpan di server</span>
             ) : (
-              <span style={{ color: '#f59e0b', fontWeight: 700 }}> · mode lokal (server off)</span>
+              <span style={{ color: '#B45309', fontWeight: 700 }}> · mode lokal (server off)</span>
             )}
           </div>
         </div>
@@ -519,10 +519,10 @@ export default function Finance() {
           style={{
             height: 40,
             padding: '0 16px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #E6E8EA',
             borderRadius: 12,
-            background: undoStack.length ? 'linear-gradient(135deg,#fff7ed,#ffedd5)' : '#f8fafc',
-            color: undoStack.length ? '#c2410c' : '#94a3b8',
+            background: undoStack.length ? 'rgba(180,83,9,0.12)' : '#F1F5F9',
+            color: undoStack.length ? '#B45309' : '#64748B',
             fontWeight: 800,
             fontSize: 13,
             cursor: undoStack.length ? 'pointer' : 'not-allowed',
@@ -544,8 +544,8 @@ export default function Finance() {
             borderRadius: 10,
             fontSize: 13,
             fontWeight: 600,
-            background: toast.type === 'err' ? 'rgba(239,68,68,0.1)' : toast.type === 'undo' ? 'rgba(245,158,11,0.12)' : 'rgba(22,163,74,0.1)',
-            color: toast.type === 'err' ? '#b91c1c' : toast.type === 'undo' ? '#c2410c' : '#15803d',
+            background: toast.type === 'err' ? 'rgba(220,38,38,0.1)' : toast.type === 'undo' ? 'rgba(180,83,9,0.12)' : 'rgba(5,150,105,0.1)',
+            color: toast.type === 'err' ? '#B91C1C' : toast.type === 'undo' ? '#B45309' : '#059669',
           }}
         >
           {toast.msg}
@@ -553,25 +553,25 @@ export default function Finance() {
       )}
 
       {undoStack[0] && (
-        <div style={{ marginBottom: 12, fontSize: 12, color: '#64748b' }}>
-          Aksi terakhir: <b style={{ color: '#0f172a' }}>{undoStack[0].label}</b> — klik Undo untuk batalkan
+        <div style={{ marginBottom: 12, fontSize: 12, color: '#94A3B8' }}>
+          Aksi terakhir: <b style={{ color: '#0F172A' }}>{undoStack[0].label}</b> — klik Undo untuk batalkan
         </div>
       )}
 
       {/* KPI */}
       <div className="kpi-grid" style={{ marginBottom: 18 }}>
         {[
-          { label: 'Total Faktur', value: formatRp(summary.total_nilai), sub: `${summary.count} dokumen`, icon: 'fa-file-invoice-dollar', color: '#2563eb' },
-          { label: 'Sudah Dibayar', value: formatRp(summary.total_dibayar), sub: `${summary.lunas} lunas`, icon: 'fa-check-circle', color: '#16a34a' },
-          { label: 'Piutang (Terutang)', value: formatRp(summary.total_terutang), sub: `${summary.belumbayar} belum bayar`, icon: 'fa-exclamation-circle', color: '#ef4444' },
-          { label: 'Collection Rate', value: `${summary.collection_rate}%`, sub: `${summary.sebagian} sebagian`, icon: 'fa-percent', color: '#7c3aed' },
+          { label: 'Total Faktur', value: formatRp(summary.total_nilai), sub: `${summary.count} dokumen`, icon: 'fa-file-invoice-dollar', color: '#334155' },
+          { label: 'Sudah Dibayar', value: formatRp(summary.total_dibayar), sub: `${summary.lunas} lunas`, icon: 'fa-check-circle', color: '#059669' },
+          { label: 'Piutang (Terutang)', value: formatRp(summary.total_terutang), sub: `${summary.belumbayar} belum bayar`, icon: 'fa-exclamation-circle', color: '#DC2626' },
+          { label: 'Collection Rate', value: `${summary.collection_rate}%`, sub: `${summary.sebagian} sebagian`, icon: 'fa-percent', color: '#7C3AED' },
         ].map((k) => (
           <div key={k.label} className="kpi-card" style={{ borderTop: `3px solid ${k.color}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>{k.label}</div>
+                <div style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>{k.label}</div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: k.color, marginTop: 4 }}>{k.value}</div>
-                <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{k.sub}</div>
+                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{k.sub}</div>
               </div>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${k.color}15`, color: k.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <i className={`fas ${k.icon}`}></i>
@@ -586,7 +586,7 @@ export default function Finance() {
         <div className="panel-body" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari no faktur / pelanggan..." style={{ ...sel, minWidth: 200, flex: 1 }} />
           <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} style={sel} />
-          <span style={{ color: '#94a3b8', fontSize: 12 }}>s/d</span>
+          <span style={{ color: '#64748B', fontSize: 12 }}>s/d</span>
           <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} style={sel} />
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={sel}>
             <option value="all">Semua Status</option>
@@ -601,15 +601,15 @@ export default function Finance() {
             ))}
           </select>
           <button type="button" onClick={() => setShowForm((v) => !v)}
-            style={{ height: 36, padding: '0 14px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+            style={{ height: 36, padding: '0 14px', border: 'none', borderRadius: 10, background: '#334155', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
             <i className="fas fa-plus" style={{ marginRight: 6 }}></i>Faktur Baru
           </button>
           <button type="button" onClick={downloadCSV}
-            style={{ height: 36, padding: '0 12px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+            style={{ height: 36, padding: '0 12px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
             CSV
           </button>
           <button type="button" onClick={printReport}
-            style={{ height: 36, padding: '0 12px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+            style={{ height: 36, padding: '0 12px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
             PDF/Print
           </button>
         </div>
@@ -628,7 +628,7 @@ export default function Finance() {
               { key: 'terutang', label: 'Terutang (kosong = full)', ph: '0 = lunas' },
               { key: 'keterangan', label: 'Keterangan / Rekening', ph: COMPANY.bank },
             ].map((f) => (
-              <label key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 11, fontWeight: 600, color: '#64748b' }}>
+              <label key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 11, fontWeight: 600, color: '#94A3B8' }}>
                 {f.label}
                 <input
                   type={f.type || 'text'}
@@ -641,8 +641,8 @@ export default function Finance() {
               </label>
             ))}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-              <button type="submit" style={{ height: 38, padding: '0 16px', border: 'none', borderRadius: 10, background: '#16a34a', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>Simpan</button>
-              <button type="button" onClick={() => setShowForm(false)} style={{ height: 38, padding: '0 16px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', cursor: 'pointer' }}>Batal</button>
+              <button type="submit" style={{ height: 38, padding: '0 16px', border: 'none', borderRadius: 10, background: '#059669', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>Simpan</button>
+              <button type="button" onClick={() => setShowForm(false)} style={{ height: 38, padding: '0 16px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', cursor: 'pointer' }}>Batal</button>
             </div>
           </div>
         </form>
@@ -657,9 +657,9 @@ export default function Finance() {
           <div className="panel-body" style={{ overflowX: 'auto', padding: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
-                <tr style={{ background: '#f8fafc' }}>
+                <tr style={{ background: '#F1F5F9' }}>
                   {['No. Faktur', 'Tgl', 'Pelanggan', 'Nilai', 'Terutang', 'Status', 'Aksi'].map((h) => (
-                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#94a3b8', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                    <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', color: '#64748B', borderBottom: '1px solid #E6E8EA' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -668,32 +668,32 @@ export default function Finance() {
                   const st = STATUS_META[r.status] || STATUS_META.belum
                   const payCount = (r.payments || []).length
                   return (
-                    <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <tr key={r.id} style={{ borderBottom: '1px solid #F8FAFC' }}>
                       <td style={{ padding: '10px 12px', fontWeight: 700 }}>{r.no_faktur}</td>
                       <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{formatDateId(r.tgl)}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <div style={{ fontWeight: 600 }}>{r.nama}</div>
-                        <div style={{ fontSize: 10, color: '#94a3b8' }}>#{r.no_pelanggan}</div>
+                        <div style={{ fontSize: 10, color: '#64748B' }}>#{r.no_pelanggan}</div>
                       </td>
                       <td style={{ padding: '10px 12px', fontWeight: 700, whiteSpace: 'nowrap' }}>{formatRp(r.nilai)}</td>
-                      <td style={{ padding: '10px 12px', fontWeight: 700, color: r.terutang > 0 ? '#ef4444' : '#16a34a', whiteSpace: 'nowrap' }}>{formatRp(r.terutang)}</td>
+                      <td style={{ padding: '10px 12px', fontWeight: 700, color: r.terutang > 0 ? '#DC2626' : '#059669', whiteSpace: 'nowrap' }}>{formatRp(r.terutang)}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <span style={{ padding: '3px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: st.bg, color: st.color }}>{st.label}</span>
                       </td>
                       <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
                         <button type="button" onClick={() => setHistoryModal(r)}
-                          style={{ marginRight: 4, padding: '4px 8px', border: '1px solid #7c3aed', borderRadius: 8, background: 'rgba(124,58,237,0.08)', color: '#6d28d9', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+                          style={{ marginRight: 4, padding: '4px 8px', border: '1px solid #7C3AED', borderRadius: 8, background: 'rgba(124,58,237,0.08)', color: '#7C3AED', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
                           title="Riwayat bayar">
                           <i className="fas fa-history"></i>{payCount ? ` ${payCount}` : ''}
                         </button>
                         {r.terutang > 0 && (
                           <>
                             <button type="button" onClick={() => { setPayModal(r); setPayAmount(String(r.terutang)); setPayNote('') }}
-                              style={{ marginRight: 4, padding: '4px 8px', border: '1px solid #2563eb', borderRadius: 8, background: 'rgba(37,99,235,0.08)', color: '#1d4ed8', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                              style={{ marginRight: 4, padding: '4px 8px', border: '1px solid #334155', borderRadius: 8, background: 'rgba(51,65,85,0.09)', color: '#1E293B', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
                               Bayar
                             </button>
                             <button type="button" onClick={() => markPaid(r)}
-                              style={{ padding: '4px 8px', border: '1px solid #16a34a', borderRadius: 8, background: 'rgba(22,163,74,0.08)', color: '#15803d', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                              style={{ padding: '4px 8px', border: '1px solid #059669', borderRadius: 8, background: 'rgba(5,150,105,0.1)', color: '#059669', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
                               Lunas
                             </button>
                           </>
@@ -704,7 +704,7 @@ export default function Finance() {
                 })}
                 {!filtered.length && (
                   <tr>
-                    <td colSpan={7} style={{ padding: 24, textAlign: 'center', color: '#94a3b8' }}>Tidak ada faktur di filter ini</td>
+                    <td colSpan={7} style={{ padding: 24, textAlign: 'center', color: '#64748B' }}>Tidak ada faktur di filter ini</td>
                   </tr>
                 )}
               </tbody>
@@ -717,11 +717,11 @@ export default function Finance() {
             <div className="panel-head"><h3>Top Pelanggan</h3></div>
             <div className="panel-body" style={{ padding: '8px 12px' }}>
               {summary.topCustomers.slice(0, 8).map((c, i) => (
-                <div key={c.nama} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '8px 4px', borderBottom: '1px solid #f1f5f9' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 8, background: i < 3 ? 'linear-gradient(135deg,#2563eb,#7c3aed)' : '#e2e8f0', color: i < 3 ? '#fff' : '#64748b', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
+                <div key={c.nama} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '8px 4px', borderBottom: '1px solid #F8FAFC' }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 8, background: i < 3 ? '#334155' : '#E6E8EA', color: i < 3 ? '#fff' : '#94A3B8', fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.nama}</div>
-                    <div style={{ fontSize: 10, color: '#94a3b8' }}>{c.count} faktur · piutang {formatRp(c.terutang)}</div>
+                    <div style={{ fontSize: 10, color: '#64748B' }}>{c.count} faktur · piutang {formatRp(c.terutang)}</div>
                   </div>
                   <div style={{ fontSize: 11, fontWeight: 800 }}>{formatRp(c.nilai)}</div>
                 </div>
@@ -732,9 +732,9 @@ export default function Finance() {
           <div className="panel">
             <div className="panel-head"><h3>Riwayat Undo</h3></div>
             <div className="panel-body" style={{ padding: '8px 12px', maxHeight: 180, overflowY: 'auto' }}>
-              {!undoStack.length && <div style={{ fontSize: 12, color: '#94a3b8' }}>Belum ada aksi bayar/lunas. Setelah bayar, Undo muncul di sini.</div>}
+              {!undoStack.length && <div style={{ fontSize: 12, color: '#64748B' }}>Belum ada aksi bayar/lunas. Setelah bayar, Undo muncul di sini.</div>}
               {undoStack.slice(0, 8).map((u, i) => (
-                <div key={i} style={{ fontSize: 11, padding: '6px 0', borderBottom: '1px solid #f1f5f9', color: i === 0 ? '#c2410c' : '#64748b' }}>
+                <div key={i} style={{ fontSize: 11, padding: '6px 0', borderBottom: '1px solid #F8FAFC', color: i === 0 ? '#B45309' : '#94A3B8' }}>
                   {i === 0 ? '↩ ' : ''}{u.label}
                 </div>
               ))}
@@ -744,10 +744,10 @@ export default function Finance() {
           <div className="panel">
             <div className="panel-head"><h3>Ringkasan Global</h3></div>
             <div className="panel-body" style={{ fontSize: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Semua faktur</span><b>{allSummary.count}</b></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Omzet total</span><b>{formatRp(allSummary.total_nilai)}</b></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Piutang total</span><b style={{ color: '#ef4444' }}>{formatRp(allSummary.total_terutang)}</b></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#64748b' }}>Collection</span><b style={{ color: '#16a34a' }}>{allSummary.collection_rate}%</b></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#94A3B8' }}>Semua faktur</span><b>{allSummary.count}</b></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#94A3B8' }}>Omzet total</span><b>{formatRp(allSummary.total_nilai)}</b></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#94A3B8' }}>Piutang total</span><b style={{ color: '#DC2626' }}>{formatRp(allSummary.total_terutang)}</b></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: '#94A3B8' }}>Collection</span><b style={{ color: '#059669' }}>{allSummary.collection_rate}%</b></div>
             </div>
           </div>
         </div>
@@ -762,31 +762,31 @@ export default function Finance() {
             <div className="panel-body">
               <div style={{ marginBottom: 12, fontSize: 13 }}>
                 <b>FP {payModal.no_faktur}</b> · {payModal.nama}
-                <div style={{ color: '#64748b', marginTop: 4 }}>
+                <div style={{ color: '#94A3B8', marginTop: 4 }}>
                   Nilai {formatRp(payModal.nilai)} · Sisa {formatRp(payModal.terutang)}
                 </div>
               </div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 10 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', display: 'block', marginBottom: 10 }}>
                 Jumlah bayar (Rp)
                 <input value={payAmount} onChange={(e) => setPayAmount(e.target.value)}
                   style={{ ...sel, width: '100%', height: 42, marginTop: 6, fontSize: 14, fontWeight: 700 }} />
               </label>
-              <label style={{ fontSize: 11, fontWeight: 700, color: '#64748b', display: 'block' }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8', display: 'block' }}>
                 Catatan (opsional)
                 <input value={payNote} onChange={(e) => setPayNote(e.target.value)} placeholder="Transfer BCA / cash / dll"
                   style={{ ...sel, width: '100%', height: 38, marginTop: 6 }} />
               </label>
               <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                 <button type="button" onClick={applyPayment}
-                  style={{ flex: 1, height: 40, border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#16a34a,#059669)', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+                  style={{ flex: 1, height: 40, border: 'none', borderRadius: 10, background: '#059669', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
                   Simpan Pembayaran
                 </button>
                 <button type="button" onClick={() => setPayModal(null)}
-                  style={{ height: 40, padding: '0 14px', border: '1px solid #e2e8f0', borderRadius: 10, background: '#fff', cursor: 'pointer' }}>
+                  style={{ height: 40, padding: '0 14px', border: '1px solid #E6E8EA', borderRadius: 10, background: '#fff', cursor: 'pointer' }}>
                   Batal
                 </button>
               </div>
-              <div style={{ marginTop: 10, fontSize: 11, color: '#94a3b8' }}>
+              <div style={{ marginTop: 10, fontSize: 11, color: '#64748B' }}>
                 <i className="fas fa-info-circle" style={{ marginRight: 4 }}></i>
                 Salah input? Pakai tombol <b>Undo</b> di atas, atau buka History → batalkan bayar terakhir.
               </div>
@@ -802,32 +802,32 @@ export default function Finance() {
           <div className="panel" style={{ width: '100%', maxWidth: 560, margin: 0, maxHeight: '90vh', overflow: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <div className="panel-head">
               <h3>
-                <i className="fas fa-history" style={{ marginRight: 8, color: '#7c3aed' }}></i>
+                <i className="fas fa-history" style={{ marginRight: 8, color: '#7C3AED' }}></i>
                 History Bayar · FP {historyRow.no_faktur}
               </h3>
-              <button type="button" onClick={() => setHistoryModal(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: '#94a3b8' }}>
+              <button type="button" onClick={() => setHistoryModal(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: '#64748B' }}>
                 <i className="fas fa-times"></i>
               </button>
             </div>
             <div className="panel-body">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
-                <div style={{ padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>NILAI FAKTUR</div>
+                <div style={{ padding: 10, borderRadius: 10, background: '#F1F5F9', border: '1px solid #E6E8EA' }}>
+                  <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>NILAI FAKTUR</div>
                   <div style={{ fontWeight: 800, fontSize: 14 }}>{formatRp(historyRow.nilai)}</div>
                 </div>
-                <div style={{ padding: 10, borderRadius: 10, background: 'rgba(22,163,74,0.08)', border: '1px solid #bbf7d0' }}>
-                  <div style={{ fontSize: 10, color: '#16a34a', fontWeight: 700 }}>DIBAYAR</div>
-                  <div style={{ fontWeight: 800, fontSize: 14, color: '#16a34a' }}>{formatRp(historyRow.dibayar)}</div>
+                <div style={{ padding: 10, borderRadius: 10, background: 'rgba(5,150,105,0.1)', border: '1px solid #D1FAE5' }}>
+                  <div style={{ fontSize: 10, color: '#059669', fontWeight: 700 }}>DIBAYAR</div>
+                  <div style={{ fontWeight: 800, fontSize: 14, color: '#059669' }}>{formatRp(historyRow.dibayar)}</div>
                 </div>
-                <div style={{ padding: 10, borderRadius: 10, background: historyRow.terutang > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(22,163,74,0.08)', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>SISA / STATUS</div>
-                  <div style={{ fontWeight: 800, fontSize: 14, color: historyRow.terutang > 0 ? '#ef4444' : '#16a34a' }}>
+                <div style={{ padding: 10, borderRadius: 10, background: historyRow.terutang > 0 ? 'rgba(220,38,38,0.1)' : 'rgba(5,150,105,0.1)', border: '1px solid #E6E8EA' }}>
+                  <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>SISA / STATUS</div>
+                  <div style={{ fontWeight: 800, fontSize: 14, color: historyRow.terutang > 0 ? '#DC2626' : '#059669' }}>
                     {historyRow.terutang > 0 ? formatRp(historyRow.terutang) : 'LUNAS ✓'}
                   </div>
                 </div>
               </div>
 
-              <div style={{ fontSize: 12, color: '#64748b', marginBottom: 10 }}>
+              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 10 }}>
                 <b>{historyRow.nama}</b> · #{historyRow.no_pelanggan} · {formatDateId(historyRow.tgl)}
               </div>
 
@@ -835,32 +835,32 @@ export default function Finance() {
               <div style={{ position: 'relative', paddingLeft: 4 }}>
                 <div style={{
                   padding: '10px 12px', marginBottom: 8, borderRadius: 10,
-                  border: '1px dashed #cbd5e1', background: '#f8fafc', fontSize: 12,
+                  border: '1px dashed #94A3B8', background: '#F1F5F9', fontSize: 12,
                 }}>
                   <div style={{ fontWeight: 700 }}>📄 Faktur dibuat</div>
-                  <div style={{ color: '#94a3b8', fontSize: 11 }}>{formatDateId(historyRow.tgl)} · Nilai {formatRp(historyRow.nilai)} · Piutang awal penuh</div>
+                  <div style={{ color: '#64748B', fontSize: 11 }}>{formatDateId(historyRow.tgl)} · Nilai {formatRp(historyRow.nilai)} · Piutang awal penuh</div>
                 </div>
 
                 {runningPaid.map((p, i) => (
                   <div key={p.id || i} style={{
                     padding: '12px', marginBottom: 8, borderRadius: 12,
-                    border: `1px solid ${p.type === 'lunas' ? '#bbf7d0' : '#e2e8f0'}`,
-                    background: p.type === 'lunas' ? 'rgba(22,163,74,0.06)' : '#fff',
+                    border: `1px solid ${p.type === 'lunas' ? '#D1FAE5' : '#E6E8EA'}`,
+                    background: p.type === 'lunas' ? 'rgba(5,150,105,0.08)' : '#fff',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
                       <div>
-                        <div style={{ fontWeight: 800, fontSize: 13, color: p.type === 'lunas' ? '#16a34a' : '#2563eb' }}>
+                        <div style={{ fontWeight: 800, fontSize: 13, color: p.type === 'lunas' ? '#059669' : '#334155' }}>
                           {p.type === 'lunas' ? '✓ Pelunasan' : '💰 Pembayaran'} {formatRp(p.amount)}
                         </div>
-                        <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                        <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>
                           {new Date(p.at).toLocaleString('id-ID')}
                           {p.source === 'seed' ? ' · data Accurate' : ' · input user'}
                         </div>
-                        {p.note && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{p.note}</div>}
+                        {p.note && <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>{p.note}</div>}
                       </div>
                       <div style={{ textAlign: 'right', fontSize: 11 }}>
-                        <div style={{ color: '#16a34a', fontWeight: 700 }}>Kumulatif {formatRp(p.running)}</div>
-                        <div style={{ color: p.sisa > 0 ? '#ef4444' : '#16a34a', fontWeight: 700 }}>
+                        <div style={{ color: '#059669', fontWeight: 700 }}>Kumulatif {formatRp(p.running)}</div>
+                        <div style={{ color: p.sisa > 0 ? '#DC2626' : '#059669', fontWeight: 700 }}>
                           {p.sisa > 0 ? `Sisa ${formatRp(p.sisa)}` : 'Lunas'}
                         </div>
                       </div>
@@ -869,7 +869,7 @@ export default function Finance() {
                 ))}
 
                 {!runningPaid.length && (
-                  <div style={{ padding: 16, textAlign: 'center', color: '#94a3b8', fontSize: 13, border: '1px dashed #e2e8f0', borderRadius: 10 }}>
+                  <div style={{ padding: 16, textAlign: 'center', color: '#64748B', fontSize: 13, border: '1px dashed #E6E8EA', borderRadius: 10 }}>
                     Belum ada pembayaran. Status: belum bayar.
                   </div>
                 )}
@@ -877,8 +877,8 @@ export default function Finance() {
                 {historyRow.status === 'lunas' && (
                   <div style={{
                     padding: '12px 14px', borderRadius: 12, marginTop: 4,
-                    background: 'linear-gradient(135deg,rgba(22,163,74,0.12),rgba(5,150,105,0.08))',
-                    border: '1px solid #bbf7d0', color: '#15803d', fontWeight: 800, fontSize: 13, textAlign: 'center',
+                    background: 'rgba(5,150,105,0.1)',
+                    border: '1px solid #D1FAE5', color: '#059669', fontWeight: 800, fontSize: 13, textAlign: 'center',
                   }}>
                     ✓ Faktur LUNAS — total terbayar {formatRp(historyRow.dibayar)}
                   </div>
@@ -887,21 +887,21 @@ export default function Finance() {
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
                 <button type="button" onClick={() => undoLastPaymentOnInvoice(historyRow.id)}
-                  style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #f59e0b', background: 'rgba(245,158,11,0.1)', color: '#b45309', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                  style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #B45309', background: 'rgba(180,83,9,0.12)', color: '#B45309', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                   <i className="fas fa-undo" style={{ marginRight: 6 }}></i>Batalkan bayar terakhir
                 </button>
                 <button type="button" onClick={() => resetInvoicePayments(historyRow.id)}
-                  style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #ef4444', background: 'rgba(239,68,68,0.08)', color: '#b91c1c', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                  style={{ padding: '8px 12px', borderRadius: 10, border: '1px solid #DC2626', background: 'rgba(220,38,38,0.1)', color: '#B91C1C', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                   <i className="fas fa-rotate-left" style={{ marginRight: 6 }}></i>Reset ke belum bayar
                 </button>
                 {historyRow.terutang > 0 && (
                   <button type="button" onClick={() => { setHistoryModal(null); setPayModal(historyRow); setPayAmount(String(historyRow.terutang)) }}
-                    style={{ padding: '8px 12px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                    style={{ padding: '8px 12px', borderRadius: 10, border: 'none', background: '#334155', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                     + Bayar lagi
                   </button>
                 )}
                 <button type="button" onClick={() => setHistoryModal(null)}
-                  style={{ marginLeft: 'auto', padding: '8px 12px', borderRadius: 10, border: '1px solid #e2e8f0', background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+                  style={{ marginLeft: 'auto', padding: '8px 12px', borderRadius: 10, border: '1px solid #E6E8EA', background: '#fff', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
                   Tutup
                 </button>
               </div>

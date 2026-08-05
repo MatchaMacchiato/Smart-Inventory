@@ -3,9 +3,9 @@ import { useInventory } from '../context/InventoryContext'
 import { REASON_LABEL, formatDateTimeFull } from '../data/products'
 
 const CAT_COLORS = {
-  MCB: '#2563eb', Kabel: '#7c3aed', Fitting: '#f59e0b', Saklar: '#16a34a',
-  'Stop Kontak': '#ef4444', Steker: '#0ea5e9', Panel: '#6366f1', Lampu: '#f97316',
-  Aksesoris: '#10b981',
+  MCB: '#334155', Kabel: '#7C3AED', Fitting: '#B45309', Saklar: '#059669',
+  'Stop Kontak': '#DC2626', Steker: '#0EA5E9', Panel: '#475569', Lampu: '#EA580C',
+  Aksesoris: '#059669',
 }
 
 export default function Dashboard({ onNavigate }) {
@@ -78,14 +78,26 @@ export default function Dashboard({ onNavigate }) {
   const totalOut = Number(stats.stock_out || 0)
   const totalMove = Math.max(1, totalIn + totalOut)
   const outPct = Math.round((totalOut / totalMove) * 100)
-  const donutStyle = useMemo(() => ({ background: `conic-gradient(#2563eb 0% ${100 - outPct}%, #f97316 ${100 - outPct}% 100%)` }), [outPct])
+  const donutStyle = useMemo(() => ({ background: `conic-gradient(#334155 0% ${100 - outPct}%, #EA580C ${100 - outPct}% 100%)` }), [outPct])
 
   return (
     <div>
-      <div className="page-title">Dashboard</div>
-      <div className="page-subtitle">
-        <i className="fas fa-circle" style={{ color: source === 'api+local' ? '#16a34a' : '#f59e0b', fontSize: 8, marginRight: 6 }}></i>
-        {source === 'api+local' ? 'Live MySQL' : 'Data Lokal'} — semua data real-time · klik KPI untuk popup detail
+      <div className="page-header">
+        <div>
+          <div className="page-title">Dashboard</div>
+          <div className="page-subtitle">
+            <i className="fas fa-circle" style={{ color: source === 'api+local' ? '#059669' : '#B45309', fontSize: 8, marginRight: 6 }}></i>
+            {source === 'api+local' ? 'Live MySQL' : 'Data Lokal'} — data real-time · klik KPI untuk detail
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button type="button" className="badge-pill" style={{ border: '1px solid var(--border)', background: '#fff', color: 'var(--text-secondary)', cursor: 'pointer' }} onClick={() => onNavigate('laporan')}>
+            <i className="fas fa-chart-line"></i> Laporan
+          </button>
+          <button type="button" className="badge-pill" style={{ border: 'none', background: 'var(--success)', color: '#fff', cursor: 'pointer' }} onClick={() => onNavigate('barang-masuk')}>
+            <i className="fas fa-plus"></i> Barang Masuk
+          </button>
+        </div>
       </div>
 
       <div className="section-label"><h2>Ikhtisar Performa Sistem</h2></div>
@@ -105,19 +117,19 @@ export default function Dashboard({ onNavigate }) {
       <div className="section-label"><h2>Akses Cepat</h2></div>
       <div className="quick-grid">
         <button className="quick-card" type="button" onClick={() => onNavigate('produk')}>
-          <div className="quick-icon" style={{ background: 'rgba(37,99,235,0.12)', color: '#2563eb' }}><i className="fas fa-plus"></i></div>
+          <div className="quick-icon" style={{ background: 'rgba(51,65,85,0.09)', color: '#334155' }}><i className="fas fa-plus"></i></div>
           <div><h4>+ Tambah Produk</h4><p>Input barang baru ke katalog</p></div>
         </button>
         <button className="quick-card" type="button" onClick={() => onNavigate('barang-masuk')}>
-          <div className="quick-icon" style={{ background: 'rgba(22,163,74,0.12)', color: '#16a34a' }}><i className="fas fa-arrow-down"></i></div>
+          <div className="quick-icon" style={{ background: 'rgba(5,150,105,0.1)', color: '#059669' }}><i className="fas fa-arrow-down"></i></div>
           <div><h4>+ Barang Masuk</h4><p>Manual / scan barcode restock</p></div>
         </button>
         <button className="quick-card" type="button" onClick={() => onNavigate('barang-keluar')}>
-          <div className="quick-icon" style={{ background: 'rgba(249,115,22,0.12)', color: '#f97316' }}><i className="fas fa-arrow-up"></i></div>
+          <div className="quick-icon" style={{ background: 'rgba(234,88,12,0.12)', color: '#EA580C' }}><i className="fas fa-arrow-up"></i></div>
           <div><h4>Barang Keluar</h4><p>Manual / scan barcode keluar</p></div>
         </button>
         <button className="quick-card" type="button" onClick={() => onNavigate('ai-asisten')}>
-          <div className="quick-icon" style={{ background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }}><i className="fas fa-robot"></i></div>
+          <div className="quick-icon" style={{ background: 'rgba(124,58,237,0.1)', color: '#7C3AED' }}><i className="fas fa-robot"></i></div>
           <div><h4>Asisten AI</h4><p>Rekomendasi stok &amp; analitik</p></div>
         </button>
       </div>
@@ -142,8 +154,8 @@ export default function Dashboard({ onNavigate }) {
               ))}
             </div>
             <div className="legend-row">
-              <span><span className="legend-dot" style={{ background: '#2563eb' }}></span>Masuk ({totalIn})</span>
-              <span><span className="legend-dot" style={{ background: '#f97316' }}></span>Keluar ({totalOut})</span>
+              <span><span className="legend-dot" style={{ background: '#334155' }}></span>Masuk ({totalIn})</span>
+              <span><span className="legend-dot" style={{ background: '#EA580C' }}></span>Keluar ({totalOut})</span>
             </div>
           </div>
         </div>
@@ -162,9 +174,9 @@ export default function Dashboard({ onNavigate }) {
                 </div>
               </div>
               <div className="donut-legend">
-                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#2563eb' }}></span>Masuk</div><strong>{totalIn}</strong></div>
-                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#f97316' }}></span>Keluar</div><strong>{totalOut}</strong></div>
-                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#16a34a' }}></span>Net</div><strong style={{ color: (totalIn - totalOut) >= 0 ? '#16a34a' : '#ef4444' }}>{(totalIn - totalOut) >= 0 ? '+' : ''}{totalIn - totalOut}</strong></div>
+                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#334155' }}></span>Masuk</div><strong>{totalIn}</strong></div>
+                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#EA580C' }}></span>Keluar</div><strong>{totalOut}</strong></div>
+                <div className="donut-legend-item"><div className="left"><span className="legend-dot" style={{ background: '#059669' }}></span>Net</div><strong style={{ color: (totalIn - totalOut) >= 0 ? '#059669' : '#DC2626' }}>{(totalIn - totalOut) >= 0 ? '+' : ''}{totalIn - totalOut}</strong></div>
               </div>
             </div>
           </div>
@@ -174,7 +186,7 @@ export default function Dashboard({ onNavigate }) {
       <div className="panel">
         <div className="panel-head">
           <h3>Aktivitas Stok Terbaru</h3>
-          <button type="button" onClick={() => onNavigate('laporan')} style={{ border: 'none', background: 'none', color: '#2563eb', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Lihat Semua →</button>
+          <button type="button" onClick={() => onNavigate('laporan')} style={{ border: 'none', background: 'none', color: '#334155', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Lihat Semua →</button>
         </div>
         <div className="panel-body" style={{ paddingTop: 4, paddingBottom: 8 }}>
           <div className="activity-list">
@@ -185,10 +197,10 @@ export default function Dashboard({ onNavigate }) {
                 <div className="activity-row" key={h.id || i}>
                   <div className={`activity-icon ${isIn ? 'in' : 'out'}`}><i className={`fas ${isIn ? 'fa-arrow-down' : 'fa-arrow-up'}`}></i></div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0f172a' }}>{h.product_name}</div>
-                    <div style={{ fontSize: 11.5, color: '#94a3b8' }}>{REASON_LABEL[h.reason] || h.reason} · {dt.hari}, {dt.tanggal} · {dt.jam}</div>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>{h.product_name}</div>
+                    <div style={{ fontSize: 11.5, color: '#64748B' }}>{REASON_LABEL[h.reason] || h.reason} · {dt.hari}, {dt.tanggal} · {dt.jam}</div>
                   </div>
-                  <div style={{ fontWeight: 800, color: isIn ? '#16a34a' : '#ef4444', fontSize: 14 }}>{isIn ? '+' : ''}{h.change}</div>
+                  <div style={{ fontWeight: 800, color: isIn ? '#059669' : '#DC2626', fontSize: 14 }}>{isIn ? '+' : ''}{h.change}</div>
                 </div>
               )
             })}
@@ -202,20 +214,20 @@ export default function Dashboard({ onNavigate }) {
           <div style={st.modal} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <h3 style={{ fontSize: 15, fontWeight: 700 }}>
-                <i className="fas fa-history" style={{ color: '#2563eb', marginRight: 8 }}></i>
+                <i className="fas fa-history" style={{ color: '#334155', marginRight: 8 }}></i>
                 {popup.title}
               </h3>
               <button onClick={() => setPopup(null)} style={st.close}>×</button>
             </div>
-            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 14 }}>
-              Total: <strong style={{ color: '#0f172a' }}>{popupCount.toLocaleString('id-ID')}</strong>
+            <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 14 }}>
+              Total: <strong style={{ color: '#0F172A' }}>{popupCount.toLocaleString('id-ID')}</strong>
               {!isProductPopup && <span> unit · {popupRows.length} transaksi</span>}
               {isProductPopup && <span> {popup.filter === 'low' ? 'produk menipis' : 'unit stok'}</span>}
               {' · '}{popupByCategory.length} kategori
             </div>
 
             {popupRows.length === 0 ? (
-              <div style={{ color: '#94a3b8', fontSize: 13, padding: 24, textAlign: 'center' }}>
+              <div style={{ color: '#64748B', fontSize: 13, padding: 24, textAlign: 'center' }}>
                 <i className="fas fa-inbox" style={{ fontSize: 24, marginBottom: 8, display: 'block' }}></i>
                 Tidak ada data.
               </div>
@@ -225,14 +237,14 @@ export default function Dashboard({ onNavigate }) {
                   <div key={cat} style={{ marginBottom: 16 }}>
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-                      background: `${CAT_COLORS[cat] || '#64748b'}10`, borderRadius: 8, marginBottom: 6,
+                      background: `${CAT_COLORS[cat] || '#94A3B8'}10`, borderRadius: 8, marginBottom: 6,
                     }}>
                       <div style={{
                         width: 8, height: 8, borderRadius: '50%',
-                        background: CAT_COLORS[cat] || '#64748b',
+                        background: CAT_COLORS[cat] || '#94A3B8',
                       }}></div>
-                      <strong style={{ fontSize: 12, color: CAT_COLORS[cat] || '#64748b' }}>{cat}</strong>
-                      <span style={{ fontSize: 11, color: '#94a3b8' }}>({rows.length})</span>
+                      <strong style={{ fontSize: 12, color: CAT_COLORS[cat] || '#94A3B8' }}>{cat}</strong>
+                      <span style={{ fontSize: 11, color: '#64748B' }}>({rows.length})</span>
                     </div>
 
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5, marginBottom: 4 }}>
@@ -255,9 +267,9 @@ export default function Dashboard({ onNavigate }) {
                             return (
                               <tr key={r.id || i}>
                                 <td style={st.td}><span style={{ fontWeight: 600 }}>{r.name}</span></td>
-                                <td style={{ ...st.td, fontWeight: 700, color: r.stock <= r.min_stock ? '#ef4444' : '#0f172a' }}>{r.stock}</td>
+                                <td style={{ ...st.td, fontWeight: 700, color: r.stock <= r.min_stock ? '#DC2626' : '#0F172A' }}>{r.stock}</td>
                                 <td style={st.td}>{r.min_stock || '-'}</td>
-                                <td style={{ ...st.td, fontWeight: 700, color: popup.filter === 'low' ? '#ef4444' : '#2563eb' }}>
+                                <td style={{ ...st.td, fontWeight: 700, color: popup.filter === 'low' ? '#DC2626' : '#334155' }}>
                                   {popup.filter === 'low' ? (gap > 0 ? `-${gap}` : 'Batas') : `Rp ${Number(r.price || 0).toLocaleString()}`}
                                 </td>
                               </tr>
@@ -266,15 +278,15 @@ export default function Dashboard({ onNavigate }) {
                           const dt = formatDateTimeFull(r.created_at)
                           return (
                             <tr key={r.id || i}>
-                              <td style={{ ...st.td, whiteSpace: 'nowrap', fontSize: 10.5, color: '#64748b' }}>
+                              <td style={{ ...st.td, whiteSpace: 'nowrap', fontSize: 10.5, color: '#94A3B8' }}>
                                 <div>{dt.hari.slice(0, 3)}, {dt.tanggal}</div>
-                                <div style={{ color: '#94a3b8' }}>{dt.jam}</div>
+                                <div style={{ color: '#64748B' }}>{dt.jam}</div>
                               </td>
                               <td style={{ ...st.td, fontWeight: 600 }}>{r.product_name}</td>
-                              <td style={{ ...st.td, fontWeight: 700, color: r.change > 0 ? '#16a34a' : '#ef4444' }}>
+                              <td style={{ ...st.td, fontWeight: 700, color: r.change > 0 ? '#059669' : '#DC2626' }}>
                                 {r.change > 0 ? '+' : ''}{r.change}
                               </td>
-                              <td style={{ ...st.td, color: '#64748b', fontSize: 10.5 }}>{REASON_LABEL[r.reason] || r.reason}</td>
+                              <td style={{ ...st.td, color: '#94A3B8', fontSize: 10.5 }}>{REASON_LABEL[r.reason] || r.reason}</td>
                             </tr>
                           )
                         })}
@@ -292,9 +304,9 @@ export default function Dashboard({ onNavigate }) {
 }
 
 const st = {
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
-  modal: { background: '#fff', borderRadius: 16, padding: 20, maxWidth: 650, width: '92%', maxHeight: '75vh', overflow: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,0.2)' },
-  close: { width: 30, height: 30, borderRadius: 8, border: 'none', background: '#f1f5f9', cursor: 'pointer', fontSize: 16, lineHeight: '30px' },
-  th: { fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', padding: '6px 6px', textAlign: 'left', background: '#f8fafc', position: 'sticky', top: 0 },
-  td: { padding: '5px 6px', borderBottom: '1px solid #f1f5f9' },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 },
+  modal: { background: '#fff', borderRadius: 14, padding: 20, maxWidth: 650, width: '100%', maxHeight: '78vh', overflow: 'auto', boxShadow: '0 24px 60px rgba(15,23,42,0.18)', animation: 'uupmModalIn 0.28s var(--ease-out) both' },
+  close: { width: 30, height: 30, borderRadius: 8, border: 'none', background: '#F8FAFC', cursor: 'pointer', fontSize: 16, lineHeight: '30px', color: '#64748B' },
+  th: { fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', borderBottom: '1px solid #E6E8EA', padding: '6px 6px', textAlign: 'left', background: '#F1F5F9', position: 'sticky', top: 0 },
+  td: { padding: '5px 6px', borderBottom: '1px solid #F8FAFC' },
 }

@@ -1,7 +1,24 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
-const AVATARS = ['🧑‍💼', '👩‍💼', '🧑‍🔧', '👨‍🔧']
+// UI/UX Pro Max — Flat Design (industrial slate + stock green)
+// Tokens dari skill ui-ux-pro-max (design system "Smart Inventory Login")
+const DS = {
+  primary: '#334155',
+  onPrimary: '#FFFFFF',
+  accent: '#059669',
+  onAccent: '#FFFFFF',
+  bg: '#F8FAFC',
+  fg: '#0F172A',
+  muted: '#F2F3F4',
+  mutedFg: '#64748B',
+  border: '#E6E8EA',
+  destructive: '#DC2626',
+  ring: '#334155',
+  radius: 12,
+  fontHead: "'Rubik', sans-serif",
+  fontBody: "'Nunito Sans', sans-serif",
+}
 
 export default function LoginPage({ onLogin }) {
   const { login } = useAuth()
@@ -12,7 +29,7 @@ export default function LoginPage({ onLogin }) {
   const [showDemo, setShowDemo] = useState(true)
 
   const doLogin = async (e) => {
-    e?.prependDefault?.()
+    e?.preventDefault?.()
     setError('')
     if (!email.trim() || !password.trim()) {
       setError('Isi email dan password terlebih dahulu.')
@@ -34,84 +51,259 @@ export default function LoginPage({ onLogin }) {
     setShowDemo(false)
   }
 
+  const inputStyle = {
+    width: '100%',
+    height: 48,
+    border: `1.5px solid ${DS.border}`,
+    borderRadius: DS.radius,
+    padding: '0 14px',
+    fontSize: 15,
+    fontFamily: DS.fontBody,
+    background: '#fff',
+    color: DS.fg,
+    outline: 'none',
+    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+  }
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 700,
+    color: DS.primary,
+    marginBottom: 6,
+    fontFamily: DS.fontBody,
+    letterSpacing: '-0.01em',
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
-      padding: 20,
+      alignItems: 'stretch',
+      background: DS.bg,
+      fontFamily: DS.fontBody,
+      color: DS.fg,
     }}>
+      {/* ===== Kiri: brand panel (flat, solid slate) ===== */}
       <div style={{
-        width: '100%',
-        maxWidth: 400,
-        background: 'rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: 20,
-        border: '1px solid rgba(255,255,255,0.1)',
-        padding: 32,
+        flex: 1.15,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '48px 56px',
+        background: DS.primary,
         color: '#fff',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        {/* dekorasi flat: kotak & lingkaran solid tanpa blur/gradient */}
+        <div style={{ position: 'absolute', right: -60, top: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
+        <div style={{ position: 'absolute', right: 90, bottom: -40, width: 120, height: 120, borderRadius: 24, background: 'rgba(255,255,255,0.06)' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
           <div style={{
-            width: 56, height: 56, borderRadius: 16,
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            width: 48, height: 48, borderRadius: 14,
+            background: DS.accent,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24, margin: '0 auto 12px',
-            boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
+            fontSize: 20, color: '#fff',
           }}>
-            <i className="fas fa-cube"></i>
+            <i className="fas fa-bolt"></i>
           </div>
-          <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 4 }}>Inventory Pro</h2>
-          <p style={{ fontSize: 13, color: '#94a3b8' }}>Sistem Manajemen Stok Toko Listrik</p>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, fontFamily: DS.fontHead, letterSpacing: '-0.01em' }}>Inventory Pro</div>
+            <div style={{ fontSize: 12, opacity: 0.7, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Smart Inventory System</div>
+          </div>
         </div>
 
-        {error && (
-          <div style={{ padding: 10, borderRadius: 10, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
-            {error}
-          </div>
-        )}
+        <h1 style={{
+          fontSize: 30,
+          fontWeight: 700,
+          fontFamily: DS.fontHead,
+          lineHeight: 1.25,
+          letterSpacing: '-0.02em',
+          maxWidth: 420,
+          marginBottom: 16,
+        }}>
+          Kelola stok toko listrik jadi{' '}
+          <span style={{ color: '#6EE7B7' }}>cepat, akurat, &amp; anti-tebak-tebakan</span>
+        </h1>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <input value={email} onChange={e => setEmail(e.target.value)}
-            placeholder="Email"
-            onKeyDown={e => e.key === 'Enter' && doLogin()}
-            style={{ height: 44, borderRadius: 12, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', color: '#fff', padding: '0 14px', fontSize: 14, outline: 'none' }} />
-          <input value={password} onChange={e => setPassword(e.target.value)}
-            type="password" placeholder="Password"
-            onKeyDown={e => e.key === 'Enter' && doLogin()}
-            style={{ height: 44, borderRadius: 12, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', color: '#fff', padding: '0 14px', fontSize: 14, outline: 'none' }} />
-          <button onClick={doLogin} disabled={busy} type="button"
-            style={{ height: 44, borderRadius: 12, border: 'none',
-              background: busy ? '#475569' : 'linear-gradient(135deg, #2563eb, #7c3aed)',
-              color: '#fff', fontWeight: 700, fontSize: 14, cursor: busy ? 'not-allowed' : 'pointer',
-              boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}>
-            {busy ? 'Memproses...' : 'Masuk'}
-          </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 400 }}>
+          {[
+            { icon: 'fa-boxes-stacked', txt: 'Stok real-time + laporan otomatis' },
+            { icon: 'fa-brain', txt: 'Apriori & EOQ untuk prediksi restock' },
+            { icon: 'fa-file-invoice-dollar', txt: 'Keuangan, invoice & pembayaran terpusat' },
+          ].map(f => (
+            <div key={f.txt} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14, fontWeight: 600, opacity: 0.92 }}>
+              <div style={{
+                width: 34, height: 34, borderRadius: 10,
+                background: 'rgba(255,255,255,0.1)', color: '#6EE7B7',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0,
+              }}>
+                <i className={`fas ${f.icon}`}></i>
+              </div>
+              {f.txt}
+            </div>
+          ))}
         </div>
 
-        {showDemo && (
-          <div style={{ marginTop: 20, padding: 14, borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', marginBottom: 8, letterSpacing: '0.05em' }}>Demo Akun</div>
-            {[
-              { role: 'Admin', label: '🚀 Full akses', email: 'admin@smartinventory.my.id', pass: 'admin123', color: '#2563eb' },
-              { role: 'Kasir', label: '💰 Transaksi + Laporan', email: 'kasir@smartinventory.my.id', pass: 'kasir123', color: '#16a34a' },
-              { role: 'Gudang', label: '📦 Stok + Barang Masuk', email: 'gudang@smartinventory.my.id', pass: 'gudang123', color: '#f59e0b' },
-            ].map(d => (
-              <button key={d.role} type="button" onClick={() => fillDemo(d.role, d.email, d.pass)}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 10px', border: 'none', borderRadius: 8, background: 'transparent', color: '#cbd5e1', fontSize: 12, cursor: 'pointer', textAlign: 'left' }}>
-                <span style={{ width: 22, height: 22, borderRadius: 6, background: `${d.color}22`, color: d.color,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>{d.role[0]}</span>
-                <span style={{ flex: 1 }}>{d.label}</span>
-                <span style={{ color: '#64748b', fontSize: 11 }}>Klik isi</span>
-              </button>
-            ))}
-          </div>
-        )}
+        <div style={{ marginTop: 'auto', paddingTop: 40, fontSize: 12, opacity: 0.6, fontWeight: 600 }}>
+          PT Kemilau Abadi Makmur · Toko Listrik
+        </div>
+      </div>
 
-        <div style={{ marginTop: 16, textAlign: 'center', fontSize: 11, color: '#475569' }}>
-          Smart Inventory AR v2.0 &middot; Sistem Informasi
+      {/* ===== Kanan: form login ===== */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '48px 32px',
+      }}>
+        <div style={{ width: '100%', maxWidth: 400 }}>
+          <div style={{ marginBottom: 28 }}>
+            <h2 style={{
+              fontSize: 24, fontWeight: 700, fontFamily: DS.fontHead,
+              color: DS.fg, letterSpacing: '-0.02em', marginBottom: 6,
+            }}>
+              Selamat datang kembali 👋
+            </h2>
+            <p style={{ fontSize: 14, color: DS.mutedFg, fontWeight: 500 }}>
+              Masuk untuk mengelola persediaan barang
+            </p>
+          </div>
+
+          {error && (
+            <div role="alert" style={{
+              padding: 12, borderRadius: DS.radius,
+              background: '#FEF2F2', border: '1px solid #FECACA',
+              color: '#B91C1C', fontSize: 13, fontWeight: 600,
+              marginBottom: 18, display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <i className="fas fa-circle-exclamation"></i>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={doLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div>
+              <label htmlFor="email" style={labelStyle}>Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="nama@email.com"
+                autoComplete="email"
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = DS.ring; e.target.style.boxShadow = `0 0 0 3px rgba(51,65,85,0.12)` }}
+                onBlur={e => { e.target.style.borderColor = DS.border; e.target.style.boxShadow = 'none' }}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" style={labelStyle}>Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                style={inputStyle}
+                onFocus={e => { e.target.style.borderColor = DS.ring; e.target.style.boxShadow = `0 0 0 3px rgba(51,65,85,0.12)` }}
+                onBlur={e => { e.target.style.borderColor = DS.border; e.target.style.boxShadow = 'none' }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={busy}
+              style={{
+                height: 48,
+                border: 'none',
+                borderRadius: DS.radius,
+                background: busy ? DS.mutedFg : DS.accent,
+                color: DS.onAccent,
+                fontSize: 15,
+                fontWeight: 700,
+                fontFamily: DS.fontBody,
+                cursor: busy ? 'not-allowed' : 'pointer',
+                transition: 'background 0.15s ease, transform 0.15s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                letterSpacing: '-0.01em',
+              }}
+              onMouseEnter={e => { if (!busy) e.target.style.background = '#047857' }}
+              onMouseLeave={e => { if (!busy) e.target.style.background = DS.accent }}
+            >
+              {busy ? (
+                <>
+                  <i className="fas fa-spinner fa-spin"></i>
+                  Memproses...
+                </>
+              ) : (
+                <>
+                  Masuk
+                  <i className="fas fa-arrow-right" style={{ fontSize: 13 }}></i>
+                </>
+              )}
+            </button>
+          </form>
+
+          {showDemo && (
+            <div style={{
+              marginTop: 24,
+              padding: 16,
+              borderRadius: DS.radius,
+              background: DS.muted,
+              border: `1px solid ${DS.border}`,
+            }}>
+              <div style={{
+                fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                color: DS.mutedFg, marginBottom: 10, letterSpacing: '0.06em',
+              }}>
+                Demo Akun
+              </div>
+              {[
+                { role: 'Admin', label: 'Full akses', email: 'admin@smartinventory.my.id', pass: 'admin123', icon: 'fa-shield-halved', color: DS.primary },
+                { role: 'Kasir', label: 'Transaksi + Laporan', email: 'kasir@smartinventory.my.id', pass: 'kasir123', icon: 'fa-cash-register', color: DS.accent },
+                { role: 'Gudang', label: 'Stok + Barang Masuk', email: 'gudang@smartinventory.my.id', pass: 'gudang123', icon: 'fa-warehouse', color: '#B45309' },
+              ].map(d => (
+                <button
+                  key={d.role}
+                  type="button"
+                  onClick={() => fillDemo(d.role, d.email, d.pass)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    width: '100%', padding: '9px 10px',
+                    border: 'none', borderRadius: 8,
+                    background: 'transparent', color: DS.fg,
+                    fontSize: 13, cursor: 'pointer', textAlign: 'left',
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#fff' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: `${d.color}14`, color: d.color,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0,
+                  }}>
+                    <i className={`fas ${d.icon}`}></i>
+                  </span>
+                  <span style={{ flex: 1, fontWeight: 700 }}>{d.role}</span>
+                  <span style={{ color: DS.mutedFg, fontSize: 12, fontWeight: 500 }}>{d.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: 20, textAlign: 'center', fontSize: 12, color: DS.mutedFg, fontWeight: 500 }}>
+            Smart Inventory <span style={{ color: '#B6BAC2' }}>· PT Kemilau Abadi Makmur</span>
+          </div>
         </div>
       </div>
     </div>

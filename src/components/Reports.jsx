@@ -21,7 +21,7 @@ export default function Reports({ onNavigate, initialFilter }) {
     }
   }, [initialFilter])
 
-  const barColors = ['#2563eb', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9', '#4f46e5']
+  const barColors = ['#334155', '#7C3AED', '#059669', '#B45309', '#DC2626', '#8B5CF6', '#0EA5E9', '#334155']
 
   // Top products by stock value
   const topByValue = useMemo(() =>
@@ -109,16 +109,16 @@ export default function Reports({ onNavigate, initialFilter }) {
     if (!w) { alert('Izinkan popup untuk unduh PDF'); return }
     const d = w.document
     const style = `
-      body { font-family: 'Segoe UI', sans-serif; padding: 30px; color: #0f172a; }
+      body { font-family: 'Segoe UI', sans-serif; padding: 30px; color: #0F172A; }
       h1 { font-size: 20px; margin-bottom: 4px; }
       .sub { color: #475569; font-size: 13px; margin-bottom: 20px; }
       table { width: 100%; border-collapse: collapse; font-size: 10px; }
-      th { background: #2563eb; color: #fff; padding: 7px 5px; text-align: left; }
-      td { padding: 5px; border-bottom: 1px solid #e2e8f0; }
-      .in { color: #16a34a; font-weight: 700; }
-      .out { color: #ef4444; font-weight: 700; }
+      th { background: #334155; color: #fff; padding: 7px 5px; text-align: left; }
+      td { padding: 5px; border-bottom: 1px solid #E6E8EA; }
+      .in { color: #059669; font-weight: 700; }
+      .out { color: #DC2626; font-weight: 700; }
       .summary { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
-      .summary div { padding: 10px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; }
+      .summary div { padding: 10px; border-radius: 8px; background: #F1F5F9; border: 1px solid #E6E8EA; }
     `
     d.write(`<html><head><meta charset="utf-8"><title>Laporan Inventaris</title><style>${style}</style></head><body>`)
     d.write('<h1>Laporan Inventaris Toko Listrik</h1>')
@@ -129,7 +129,7 @@ export default function Reports({ onNavigate, initialFilter }) {
       const dt = h.created_at ? new Date(h.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'
       d.write(`<tr><td>${dt}</td><td>${h.product_name}</td><td>${h.category || '-'}</td><td class="${h.change > 0 ? 'in' : 'out'}">${h.change > 0 ? '+' : ''}${h.change}</td><td>${REASON_LABEL[h.reason] || h.reason}</td><td>${h.supplier || '-'}</td><td>${h.customer || '-'}</td></tr>`)
     })
-    d.write('</tbody></table><p style="margin-top:16px;color:#94a3b8;font-size:10px;">Dicetak dari Smart Inventory Pro System</p></body></html>')
+    d.write('</tbody></table><p style="margin-top:16px;color:#64748B;font-size:10px;">Dicetak dari Smart Inventory Pro System</p></body></html>')
     d.close()
     w.focus()
     setTimeout(() => w.print(), 300)
@@ -169,7 +169,7 @@ export default function Reports({ onNavigate, initialFilter }) {
           <button type="button" onClick={downloadCSV} style={s.btn}>
             <i className="fas fa-download"></i> CSV
           </button>
-          <button type="button" onClick={downloadPDF} style={{ ...s.btn, background: '#ef4444', color: '#fff' }}>
+          <button type="button" onClick={downloadPDF} style={{ ...s.btn, background: '#DC2626', color: '#fff' }}>
             <i className="fas fa-file-pdf"></i> PDF
           </button>
         </div>
@@ -178,8 +178,8 @@ export default function Reports({ onNavigate, initialFilter }) {
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {[{ key: 'ringkasan', label: 'Ringkasan' }, { key: 'pergerakan', label: 'Pergerakan' }, { key: 'riwayat', label: 'Riwayat' }].map(t => (
           <button key={t.key} type="button" onClick={() => setTab(t.key)}
-            style={{ padding: '7px 16px', borderRadius: 8, border: tab === t.key ? '1px solid #2563eb' : '1px solid #e2e8f0',
-              background: tab === t.key ? 'rgba(37,99,235,0.1)' : '#fff', color: tab === t.key ? '#1d4ed8' : '#475569',
+            style={{ padding: '7px 16px', borderRadius: 8, border: tab === t.key ? '1px solid #334155' : '1px solid #E6E8EA',
+              background: tab === t.key ? 'rgba(51,65,85,0.09)' : '#fff', color: tab === t.key ? '#1E293B' : '#475569',
               fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>{t.label}</button>
         ))}
       </div>
@@ -189,22 +189,22 @@ export default function Reports({ onNavigate, initialFilter }) {
         <>
           <div className="kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
             {[
-              { label: 'Total Produk', value: stats.total_products, icon: 'fa-cube', color: '#2563eb' },
-              { label: 'Total Stok', value: Number(stats.total_stock || 0).toLocaleString('id-ID'), icon: 'fa-boxes', color: '#7c3aed' },
-              { label: 'Stok Menipis', value: lowStock.length, icon: 'fa-exclamation-triangle', color: '#ef4444' },
-              { label: 'Nilai Stok', value: `Rp ${(totalNilaiStok / 1000000).toFixed(1)}jt`, icon: 'fa-coins', color: '#10b981' },
-              { label: 'Barang Masuk', value: totalIn.toLocaleString('id-ID'), icon: 'fa-arrow-down', color: '#16a34a' },
-              { label: 'Barang Keluar', value: totalOut.toLocaleString('id-ID'), icon: 'fa-arrow-up', color: '#f97316' },
-              { label: 'Total Transaksi', value: history.length, icon: 'fa-exchange-alt', color: '#8b5cf6' },
-              { label: 'Kategori', value: stats.categories_count, icon: 'fa-tags', color: '#0ea5e9' },
+              { label: 'Total Produk', value: stats.total_products, icon: 'fa-cube', color: '#334155' },
+              { label: 'Total Stok', value: Number(stats.total_stock || 0).toLocaleString('id-ID'), icon: 'fa-boxes', color: '#7C3AED' },
+              { label: 'Stok Menipis', value: lowStock.length, icon: 'fa-exclamation-triangle', color: '#DC2626' },
+              { label: 'Nilai Stok', value: `Rp ${(totalNilaiStok / 1000000).toFixed(1)}jt`, icon: 'fa-coins', color: '#059669' },
+              { label: 'Barang Masuk', value: totalIn.toLocaleString('id-ID'), icon: 'fa-arrow-down', color: '#059669' },
+              { label: 'Barang Keluar', value: totalOut.toLocaleString('id-ID'), icon: 'fa-arrow-up', color: '#EA580C' },
+              { label: 'Total Transaksi', value: history.length, icon: 'fa-exchange-alt', color: '#8B5CF6' },
+              { label: 'Kategori', value: stats.categories_count, icon: 'fa-tags', color: '#0EA5E9' },
             ].map((s, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div key={i} style={{ background: '#fff', border: '1px solid #E6E8EA', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: `${s.color}15`, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
                   <i className={`fas ${s.icon}`}></i>
                 </div>
                 <div>
                   <div style={{ fontSize: 17, fontWeight: 800 }}>{s.value}</div>
-                  <div style={{ fontSize: 11, color: '#64748b' }}>{s.label}</div>
+                  <div style={{ fontSize: 11, color: '#94A3B8' }}>{s.label}</div>
                 </div>
               </div>
             ))}
@@ -217,16 +217,16 @@ export default function Reports({ onNavigate, initialFilter }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead><tr>
                     {['#', 'Produk', 'Stok', 'Nilai Stok'].map(h => (
-                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', textAlign: 'left', padding: '7px 4px', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                      <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', textAlign: 'left', padding: '7px 4px', borderBottom: '1px solid #E6E8EA' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
                     {topByValue.slice(0, 8).map((p, i) => (
                       <tr key={p.id}>
-                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', fontWeight: 600, fontSize: 10, color: '#94a3b8' }}>#{i + 1}</td>
-                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{p.name}</td>
-                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9' }}>{p.stock}</td>
-                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #f1f5f9', color: '#2563eb', fontWeight: 700, fontSize: 11 }}>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #F8FAFC', fontWeight: 600, fontSize: 10, color: '#64748B' }}>#{i + 1}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #F8FAFC', fontWeight: 600 }}>{p.name}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #F8FAFC' }}>{p.stock}</td>
+                        <td style={{ padding: '7px 4px', borderBottom: '1px solid #F8FAFC', color: '#334155', fontWeight: 700, fontSize: 11 }}>
                           Rp {(Number(p.stock) * Number(p.price)).toLocaleString()}
                         </td>
                       </tr>
@@ -243,7 +243,7 @@ export default function Reports({ onNavigate, initialFilter }) {
                   <div key={c.category} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <div style={{ width: 10, height: 10, borderRadius: 3, background: barColors[i % barColors.length] }}></div>
                     <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{c.category}</span>
-                    <span style={{ fontSize: 12, color: '#94a3b8' }}>{c.count} SKU</span>
+                    <span style={{ fontSize: 12, color: '#64748B' }}>{c.count} SKU</span>
                     <span style={{ fontSize: 12, fontWeight: 700 }}>{c.total_stock}</span>
                   </div>
                 ))}
@@ -271,8 +271,8 @@ export default function Reports({ onNavigate, initialFilter }) {
                 ))}
               </div>
               <div className="legend-row">
-                <span><span className="legend-dot" style={{ background: '#2563eb' }}></span>Masuk ({totalIn})</span>
-                <span><span className="legend-dot" style={{ background: '#f97316' }}></span>Keluar ({totalOut})</span>
+                <span><span className="legend-dot" style={{ background: '#334155' }}></span>Masuk ({totalIn})</span>
+                <span><span className="legend-dot" style={{ background: '#EA580C' }}></span>Keluar ({totalOut})</span>
               </div>
             </div>
           </div>
@@ -283,7 +283,7 @@ export default function Reports({ onNavigate, initialFilter }) {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead><tr>
                   {['Alasan', 'Masuk', 'Keluar', 'Transaksi'].map(h => (
-                    <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', padding: '8px 10px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', textAlign: 'left' }}>{h}</th>
+                    <th key={h} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', padding: '8px 10px', borderBottom: '1px solid #E6E8EA', background: '#F1F5F9', textAlign: 'left' }}>{h}</th>
                   ))}
                 </tr></thead>
                 <tbody>
@@ -294,10 +294,10 @@ export default function Reports({ onNavigate, initialFilter }) {
                     if (count === 0) return null
                     return (
                       <tr key={k}>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', fontWeight: 600 }}>{v}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', color: '#16a34a', fontWeight: 600 }}>{masuk > 0 ? `+${masuk}` : '-'}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9', color: '#ef4444', fontWeight: 600 }}>{keluar > 0 ? `-${keluar}` : '-'}</td>
-                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #f1f5f9' }}>{count}x</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #F8FAFC', fontWeight: 600 }}>{v}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #F8FAFC', color: '#059669', fontWeight: 600 }}>{masuk > 0 ? `+${masuk}` : '-'}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #F8FAFC', color: '#DC2626', fontWeight: 600 }}>{keluar > 0 ? `-${keluar}` : '-'}</td>
+                        <td style={{ padding: '8px 10px', borderBottom: '1px solid #F8FAFC' }}>{count}x</td>
                       </tr>
                     )
                   })}
@@ -347,7 +347,7 @@ export default function Reports({ onNavigate, initialFilter }) {
               <thead>
                 <tr>
                   {['Waktu', 'Produk', 'Kategori', 'Sebelum', 'Sesudah', 'Perubahan', 'Alasan', 'Supplier', 'Customer', 'Catatan'].map(h => (
-                    <th key={h} style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', padding: '8px 6px', background: '#f8fafc', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', borderBottom: '1px solid #E6E8EA', padding: '8px 6px', background: '#F1F5F9', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -356,40 +356,40 @@ export default function Reports({ onNavigate, initialFilter }) {
                   const dt = h.created_at ? formatDateTimeFull(h.created_at) : { hari: '-', tanggal: '-', jam: '-', full: '-' }
                   return (
                     <tr key={h.id || i}>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, whiteSpace: 'nowrap', color: '#64748b' }}>
-                        {dt.hari.slice(0, 3)}, {dt.tanggal}<br /><span style={{ fontSize: 10, color: '#94a3b8' }}>{dt.jam}</span>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10.5, whiteSpace: 'nowrap', color: '#94A3B8' }}>
+                        {dt.hari.slice(0, 3)}, {dt.tanggal}<br /><span style={{ fontSize: 10, color: '#64748B' }}>{dt.jam}</span>
                       </td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontWeight: 600, fontSize: 11.5 }}>{h.product_name}</td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5 }}>{h.category || '-'}</td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>{h.stock_before}</td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center', fontWeight: 600 }}>{h.stock_after}</td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>
-                        <span style={{ fontWeight: 700, color: h.change > 0 ? '#16a34a' : '#ef4444' }}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontWeight: 600, fontSize: 11.5 }}>{h.product_name}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10.5 }}>{h.category || '-'}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', textAlign: 'center' }}>{h.stock_before}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', textAlign: 'center', fontWeight: 600 }}>{h.stock_after}</td>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', textAlign: 'center' }}>
+                        <span style={{ fontWeight: 700, color: h.change > 0 ? '#059669' : '#DC2626' }}>
                           {h.change > 0 ? '+' : ''}{h.change}
                         </span>
                       </td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, color: '#64748b' }}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10.5, color: '#94A3B8' }}>
                         {REASON_LABEL[h.reason] || h.reason}
                       </td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, fontWeight: 600, color: h.change > 0 ? '#16a34a' : '#94a3b8' }}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10.5, fontWeight: 600, color: h.change > 0 ? '#059669' : '#64748B' }}>
                         {h.supplier && h.supplier !== '-' ? h.supplier : (h.change > 0 ? '-' : '—')}
                       </td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10.5, fontWeight: 600, color: h.change < 0 ? '#f97316' : '#94a3b8' }}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10.5, fontWeight: 600, color: h.change < 0 ? '#EA580C' : '#64748B' }}>
                         {h.customer && h.customer !== '-' ? h.customer : (h.change < 0 ? '-' : '—')}
                       </td>
-                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #f1f5f9', fontSize: 10, color: '#94a3b8', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '7px 6px', borderBottom: '1px solid #F8FAFC', fontSize: 10, color: '#64748B', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {h.notes || '-'}
                       </td>
                     </tr>
                   )
                 })}
                 {filteredHistory.length > 500 && (
-                  <tr><td colSpan={10} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: 12 }}>
+                  <tr><td colSpan={10} style={{ padding: '12px', textAlign: 'center', color: '#64748B', fontSize: 12 }}>
                     Menampilkan 500 dari {filteredHistory.length} transaksi. Download CSV/PDF untuk semua data.
                   </td></tr>
                 )}
                 {filteredHistory.length === 0 && (
-                  <tr><td colSpan={10} style={{ padding: 20, textAlign: 'center', color: '#94a3b8' }}>Tidak ada data</td></tr>
+                  <tr><td colSpan={10} style={{ padding: 20, textAlign: 'center', color: '#64748B' }}>Tidak ada data</td></tr>
                 )}
               </tbody>
             </table>
@@ -401,6 +401,6 @@ export default function Reports({ onNavigate, initialFilter }) {
 }
 
 const s = {
-  btn: { padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff', color: '#475569', fontWeight: 700, fontSize: 11.5, cursor: 'pointer' },
-  sel: { padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 12, background: '#fff', color: '#0f172a' },
+  btn: { padding: '8px 12px', border: '1px solid #E6E8EA', borderRadius: 8, background: '#fff', color: '#475569', fontWeight: 700, fontSize: 11.5, cursor: 'pointer' },
+  sel: { padding: '6px 10px', border: '1px solid #E6E8EA', borderRadius: 8, fontSize: 12, background: '#fff', color: '#0F172A' },
 }

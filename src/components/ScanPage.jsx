@@ -43,7 +43,7 @@ export default function ScanPage({ onBack }) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 40, height: 40, border: '3px solid #6366f1', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
+          <div style={{ width: 40, height: 40, border: '3px solid #334155', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }}></div>
           <p style={{ fontSize: 14, color: '#475569' }}>Memuat produk...</p>
         </div>
       </div>
@@ -58,7 +58,7 @@ export default function ScanPage({ onBack }) {
           <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Produk Tidak Ditemukan</h2>
           <p style={{ fontSize: 13, color: '#475569', marginBottom: 16 }}>QR Code ini tidak valid atau produk sudah dihapus</p>
           <button onClick={() => window.location.href = '/'}
-            style={{ padding: '10px 24px', border: 'none', borderRadius: 10, background: '#6366f1', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            style={{ padding: '10px 24px', border: 'none', borderRadius: 10, background: '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             Kembali ke Dashboard
           </button>
         </div>
@@ -69,13 +69,13 @@ export default function ScanPage({ onBack }) {
   return (
     <div>
       {/* Scan Success Banner */}
-      <div style={{ marginBottom: 20, padding: '12px 20px', borderRadius: 12, background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1))', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: 20, padding: '12px 20px', borderRadius: 12, background: 'rgba(5,150,105,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 24 }}>✅</span>
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: 14, fontWeight: 700 }}>QR Code Terdeteksi!</span>
           <span style={{ fontSize: 12, color: '#475569', marginLeft: 8 }}>Produk: <strong>{product.name}</strong></span>
         </div>
-        <div style={{ fontSize: 11, color: '#64748b' }}>
+        <div style={{ fontSize: 11, color: '#94A3B8' }}>
           <i className="fas fa-clock"></i> {new Date().toLocaleString('id-ID')}
         </div>
       </div>

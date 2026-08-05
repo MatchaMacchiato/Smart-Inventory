@@ -37,7 +37,7 @@ export default function Sidebar({ page, onNavigate }) {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="sidebar-brand-icon">
-          <i className="fas fa-cube"></i>
+          <i className="fas fa-bolt"></i>
         </div>
         <div className="sidebar-brand-text">
           INVENTORY PRO<br />SYSTEM
@@ -73,9 +73,12 @@ export default function Sidebar({ page, onNavigate }) {
         })}
       </nav>
 
-      <div style={{ padding: '12px 16px', borderTop: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8' }}>
-        <div style={{ fontWeight: 700, color: '#0f172a', textTransform: 'capitalize' }}>{user?.name || 'User'}</div>
-        <div style={{ textTransform: 'capitalize' }}>Role: {role}</div>
+      <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)' }}>
+        <div style={{ fontWeight: 700, color: 'var(--navy)', textTransform: 'capitalize' }}>{user?.name || 'User'}</div>
+        <div style={{ textTransform: 'capitalize', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)', display: 'inline-block' }}></span>
+          Role: {role}
+        </div>
       </div>
     </aside>
   )

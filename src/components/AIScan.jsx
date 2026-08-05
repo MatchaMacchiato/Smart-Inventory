@@ -31,7 +31,7 @@ export default function AIScan() {
       canvas.height = img.height * scale
       const ctx = canvas.getContext('2d')
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      const colors = ['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#7c3aed', '#0891b2']
+      const colors = ['#334155', '#059669', '#B45309', '#DC2626', '#7C3AED', '#0EA5E9']
       result.detected_products.forEach((d, i) => {
         const box = d.bounding_box
         if (!box) return
@@ -99,17 +99,17 @@ export default function AIScan() {
         <div className="panel-body" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
           <div style={{
             padding: '8px 14px', borderRadius: 20, fontWeight: 800, fontSize: 12,
-            background: online ? 'rgba(22,163,74,0.12)' : 'rgba(245,158,11,0.12)',
-            color: online ? '#15803d' : '#c2410c',
+            background: online ? 'rgba(5,150,105,0.1)' : 'rgba(180,83,9,0.12)',
+            color: online ? '#059669' : '#B45309',
           }}>
             {online ? '● YOLOv8 service online' : '● Service offline → Laravel fallback simulasi'}
           </div>
-          <div style={{ fontSize: 12, color: '#64748b' }}>
+          <div style={{ fontSize: 12, color: '#94A3B8' }}>
             Model: <b>{modelInfo?.model_name || '…'}</b>
             {modelInfo?.weights ? ` · ${modelInfo.weights}` : ''}
             {modelInfo?.confidence_threshold != null ? ` · conf ≥ ${modelInfo.confidence_threshold}` : ''}
           </div>
-          <div style={{ fontSize: 11, color: '#94a3b8', marginLeft: 'auto' }}>
+          <div style={{ fontSize: 11, color: '#64748B', marginLeft: 'auto' }}>
             {modelInfo?.note || 'Train custom weights di Roboflow untuk akurasi produk listrik.'}
           </div>
         </div>
@@ -119,10 +119,10 @@ export default function AIScan() {
         <div className="panel">
           <div className="panel-head"><h3>Upload Foto Rak</h3></div>
           <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
               ID Rak / Store
               <input value={storeId} onChange={(e) => setStoreId(e.target.value)}
-                style={{ width: '100%', height: 38, marginTop: 6, border: '1px solid #e2e8f0', borderRadius: 10, padding: '0 12px' }} />
+                style={{ width: '100%', height: 38, marginTop: 6, border: '1px solid #E6E8EA', borderRadius: 10, padding: '0 12px' }} />
             </label>
 
             <div
@@ -138,8 +138,8 @@ export default function AIScan() {
                 }
               }}
               style={{
-                border: '2px dashed #cbd5e1', borderRadius: 14, padding: 28, textAlign: 'center',
-                cursor: 'pointer', background: '#f8fafc', color: '#64748b',
+                border: '2px dashed #94A3B8', borderRadius: 14, padding: 28, textAlign: 'center',
+                cursor: 'pointer', background: '#F1F5F9', color: '#94A3B8',
               }}
             >
               <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
@@ -149,22 +149,22 @@ export default function AIScan() {
             </div>
 
             {preview && (
-              <img src={preview} alt="preview" style={{ width: '100%', borderRadius: 12, border: '1px solid #e2e8f0' }} />
+              <img src={preview} alt="preview" style={{ width: '100%', borderRadius: 12, border: '1px solid #E6E8EA' }} />
             )}
 
             {error && (
-              <div style={{ padding: 10, borderRadius: 10, background: 'rgba(239,68,68,0.1)', color: '#b91c1c', fontSize: 12 }}>{error}</div>
+              <div style={{ padding: 10, borderRadius: 10, background: 'rgba(220,38,38,0.1)', color: '#B91C1C', fontSize: 12 }}>{error}</div>
             )}
 
             <button type="button" onClick={runScan} disabled={busy || !file}
               style={{
                 height: 44, border: 'none', borderRadius: 12, fontWeight: 800, color: '#fff', cursor: busy || !file ? 'not-allowed' : 'pointer',
-                background: 'linear-gradient(135deg,#2563eb,#7c3aed)', opacity: busy || !file ? 0.6 : 1,
+                background: '#334155', opacity: busy || !file ? 0.6 : 1,
               }}>
               {busy ? <><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }}></i>Scanning…</> : <><i className="fas fa-eye" style={{ marginRight: 8 }}></i>Scan dengan AI</>}
             </button>
 
-            <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.5 }}>
               <b>Cara skripsi-ready:</b> jalankan <code>ai-service/python app.py</code>,
               set <code>AI_SERVICE_URL</code> di Laravel .env, lalu train custom <code>.pt</code> dari foto toko sendiri.
             </div>
@@ -175,14 +175,14 @@ export default function AIScan() {
           <div className="panel-head">
             <h3>Hasil Deteksi</h3>
             {result && (
-              <span className="badge-pill" style={{ background: result.mode?.includes('yolo') || result.mode === 'yolov8' || result.mode === 'fallback_mock' ? 'rgba(37,99,235,0.12)' : 'rgba(245,158,11,0.15)', color: '#1d4ed8' }}>
+              <span className="badge-pill" style={{ background: result.mode?.includes('yolo') || result.mode === 'yolov8' || result.mode === 'fallback_mock' ? 'rgba(51,65,85,0.09)' : 'rgba(180,83,9,0.12)', color: '#1E293B' }}>
                 mode: {result.mode || '—'}
               </span>
             )}
           </div>
           <div className="panel-body">
             {!result && (
-              <div style={{ textAlign: 'center', color: '#94a3b8', padding: 48 }}>
+              <div style={{ textAlign: 'center', color: '#64748B', padding: 48 }}>
                 Hasil bounding box + mapping produk muncul di sini
               </div>
             )}
@@ -194,31 +194,31 @@ export default function AIScan() {
                     { l: 'Avg Confidence', v: `${Math.round((result.accuracy_score || 0) * 100)}%` },
                     { l: 'Waktu', v: `${result.processing_time || 0} ms` },
                   ].map((k) => (
-                    <div key={k.l} style={{ padding: 12, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                      <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>{k.l}</div>
+                    <div key={k.l} style={{ padding: 12, borderRadius: 12, background: '#F1F5F9', border: '1px solid #E6E8EA' }}>
+                      <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>{k.l}</div>
                       <div style={{ fontWeight: 800, fontSize: 18 }}>{k.v}</div>
                     </div>
                   ))}
                 </div>
 
-                <canvas ref={canvasRef} style={{ width: '100%', borderRadius: 12, border: '1px solid #e2e8f0', marginBottom: 14 }} />
+                <canvas ref={canvasRef} style={{ width: '100%', borderRadius: 12, border: '1px solid #E6E8EA', marginBottom: 14 }} />
 
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                   <thead>
-                    <tr style={{ background: '#f8fafc' }}>
+                    <tr style={{ background: '#F1F5F9' }}>
                       {['Produk', 'Kategori', 'Qty est.', 'Confidence'].map((h) => (
-                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 10, color: '#94a3b8', textTransform: 'uppercase' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 10, color: '#64748B', textTransform: 'uppercase' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {(result.detected_products || []).map((d, i) => (
-                      <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <tr key={i} style={{ borderBottom: '1px solid #F8FAFC' }}>
                         <td style={{ padding: '8px 10px', fontWeight: 700 }}>{d.name}</td>
                         <td style={{ padding: '8px 10px' }}>{d.category}</td>
                         <td style={{ padding: '8px 10px' }}>{d.quantity}</td>
                         <td style={{ padding: '8px 10px' }}>
-                          <span style={{ fontWeight: 800, color: (d.confidence || 0) > 0.8 ? '#16a34a' : '#f59e0b' }}>
+                          <span style={{ fontWeight: 800, color: (d.confidence || 0) > 0.8 ? '#059669' : '#B45309' }}>
                             {Math.round((d.confidence || 0) * 100)}%
                           </span>
                         </td>

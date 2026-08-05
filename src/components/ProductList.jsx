@@ -83,15 +83,14 @@ export default function ProductList({ onSelect }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div className="page-header">
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Plus Jakarta Sans','Inter',sans-serif" }}>Produk</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', marginTop: 4 }}>
-            <i className="fas fa-home"></i>
-            <span>Home / Produk · {filtered.length} item{catFilter ? ` · ${catFilter}` : ''}</span>
+          <div className="page-title">Data Produk</div>
+          <div className="page-subtitle">
+            Katalog barang toko listrik · {filtered.length} item{catFilter ? ` · ${catFilter}` : ''}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button onClick={() => setShowBatchQR(true)} style={btnOutline}>
             <i className="fas fa-qrcode"></i> Cetak QR
           </button>
@@ -109,14 +108,14 @@ export default function ProductList({ onSelect }) {
           onChange={(e) => setFilter(e.target.value)}
           style={{
             padding: '10px 16px',
-            border: '1px solid #eef2f6',
+            border: '1px solid #E6E8EA',
             borderRadius: 10,
             fontSize: 13,
             outline: 'none',
             flex: 1,
             minWidth: 200,
             background: '#fff',
-            color: '#0f172a',
+            color: '#0F172A',
           }}
         />
       </div>
@@ -153,7 +152,7 @@ export default function ProductList({ onSelect }) {
             key={p.id}
             style={{
               background: '#fff',
-              border: '1px solid #eef2f6',
+              border: '1px solid #E6E8EA',
               borderRadius: 12,
               padding: 20,
               transition: 'all 0.25s',
@@ -169,7 +168,7 @@ export default function ProductList({ onSelect }) {
                   position: 'absolute',
                   top: 12,
                   right: 12,
-                  background: p.stock <= 5 ? '#ef4444' : '#f59e0b',
+                  background: p.stock <= 5 ? '#DC2626' : '#B45309',
                   color: 'white',
                   fontSize: 10,
                   fontWeight: 700,
@@ -187,23 +186,23 @@ export default function ProductList({ onSelect }) {
                   height: 120,
                   borderRadius: 8,
                   marginBottom: 12,
-                  background: 'linear-gradient(135deg, #eef2f6, #f6f8fc)',
+                  background: '#F8FAFC',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#94a3b8',
+                  color: '#64748B',
                   fontSize: 32,
                 }}
               >
                 <i className={`fas ${ICONS[p.category] || 'fa-cube'}`}></i>
               </div>
-              <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600, marginBottom: 4 }}>{p.category}</div>
+              <div style={{ fontSize: 11, color: '#334155', fontWeight: 600, marginBottom: 4 }}>{p.category}</div>
               <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{p.name}</div>
               {p.sku && (
-                <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>SKU: {p.sku}</div>
+                <div style={{ fontSize: 11, color: '#64748B', marginBottom: 4 }}>SKU: {p.sku}</div>
               )}
-              <div style={{ fontSize: 11, color: '#64748b', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
-                <i className="fas fa-truck" style={{ fontSize: 10, color: '#6366f1' }}></i>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <i className="fas fa-truck" style={{ fontSize: 10, color: '#334155' }}></i>
                 <span style={{ fontWeight: 600 }}>{p.supplier || 'Supplier belum diisi'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -211,7 +210,7 @@ export default function ProductList({ onSelect }) {
                 <span
                   style={{
                     fontSize: 12,
-                    color: p.stock <= p.min_stock ? '#ef4444' : '#10b981',
+                    color: p.stock <= p.min_stock ? '#DC2626' : '#059669',
                     fontWeight: 600,
                   }}
                 >
@@ -230,7 +229,7 @@ export default function ProductList({ onSelect }) {
                   padding: '7px 0',
                   border: 'none',
                   borderRadius: 8,
-                  background: 'linear-gradient(135deg,#6366f1,#06b6d4)',
+                  background: '#334155',
                   color: 'white',
                   fontSize: 11,
                   fontWeight: 600,
@@ -244,7 +243,7 @@ export default function ProductList({ onSelect }) {
                   e.stopPropagation()
                   setQrProduct(p)
                 }}
-                style={iconBtn('#6366f1')}
+                style={iconBtn('#334155')}
               >
                 <i className="fas fa-qrcode"></i>
               </button>
@@ -253,7 +252,7 @@ export default function ProductList({ onSelect }) {
                   e.stopPropagation()
                   openEdit(p)
                 }}
-                style={iconBtn('#f59e0b')}
+                style={iconBtn('#B45309')}
               >
                 <i className="fas fa-edit"></i>
               </button>
@@ -262,7 +261,7 @@ export default function ProductList({ onSelect }) {
                   e.stopPropagation()
                   del(p.id, p.name)
                 }}
-                style={iconBtn('#ef4444')}
+                style={iconBtn('#DC2626')}
               >
                 <i className="fas fa-trash"></i>
               </button>
@@ -272,7 +271,7 @@ export default function ProductList({ onSelect }) {
       </div>
 
       {filtered.length === 0 && (
-        <div style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>
+        <div style={{ textAlign: 'center', padding: 40, color: '#64748B' }}>
           Tidak ada produk{catFilter ? ` di kategori ${catFilter}` : ''}.
         </div>
       )}
@@ -284,7 +283,7 @@ export default function ProductList({ onSelect }) {
             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
               <i
                 className={formModal === 'add' ? 'fas fa-plus-circle' : 'fas fa-edit'}
-                style={{ color: '#6366f1', marginRight: 8 }}
+                style={{ color: '#334155', marginRight: 8 }}
               ></i>
               {formModal === 'add' ? 'Tambah Produk Baru' : 'Edit Produk'}
             </h3>
@@ -306,7 +305,7 @@ export default function ProductList({ onSelect }) {
             ].map((field) => (
               <div key={field.key} style={{ marginBottom: 12 }}>
                 <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>
-                  {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+                  {field.label} {field.required && <span style={{ color: '#DC2626' }}>*</span>}
                 </label>
                 {field.type === 'select' ? (
                   <select
@@ -348,21 +347,21 @@ export default function ProductList({ onSelect }) {
           <div style={{ ...modal, maxWidth: 380 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700 }}>
-                <i className="fas fa-qrcode" style={{ color: '#6366f1', marginRight: 8 }}></i>QR Code
+                <i className="fas fa-qrcode" style={{ color: '#334155', marginRight: 8 }}></i>QR Code
               </h3>
               <button onClick={() => setQrProduct(null)} style={closeBtn}>
                 ×
               </button>
             </div>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600 }}>{qrProduct.category}</div>
+              <div style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>{qrProduct.category}</div>
               <div style={{ fontWeight: 600, fontSize: 15 }}>{qrProduct.name}</div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#334155' }}>
                 Rp {Number(qrProduct.price).toLocaleString()}
               </div>
             </div>
             <QRGenerator product={qrProduct} size={220} />
-            <p style={{ fontSize: 11, color: '#94a3b8', textAlign: 'center', marginTop: 12 }}>
+            <p style={{ fontSize: 11, color: '#64748B', textAlign: 'center', marginTop: 12 }}>
               Scan dari HP untuk lihat model 3D + info produk
             </p>
           </div>
@@ -375,7 +374,7 @@ export default function ProductList({ onSelect }) {
           <div style={{ ...modal, maxWidth: 800 }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700 }}>
-                <i className="fas fa-qrcode" style={{ color: '#6366f1', marginRight: 8 }}></i>
+                <i className="fas fa-qrcode" style={{ color: '#334155', marginRight: 8 }}></i>
                 QR {catFilter || 'Semua'} ({filtered.length})
               </h3>
               <button onClick={() => setShowBatchQR(false)} style={closeBtn}>
@@ -384,10 +383,10 @@ export default function ProductList({ onSelect }) {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
               {filtered.map((p) => (
-                <div key={p.id} style={{ padding: 12, border: '1px solid #eef2f6', borderRadius: 10, textAlign: 'center' }}>
+                <div key={p.id} style={{ padding: 12, border: '1px solid #E6E8EA', borderRadius: 10, textAlign: 'center' }}>
                   <QRGenerator product={p} size={120} />
                   <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600 }}>{p.name}</div>
-                  <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600 }}>
+                  <div style={{ fontSize: 11, color: '#334155', fontWeight: 600 }}>
                     Rp {Number(p.price).toLocaleString()}
                   </div>
                 </div>
@@ -404,9 +403,9 @@ function chipStyle(active) {
   return {
     padding: '8px 14px',
     borderRadius: 999,
-    border: active ? '1px solid #6366f1' : '1px solid #eef2f6',
-    background: active ? 'rgba(99,102,241,0.1)' : '#fff',
-    color: active ? '#4f46e5' : '#475569',
+    border: active ? '1px solid #334155' : '1px solid #E6E8EA',
+    background: active ? 'rgba(51,65,85,0.09)' : '#fff',
+    color: active ? '#334155' : '#475569',
     fontSize: 12.5,
     fontWeight: 700,
     cursor: 'pointer',
@@ -432,23 +431,24 @@ const btnPrimary = {
   padding: '9px 18px',
   border: 'none',
   borderRadius: 10,
-  background: 'linear-gradient(135deg,#6366f1,#06b6d4)',
+  background: 'var(--success)',
   color: '#fff',
   fontSize: 13,
-  fontWeight: 600,
+  fontWeight: 700,
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   gap: 8,
-  boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
+  boxShadow: '0 2px 8px rgba(5,150,105,0.25)',
+  transition: 'background 0.2s var(--ease-soft), transform 0.2s var(--ease-out)',
 }
 
 const btnOutline = {
   padding: '9px 18px',
-  border: '1px solid #6366f1',
+  border: '1px solid #334155',
   borderRadius: 10,
   background: '#fff',
-  color: '#6366f1',
+  color: '#334155',
   fontSize: 13,
   fontWeight: 600,
   cursor: 'pointer',
@@ -460,7 +460,7 @@ const btnOutline = {
 const btnGhost = {
   flex: 1,
   padding: '10px',
-  border: '1px solid #eef2f6',
+  border: '1px solid #E6E8EA',
   borderRadius: 8,
   background: '#fff',
   color: '#475569',
@@ -496,11 +496,11 @@ const modal = {
 const inputStyle = {
   width: '100%',
   padding: '10px 14px',
-  border: '1px solid #eef2f6',
+  border: '1px solid #E6E8EA',
   borderRadius: 8,
   fontSize: 13,
   outline: 'none',
-  color: '#0f172a',
+  color: '#0F172A',
 }
 
 const closeBtn = {
@@ -508,7 +508,7 @@ const closeBtn = {
   height: 32,
   borderRadius: 8,
   border: 'none',
-  background: '#f1f5f9',
+  background: '#F8FAFC',
   cursor: 'pointer',
   fontSize: 16,
 }

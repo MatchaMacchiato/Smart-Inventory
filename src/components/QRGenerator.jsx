@@ -14,7 +14,7 @@ export default function QRGenerator({ product, size = 200 }) {
       width: size,
       margin: 2,
       color: {
-        dark: '#0f172a',
+        dark: '#0F172A',
         light: '#ffffff'
       }
     }, err => {
@@ -45,7 +45,7 @@ export default function QRGenerator({ product, size = 200 }) {
         .label { border: 1px dashed #ccc; padding: 20px; display: inline-block; }
         h3 { margin: 10px 0 5px; font-size: 14px; }
         p { margin: 0; font-size: 11px; color: #666; }
-        .price { font-size: 13px; font-weight: bold; color: #6366f1; margin: 4px 0; }
+        .price { font-size: 13px; font-weight: bold; color: #334155; margin: 4px 0; }
       </style>
       </head>
       <body>
@@ -70,11 +70,11 @@ export default function QRGenerator({ product, size = 200 }) {
       <canvas ref={canvasRef} style={{ borderRadius: 8, maxWidth: '100%' }} />
       <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'center' }}>
         <button onClick={downloadQR}
-          style={{ padding: '8px 16px', border: '1px solid #6366f1', borderRadius: 8, background: '#fff', color: '#6366f1', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          style={{ padding: '8px 16px', border: '1px solid #334155', borderRadius: 8, background: '#fff', color: '#334155', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
           <i className="fas fa-download"></i> Download PNG
         </button>
         <button onClick={printQR}
-          style={{ padding: '8px 16px', border: 'none', borderRadius: 8, background: '#6366f1', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+          style={{ padding: '8px 16px', border: 'none', borderRadius: 8, background: '#334155', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
           <i className="fas fa-print"></i> Cetak Stiker
         </button>
       </div>

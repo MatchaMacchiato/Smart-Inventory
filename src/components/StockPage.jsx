@@ -36,17 +36,17 @@ export default function StockPage() {
       ]))
   }, [])
 
-  const barColors = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+  const barColors = ['#334155', '#0EA5E9', '#059669', '#B45309', '#DC2626', '#8B5CF6', '#e0449c']
   const maxStock = Math.max(...analytics.categories.map(c => c.total_stock))
 
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Plus Jakarta Sans','Inter',sans-serif" }}>
-          <i className="fas fa-warehouse" style={{ color: '#6366f1', marginRight: 8 }}></i>
+          <i className="fas fa-warehouse" style={{ color: '#334155', marginRight: 8 }}></i>
           Manajemen Stok
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', marginTop: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#64748B', marginTop: 4 }}>
           <i className="fas fa-home"></i><span>Home / Stok</span>
         </div>
       </div>
@@ -55,8 +55,8 @@ export default function StockPage() {
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {[{ key: 'overview', label: 'Ringkasan' }, { key: 'low', label: 'Stok Menipis' }].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            style={{ padding: '8px 18px', borderRadius: 8, border: tab === t.key ? '1px solid #6366f1' : '1px solid #eef2f6',
-              background: tab === t.key ? 'rgba(99,102,241,0.1)' : '#fff', color: tab === t.key ? '#6366f1' : '#475569',
+            style={{ padding: '8px 18px', borderRadius: 8, border: tab === t.key ? '1px solid #334155' : '1px solid #E6E8EA',
+              background: tab === t.key ? 'rgba(51,65,85,0.09)' : '#fff', color: tab === t.key ? '#334155' : '#475569',
               fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
             {t.label}
           </button>
@@ -68,34 +68,34 @@ export default function StockPage() {
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 24 }}>
             {[
-              { label: 'Total Produk', value: analytics.total_products, icon: 'fa-box', color: '#6366f1' },
-              { label: 'Total Stok', value: analytics.total_stock.toLocaleString(), icon: 'fa-warehouse', color: '#06b6d4' },
-              { label: 'Stok Menipis', value: analytics.low_stock_count, icon: 'fa-exclamation-triangle', color: '#f59e0b' },
-              { label: 'Habis', value: analytics.out_of_stock, icon: 'fa-times-circle', color: '#ef4444' },
+              { label: 'Total Produk', value: analytics.total_products, icon: 'fa-box', color: '#334155' },
+              { label: 'Total Stok', value: analytics.total_stock.toLocaleString(), icon: 'fa-warehouse', color: '#0EA5E9' },
+              { label: 'Stok Menipis', value: analytics.low_stock_count, icon: 'fa-exclamation-triangle', color: '#B45309' },
+              { label: 'Habis', value: analytics.out_of_stock, icon: 'fa-times-circle', color: '#DC2626' },
             ].map((s, i) => (
-              <div key={i} style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 18, display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              <div key={i} style={{ background: '#fff', border: '1px solid #E6E8EA', borderRadius: 12, padding: 18, display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <div style={{ width: 42, height: 42, borderRadius: 10, background: `${s.color}15`, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
                   <i className={`fas ${s.icon}`}></i>
                 </div>
                 <div>
                   <div style={{ fontSize: 20, fontWeight: 800 }}>{s.value}</div>
-                  <div style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>{s.label}</div>
+                  <div style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>{s.label}</div>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Chart per kategori */}
-          <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ background: '#fff', border: '1px solid #E6E8EA', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-              <i className="fas fa-chart-bar" style={{ color: '#6366f1', marginRight: 8 }}></i>
+              <i className="fas fa-chart-bar" style={{ color: '#334155', marginRight: 8 }}></i>
               Stok per Kategori
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {analytics.categories.map((cat, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ width: 80, fontSize: 12, fontWeight: 600, color: '#475569', textAlign: 'right' }}>{cat.category}</span>
-                  <div style={{ flex: 1, height: 24, background: '#f1f5f9', borderRadius: 6, overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 24, background: '#F8FAFC', borderRadius: 6, overflow: 'hidden' }}>
                     <div style={{ width: `${(cat.total_stock / maxStock) * 100}%`, height: '100%', background: barColors[i % barColors.length], borderRadius: 6, transition: 'width 0.5s', display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
                       {cat.total_stock > 20 && <span style={{ fontSize: 11, color: '#fff', fontWeight: 600 }}>{cat.total_stock}</span>}
                     </div>
@@ -109,10 +109,10 @@ export default function StockPage() {
       )}
 
       {tab === 'low' && (
-        <div style={{ background: '#fff', border: '1px solid #eef2f6', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ background: '#fff', border: '1px solid #E6E8EA', borderRadius: 12, overflow: 'hidden' }}>
           {lowStock.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
-              <i className="fas fa-check-circle" style={{ fontSize: 36, marginBottom: 12, color: '#10b981' }}></i>
+            <div style={{ padding: 40, textAlign: 'center', color: '#64748B' }}>
+              <i className="fas fa-check-circle" style={{ fontSize: 36, marginBottom: 12, color: '#059669' }}></i>
               <p>Semua stok aman! Tidak ada produk yang menipis.</p>
             </div>
           ) : (
@@ -120,7 +120,7 @@ export default function StockPage() {
               <thead>
                 <tr>
                   {['Produk', 'Kategori', 'Stok', 'Min Stok', 'Rasio', 'Aksi'].map(h => (
-                    <th key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#94a3b8', borderBottom: '1px solid #eef2f6', padding: '12px 16px', background: '#f6f8fc', textAlign: 'left' }}>{h}</th>
+                    <th key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#64748B', borderBottom: '1px solid #E6E8EA', padding: '12px 16px', background: '#f6f8fc', textAlign: 'left' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -130,20 +130,20 @@ export default function StockPage() {
                   const isCritical = p.stock <= p.min_stock * 0.5
                   return (
                     <tr key={p.id}>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6', fontWeight: 600 }}>{p.name}</td>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6', color: '#475569' }}>{p.category}</td>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6' }}>
-                        <span style={{ fontWeight: 700, color: isCritical ? '#ef4444' : '#f59e0b' }}>{p.stock}</span>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA', fontWeight: 600 }}>{p.name}</td>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA', color: '#475569' }}>{p.category}</td>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA' }}>
+                        <span style={{ fontWeight: 700, color: isCritical ? '#DC2626' : '#B45309' }}>{p.stock}</span>
                       </td>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6', color: '#64748b' }}>{p.min_stock}</td>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6' }}>
-                        <span style={{ padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, background: isCritical ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)', color: isCritical ? '#ef4444' : '#d97706' }}>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA', color: '#94A3B8' }}>{p.min_stock}</td>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA' }}>
+                        <span style={{ padding: '3px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, background: isCritical ? 'rgba(220,38,38,0.1)' : 'rgba(180,83,9,0.12)', color: isCritical ? '#DC2626' : '#B45309' }}>
                           {ratio}%
                         </span>
                       </td>
-                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #eef2f6' }}>
+                      <td style={{ fontSize: 13, padding: '12px 16px', borderBottom: '1px solid #E6E8EA' }}>
                         <button onClick={() => { setAdjustModal(p); setAdjustQty(''); setAdjustReason('manual'); setAdjustNotes('') }}
-                          style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#6366f1', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                          style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#334155', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                           <i className="fas fa-edit"></i> Adjust
                         </button>
                       </td>
@@ -163,21 +163,21 @@ export default function StockPage() {
           <div style={{ background: '#fff', borderRadius: 16, padding: 28, maxWidth: 420, width: '90%', boxShadow: '0 25px 50px rgba(0,0,0,0.2)' }}
             onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-              <i className="fas fa-edit" style={{ color: '#6366f1', marginRight: 8 }}></i>
+              <i className="fas fa-edit" style={{ color: '#334155', marginRight: 8 }}></i>
               Adjust Stok — {adjustModal.name}
             </h3>
             <div style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 8, background: '#f6f8fc', fontSize: 13, color: '#475569' }}>
-              Stok saat ini: <strong style={{ color: '#0f172a' }}>{adjustModal.stock}</strong> &middot; Min: {adjustModal.min_stock}
+              Stok saat ini: <strong style={{ color: '#0F172A' }}>{adjustModal.stock}</strong> &middot; Min: {adjustModal.min_stock}
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Stok Baru</label>
               <input type="number" value={adjustQty} onChange={e => setAdjustQty(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #eef2f6', borderRadius: 8, fontSize: 14, outline: 'none', color: '#0f172a' }} />
+                style={{ width: '100%', padding: '10px 14px', border: '1px solid #E6E8EA', borderRadius: 8, fontSize: 14, outline: 'none', color: '#0F172A' }} />
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Alasan</label>
               <select value={adjustReason} onChange={e => setAdjustReason(e.target.value)}
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #eef2f6', borderRadius: 8, fontSize: 13, outline: 'none', color: '#0f172a' }}>
+                style={{ width: '100%', padding: '10px 14px', border: '1px solid #E6E8EA', borderRadius: 8, fontSize: 13, outline: 'none', color: '#0F172A' }}>
                 <option value="manual">Manual</option>
                 <option value="ai_scan">AI Scan</option>
                 <option value="purchase">Pembelian</option>
@@ -188,11 +188,11 @@ export default function StockPage() {
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Catatan</label>
               <input type="text" value={adjustNotes} onChange={e => setAdjustNotes(e.target.value)} placeholder="Opsional..."
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid #eef2f6', borderRadius: 8, fontSize: 13, outline: 'none', color: '#0f172a' }} />
+                style={{ width: '100%', padding: '10px 14px', border: '1px solid #E6E8EA', borderRadius: 8, fontSize: 13, outline: 'none', color: '#0F172A' }} />
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setAdjustModal(null)}
-                style={{ flex: 1, padding: '10px', border: '1px solid #eef2f6', borderRadius: 8, background: '#fff', color: '#475569', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ flex: 1, padding: '10px', border: '1px solid #E6E8EA', borderRadius: 8, background: '#fff', color: '#475569', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 Batal
               </button>
               <button onClick={() => {
@@ -201,7 +201,7 @@ export default function StockPage() {
                   .then(() => { setAdjustModal(null); alert('✅ Stok berhasil diupdate!') })
                   .catch(() => alert('⚠️ Backend offline. Update tidak tersimpan.'))
               }}
-                style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#06b6d4)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 8, background: '#334155', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 Simpan
               </button>
             </div>

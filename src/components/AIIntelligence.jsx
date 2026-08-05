@@ -149,13 +149,13 @@ function RuleCard({ rule }) {
       <div className="panel-body" style={{ padding: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ fontWeight: 800, fontSize: 13 }}>{rule.antecedent?.name}</span>
-          <span style={{ fontWeight: 900, color: '#2563eb', fontSize: 15 }}>→</span>
-          <span style={{ fontWeight: 800, fontSize: 13, color: '#1d4ed8' }}>{rule.consequent?.name}</span>
+          <span style={{ fontWeight: 900, color: '#334155', fontSize: 15 }}>→</span>
+          <span style={{ fontWeight: 800, fontSize: 13, color: '#1E293B' }}>{rule.consequent?.name}</span>
         </div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11, color: '#64748b', flexWrap: 'wrap' }}>
-          <span><b style={{ color: '#0f172a' }}>{pct(rule.confidence)}</b> confidence</span>
-          <span><b style={{ color: '#0f172a' }}>{pct(rule.support)}</b> support</span>
-          <span>Lift <b style={{ color: rule.lift >= 1 ? '#16a34a' : '#ef4444' }}>{Number(rule.lift).toFixed(2)}</b></span>
+        <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11, color: '#94A3B8', flexWrap: 'wrap' }}>
+          <span><b style={{ color: '#0F172A' }}>{pct(rule.confidence)}</b> confidence</span>
+          <span><b style={{ color: '#0F172A' }}>{pct(rule.support)}</b> support</span>
+          <span>Lift <b style={{ color: rule.lift >= 1 ? '#059669' : '#DC2626' }}>{Number(rule.lift).toFixed(2)}</b></span>
           <span>{rule.count} transaksi</span>
         </div>
       </div>
@@ -247,10 +247,10 @@ export default function AIIntelligence() {
   }, [tab])
 
   const statusMeta = {
-    restock: { label: 'SEGERA RESTOCK', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
-    watch: { label: 'WASPADA', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-    ok: { label: 'AMAN', color: '#16a34a', bg: 'rgba(22,163,74,0.1)' },
-    no_demand: { label: 'NO DEMAND', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
+    restock: { label: 'SEGERA RESTOCK', color: '#DC2626', bg: 'rgba(220,38,38,0.1)' },
+    watch: { label: 'WASPADA', color: '#B45309', bg: 'rgba(180,83,9,0.12)' },
+    ok: { label: 'AMAN', color: '#059669', bg: 'rgba(5,150,105,0.1)' },
+    no_demand: { label: 'NO DEMAND', color: '#64748B', bg: 'rgba(148,163,184,0.1)' },
   }
 
   const restockRows = useMemo(
@@ -259,7 +259,7 @@ export default function AIIntelligence() {
   )
 
   const sel = {
-    height: 36, border: '1px solid #e2e8f0', borderRadius: 10, padding: '0 10px',
+    height: 36, border: '1px solid #E6E8EA', borderRadius: 10, padding: '0 10px',
     fontSize: 12, background: '#fff', outline: 'none',
   }
 
@@ -269,7 +269,7 @@ export default function AIIntelligence() {
       <div className="page-subtitle">
         Analisis data penjualan deterministik — bundling (Apriori) & optimasi restock (EOQ).
         {sourceNote && (
-          <span style={{ marginLeft: 8, color: sourceNote.includes('lokal') ? '#c2410c' : '#16a34a', fontWeight: 700 }}>
+          <span style={{ marginLeft: 8, color: sourceNote.includes('lokal') ? '#B45309' : '#059669', fontWeight: 700 }}>
             · sumber: {sourceNote}
           </span>
         )}
@@ -286,19 +286,19 @@ export default function AIIntelligence() {
             onClick={() => setTab(t.id)}
             style={{
               padding: '10px 16px', borderRadius: 12,
-              border: tab === t.id ? '2px solid #2563eb' : '1px solid #e2e8f0',
-              background: tab === t.id ? 'rgba(37,99,235,0.08)' : '#fff',
+              border: tab === t.id ? '2px solid #334155' : '1px solid #E6E8EA',
+              background: tab === t.id ? 'rgba(51,65,85,0.09)' : '#fff',
               cursor: 'pointer', textAlign: 'left',
             }}
           >
             <div style={{ fontWeight: 800, fontSize: 13 }}>{t.label}</div>
-            <div style={{ fontSize: 11, color: '#94a3b8' }}>{t.desc}</div>
+            <div style={{ fontSize: 11, color: '#64748B' }}>{t.desc}</div>
           </button>
         ))}
       </div>
 
       {error && (
-        <div style={{ marginBottom: 12, padding: 10, borderRadius: 10, background: 'rgba(245,158,11,0.12)', color: '#c2410c', fontSize: 12 }}>
+        <div style={{ marginBottom: 12, padding: 10, borderRadius: 10, background: 'rgba(180,83,9,0.12)', color: '#B45309', fontSize: 12 }}>
           {error}
         </div>
       )}
@@ -308,24 +308,24 @@ export default function AIIntelligence() {
           <div className="panel">
             <div className="panel-head"><h3>Parameter Apriori</h3></div>
             <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Min Support ({minSupport})
                 <input type="range" min="0.02" max="0.5" step="0.01" value={minSupport}
                   onChange={(e) => setMinSupport(Number(e.target.value))} style={{ width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Min Confidence ({minConfidence})
                 <input type="range" min="0.1" max="0.9" step="0.05" value={minConfidence}
                   onChange={(e) => setMinConfidence(Number(e.target.value))} style={{ width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Rentang data (hari)
                 <select value={days} onChange={(e) => setDays(Number(e.target.value))} style={{ ...sel, width: '100%', marginTop: 6 }}>
                   {[30, 60, 90, 180].map((d) => <option key={d} value={d}>{d} hari</option>)}
                 </select>
               </label>
               <button type="button" onClick={runApriori} disabled={loading}
-                style={{ height: 40, border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>
+                style={{ height: 40, border: 'none', borderRadius: 10, background: '#334155', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>
                 {loading ? 'Menghitung…' : '🔄 Hitung Ulang'}
               </button>
             </div>
@@ -336,14 +336,14 @@ export default function AIIntelligence() {
               <div className="panel" style={{ marginBottom: 12 }}>
                 <div className="panel-body" style={{ display: 'flex', gap: 24, flexWrap: 'wrap', padding: 14 }}>
                   <div>
-                    <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>TRANSAKSI</div>
+                    <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>TRANSAKSI</div>
                     <div style={{ fontSize: 20, fontWeight: 800 }}>{fmt(apriori.transactions)}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>RULES</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: '#2563eb' }}>{fmt(apriori.total_rules)}</div>
+                    <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>RULES</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#334155' }}>{fmt(apriori.total_rules)}</div>
                   </div>
-                  {apriori.message && <div style={{ fontSize: 12, color: '#b45309', alignSelf: 'center' }}>{apriori.message}</div>}
+                  {apriori.message && <div style={{ fontSize: 12, color: '#B45309', alignSelf: 'center' }}>{apriori.message}</div>}
                 </div>
               </div>
             )}
@@ -351,7 +351,7 @@ export default function AIIntelligence() {
               <div className="panel-head"><h3>Aturan Bundling (A→B)</h3></div>
               <div className="panel-body" style={{ padding: 14 }}>
                 {!apriori?.rules?.length && (
-                  <div style={{ textAlign: 'center', color: '#94a3b8', padding: 24 }}>
+                  <div style={{ textAlign: 'center', color: '#64748B', padding: 24 }}>
                     Belum ada rule. Turunkan threshold atau pastikan ada data barang keluar.
                   </div>
                 )}
@@ -367,32 +367,32 @@ export default function AIIntelligence() {
           <div className="panel">
             <div className="panel-head"><h3>Parameter EOQ</h3></div>
             <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Biaya sekali PO (Rp)
                 <input type="number" value={orderingCost} onChange={(e) => setOrderingCost(Number(e.target.value))} style={{ ...sel, width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Biaya simpan / tahun ({Math.round(holdingPct * 100)}% harga)
                 <input type="range" min="0.05" max="0.4" step="0.01" value={holdingPct}
                   onChange={(e) => setHoldingPct(Number(e.target.value))} style={{ width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Lead time supplier (hari)
                 <input type="number" value={leadTime} onChange={(e) => setLeadTime(Number(e.target.value))} style={{ ...sel, width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Service level ({serviceLevel})
                 <input type="range" min="0.8" max="0.99" step="0.01" value={serviceLevel}
                   onChange={(e) => setServiceLevel(Number(e.target.value))} style={{ width: '100%', marginTop: 6 }} />
               </label>
-              <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
                 Rentang demand (hari)
                 <select value={eoqDays} onChange={(e) => setEoqDays(Number(e.target.value))} style={{ ...sel, width: '100%', marginTop: 6 }}>
                   {[30, 60, 90, 180].map((d) => <option key={d} value={d}>{d} hari</option>)}
                 </select>
               </label>
               <button type="button" onClick={runEoq} disabled={loading}
-                style={{ height: 40, border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#16a34a,#059669)', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>
+                style={{ height: 40, border: 'none', borderRadius: 10, background: '#059669', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>
                 {loading ? 'Menghitung…' : '🔄 Hitung Ulang'}
               </button>
             </div>
@@ -404,20 +404,20 @@ export default function AIIntelligence() {
                 <div className="panel" style={{ marginBottom: 12 }}>
                   <div className="panel-body" style={{ display: 'flex', gap: 24, flexWrap: 'wrap', padding: 14 }}>
                     <div>
-                      <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700 }}>PRODUK</div>
+                      <div style={{ fontSize: 10, color: '#64748B', fontWeight: 700 }}>PRODUK</div>
                       <div style={{ fontSize: 20, fontWeight: 800 }}>{eoq.summary?.total_products ?? 0}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, color: '#ef4444', fontWeight: 700 }}>RESTOCK</div>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: '#ef4444' }}>{eoq.summary?.needs_restock ?? 0}</div>
+                      <div style={{ fontSize: 10, color: '#DC2626', fontWeight: 700 }}>RESTOCK</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: '#DC2626' }}>{eoq.summary?.needs_restock ?? 0}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, color: '#f59e0b', fontWeight: 700 }}>WASPADA</div>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: '#f59e0b' }}>{eoq.summary?.watch ?? 0}</div>
+                      <div style={{ fontSize: 10, color: '#B45309', fontWeight: 700 }}>WASPADA</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: '#B45309' }}>{eoq.summary?.watch ?? 0}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 10, color: '#16a34a', fontWeight: 700 }}>AMAN</div>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: '#16a34a' }}>{eoq.summary?.ok ?? 0}</div>
+                      <div style={{ fontSize: 10, color: '#059669', fontWeight: 700 }}>AMAN</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: '#059669' }}>{eoq.summary?.ok ?? 0}</div>
                     </div>
                   </div>
                 </div>
@@ -430,9 +430,9 @@ export default function AIIntelligence() {
                   <div className="panel-body" style={{ padding: 0, overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                       <thead>
-                        <tr style={{ background: '#f8fafc' }}>
+                        <tr style={{ background: '#F1F5F9' }}>
                           {['Produk', 'Stok', 'Demand/hari', 'EOQ', 'ROP', 'Status', 'Rekomendasi'].map((h) => (
-                            <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                            <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 10, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', borderBottom: '1px solid #E6E8EA' }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -440,10 +440,10 @@ export default function AIIntelligence() {
                         {(eoq?.products || []).map((p) => {
                           const st = statusMeta[p.status] || statusMeta.ok
                           return (
-                            <tr key={p.product_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                            <tr key={p.product_id} style={{ borderBottom: '1px solid #F8FAFC' }}>
                               <td style={{ padding: '10px 12px' }}>
                                 <div style={{ fontWeight: 700 }}>{p.name}</div>
-                                <div style={{ fontSize: 10, color: '#94a3b8' }}>{p.sku || `PRD-${p.product_id}`} · {p.category}</div>
+                                <div style={{ fontSize: 10, color: '#64748B' }}>{p.sku || `PRD-${p.product_id}`} · {p.category}</div>
                               </td>
                               <td style={{ padding: '10px 12px', fontWeight: 800 }}>{p.stock}</td>
                               <td style={{ padding: '10px 12px' }}>{p.avg_daily_demand}</td>
@@ -452,7 +452,7 @@ export default function AIIntelligence() {
                               <td style={{ padding: '10px 12px' }}>
                                 <span style={{ padding: '3px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: st.bg, color: st.color }}>{st.label}</span>
                               </td>
-                              <td style={{ padding: '10px 12px', color: '#64748b', fontSize: 11 }}>{p.recommendation}</td>
+                              <td style={{ padding: '10px 12px', color: '#94A3B8', fontSize: 11 }}>{p.recommendation}</td>
                             </tr>
                           )
                         })}
@@ -463,7 +463,7 @@ export default function AIIntelligence() {
               </>
             )}
             {!eoq && !loading && (
-              <div className="panel"><div className="panel-body" style={{ textAlign: 'center', color: '#94a3b8', padding: 40 }}>Klik Hitung Ulang untuk hitung EOQ</div></div>
+              <div className="panel"><div className="panel-body" style={{ textAlign: 'center', color: '#64748B', padding: 40 }}>Klik Hitung Ulang untuk hitung EOQ</div></div>
             )}
           </div>
         </div>

@@ -176,9 +176,9 @@ export default function StockTransaction({ mode = 'in' }) {
       {msg && (
         <div style={{
           marginBottom: 14, padding: '12px 14px', borderRadius: 12, fontSize: 13,
-          border: `1px solid ${msg.type === 'ok' ? 'rgba(22,163,74,0.25)' : 'rgba(239,68,68,0.25)'}`,
-          background: msg.type === 'ok' ? 'rgba(22,163,74,0.08)' : 'rgba(239,68,68,0.08)',
-          color: msg.type === 'ok' ? '#15803d' : '#b91c1c', fontWeight: 600,
+          border: `1px solid ${msg.type === 'ok' ? 'rgba(5,150,105,0.25)' : 'rgba(220,38,38,0.25)'}`,
+          background: msg.type === 'ok' ? 'rgba(5,150,105,0.1)' : 'rgba(220,38,38,0.1)',
+          color: msg.type === 'ok' ? '#059669' : '#B91C1C', fontWeight: 600,
         }}>{msg.text}</div>
       )}
 
@@ -200,13 +200,13 @@ export default function StockTransaction({ mode = 'in' }) {
                   <i className={`fas ${cameraOn ? 'fa-times' : 'fa-camera'}`}></i>
                 </button>
               </div>
-              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>
                 Scanner USB otomatis + Enter. Kode kategori: MCB=CAT-MCB, Fitting=CAT-FITTING, Kabel=CAT-KABEL, Stop Kontak=CAT-STOPKONTAK, Steker=CAT-STEKER, Saklar=CAT-SAKLAR, Panel=CAT-PANEL, Lampu=CAT-LAMPU
               </div>
             </div>
 
             {cameraOn && (
-              <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#0f172a' }}>
+              <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #E6E8EA', background: '#0F172A' }}>
                 <video ref={videoRef} muted playsInline style={{ width: '100%', maxHeight: 200, objectFit: 'cover' }} />
               </div>
             )}
@@ -219,9 +219,9 @@ export default function StockTransaction({ mode = 'in' }) {
                     <button key={c} type="button" onClick={() => { setCategory(c); setSelectedId('') }}
                       style={{
                         padding: '6px 11px', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                        border: category === c ? '1px solid #2563eb' : '1px solid #e2e8f0',
-                        background: category === c ? 'rgba(37,99,235,0.1)' : '#fff',
-                        color: category === c ? '#1d4ed8' : '#475569',
+                        border: category === c ? '1px solid #334155' : '1px solid #E6E8EA',
+                        background: category === c ? 'rgba(51,65,85,0.09)' : '#fff',
+                        color: category === c ? '#1E293B' : '#475569',
                       }}>
                       {c}
                     </button>
@@ -249,17 +249,17 @@ export default function StockTransaction({ mode = 'in' }) {
             </div>
 
             {selected && (
-              <div style={{ padding: 10, borderRadius: 10, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, fontSize: 12 }}>
-                <div><span style={{ color: '#94a3b8' }}>Stok</span><br /><strong>{selected.stock}</strong></div>
-                <div><span style={{ color: '#94a3b8' }}>Min</span><br /><strong>{selected.min_stock ?? '-'}</strong></div>
-                <div><span style={{ color: '#94a3b8' }}>SKU</span><br /><strong>{selected.sku || selected.id}</strong></div>
-                <div><span style={{ color: '#94a3b8' }}>Supplier</span><br /><strong>{selected.supplier || '-'}</strong></div>
+              <div style={{ padding: 10, borderRadius: 10, background: '#F1F5F9', border: '1px solid #E6E8EA', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, fontSize: 12 }}>
+                <div><span style={{ color: '#64748B' }}>Stok</span><br /><strong>{selected.stock}</strong></div>
+                <div><span style={{ color: '#64748B' }}>Min</span><br /><strong>{selected.min_stock ?? '-'}</strong></div>
+                <div><span style={{ color: '#64748B' }}>SKU</span><br /><strong>{selected.sku || selected.id}</strong></div>
+                <div><span style={{ color: '#64748B' }}>Supplier</span><br /><strong>{selected.supplier || '-'}</strong></div>
               </div>
             )}
 
             {isIn ? (
               <div>
-                <label style={s.label}>Sumber Supplier <span style={{ color: '#ef4444' }}>*</span></label>
+                <label style={s.label}>Sumber Supplier <span style={{ color: '#DC2626' }}>*</span></label>
                 <input
                   list="supplier-list"
                   value={supplier}
@@ -270,13 +270,13 @@ export default function StockTransaction({ mode = 'in' }) {
                 <datalist id="supplier-list">
                   {supplierOptions.map(sp => <option key={sp} value={sp} />)}
                 </datalist>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>
                   Otomatis terisi dari data produk, bisa diganti.
                 </div>
               </div>
             ) : (
               <div>
-                <label style={s.label}>Customer <span style={{ color: '#ef4444' }}>*</span></label>
+                <label style={s.label}>Customer <span style={{ color: '#DC2626' }}>*</span></label>
                 <input
                   value={customer}
                   onChange={e => setCustomer(e.target.value)}
@@ -311,9 +311,9 @@ export default function StockTransaction({ mode = 'in' }) {
             <div className="panel-body">
               <div style={{ display: 'grid', gap: 6 }}>
                 {Object.entries(categoryBarcodes).map(([cat, code]) => (
-                  <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                  <div key={cat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 10px', borderRadius: 8, background: '#F1F5F9', border: '1px solid #E6E8EA' }}>
                     <strong style={{ fontSize: 13 }}>{cat}</strong>
-                    <code style={{ fontSize: 11.5, color: '#2563eb', fontWeight: 700 }}>{code}</code>
+                    <code style={{ fontSize: 11.5, color: '#334155', fontWeight: 700 }}>{code}</code>
                   </div>
                 ))}
               </div>
@@ -324,7 +324,7 @@ export default function StockTransaction({ mode = 'in' }) {
             <div className="panel-head"><h3>Sesi Ini</h3></div>
             <div className="panel-body" style={{ paddingTop: 8 }}>
               {historyLocal.length === 0 ? (
-                <div style={{ color: '#94a3b8', fontSize: 13, padding: '12px 0' }}>Belum ada transaksi sesi ini.</div>
+                <div style={{ color: '#64748B', fontSize: 13, padding: '12px 0' }}>Belum ada transaksi sesi ini.</div>
               ) : (
                 <div className="activity-list">
                   {historyLocal.map(h => (
@@ -334,13 +334,13 @@ export default function StockTransaction({ mode = 'in' }) {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 12.5, fontWeight: 700 }}>{h.product_name}</div>
-                        <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                        <div style={{ fontSize: 11, color: '#64748B' }}>
                           {h.stock_before} → {h.stock_after}
                           {h.change > 0 && h.supplier ? ` · ${h.supplier}` : ''}
                           {h.change < 0 && h.customer ? ` · ${h.customer}` : ''}
                         </div>
                       </div>
-                      <div style={{ fontWeight: 800, fontSize: 13, color: h.change > 0 ? '#16a34a' : '#ef4444' }}>
+                      <div style={{ fontWeight: 800, fontSize: 13, color: h.change > 0 ? '#059669' : '#DC2626' }}>
                         {h.change > 0 ? '+' : ''}{h.change}
                       </div>
                     </div>
@@ -357,7 +357,7 @@ export default function StockTransaction({ mode = 'in' }) {
 
 const s = {
   label: { display: 'block', fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 4 },
-  input: { width: '100%', height: 40, border: '1px solid #e2e8f0', borderRadius: 10, padding: '0 12px', fontSize: 13, outline: 'none', background: '#fff', color: '#0f172a' },
-  btnP: { height: 40, padding: '0 14px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' },
-  btnG: { width: 40, height: 40, borderRadius: 10, border: '1px solid #e2e8f0', background: '#fff', color: '#475569', cursor: 'pointer' },
+  input: { width: '100%', height: 40, border: '1px solid #E6E8EA', borderRadius: 10, padding: '0 12px', fontSize: 13, outline: 'none', background: '#fff', color: '#0F172A' },
+  btnP: { height: 40, padding: '0 14px', border: 'none', borderRadius: 10, background: '#334155', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' },
+  btnG: { width: 40, height: 40, borderRadius: 10, border: '1px solid #E6E8EA', background: '#fff', color: '#475569', cursor: 'pointer' },
 }
