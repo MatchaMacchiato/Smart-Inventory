@@ -4,39 +4,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { InventoryProvider } from "@/context/InventoryContext";
 import { MasterProvider } from "@/context/MasterContext";
-import MasterCategory from "@/components/MasterCategory";
-import MasterSupplier from "@/components/MasterSupplier";
-import ManajemenStok from "@/components/ManajemenStok";
-import AnalisisApriori from "@/components/AnalisisApriori";
-import OptimasiEOQ from "@/components/OptimasiEOQ";
-import RekomendasiPengadaan from "@/components/RekomendasiPengadaan";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
 import Dashboard from "@/components/Dashboard";
+import MasterCategory from "@/components/MasterCategory";
 import ProductList from "@/components/ProductList";
-import ARViewer from "@/components/ARViewer";
-import StockTransaction from "@/components/StockTransaction";
-import AIAsisten from "@/components/AIAsisten";
-import Reports from "@/components/Reports";
-import ScanPage from "@/components/ScanPage";
-import LoginPage from "@/components/LoginPage";
+import MasterSupplier from "@/components/MasterSupplier";
 import Finance from "@/components/Finance";
+import ManajemenStok from "@/components/ManajemenStok";
+import PurchaseOrder from "@/components/PurchaseOrder";
+import ReturBarang from "@/components/ReturBarang";
+import StockOpname from "@/components/StockOpname";
+import StockTransaction from "@/components/StockTransaction";
+import Reports from "@/components/Reports";
+import ARViewer from "@/components/ARViewer";
+import AIAsisten from "@/components/AIAsisten";
+import AIIntelligence from "@/components/AIIntelligence";
 import BomAI from "@/components/BomAI";
 import AIScan from "@/components/AIScan";
-import AIIntelligence from "@/components/AIIntelligence";
+import ScanPage from "@/components/ScanPage";
+import LoginPage from "@/components/LoginPage";
 
-// Page transition (UI/UX Pro Max — softer, shorter travel, no bounce)
+// Page transition: subtle, crisp, no cheesy bouncing
 const pageVariants = {
-  initial: { opacity: 0, y: 6 },
+  initial: { opacity: 0, y: 5 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
   },
   exit: {
     opacity: 0,
-    y: -4,
-    transition: { duration: 0.14, ease: [0.4, 0, 1, 1] },
+    y: -3,
+    transition: { duration: 0.12, ease: [0.4, 0, 1, 1] },
   },
 };
 
@@ -57,11 +57,11 @@ function MainApp() {
           alignItems: "center",
           height: "100vh",
           color: "#64748B",
-          fontFamily: "'Nunito Sans', sans-serif",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 14,
         }}
       >
-        <i className="fas fa-spinner fa-spin" style={{ marginRight: 10 }}></i>
-        Memuat...
+        <span style={{ marginRight: 10 }}>Memuat Ruang Kerja KDM...</span>
       </div>
     );
   }
@@ -94,13 +94,20 @@ function MainApp() {
 
   return (
     <div className="app-shell">
-      <a className="skip-link" href="#main-content">Lewati ke konten</a>
-      <Sidebar page={page} onNavigate={navigate} open={menuOpen} onClose={closeMenu} />
+      <a className="skip-link" href="#main-content">
+        Lewati ke konten
+      </a>
+      <Sidebar
+        page={page}
+        onNavigate={navigate}
+        open={menuOpen}
+        onClose={closeMenu}
+      />
       <div className="main-area">
         <Topbar
           page={page}
           menuOpen={menuOpen}
-          onToggleMenu={() => setMenuOpen(open => !open)}
+          onToggleMenu={() => setMenuOpen((open) => !open)}
           onNavigate={navigate}
           onSelectProduct={(p) => {
             setSelectedProduct(p);
@@ -117,10 +124,12 @@ function MainApp() {
               animate="animate"
               exit="exit"
             >
+              {/* OPERASIONAL UTAMA */}
               {page === "dashboard" && (
                 <Dashboard onNavigate={navigate} showHistory={showHistory} />
               )}
-              {/* 8 MENU UTAMA (di luar users / transaksi / laporan) */}
+
+              {/* 8 MENU UTAMA */}
               {page === "kategori" && <MasterCategory />}
               {page === "produk" && (
                 <ProductList
@@ -133,25 +142,34 @@ function MainApp() {
               {page === "supplier" && <MasterSupplier />}
               {page === "keuangan" && <Finance />}
               {page === "manajemen-stok" && <ManajemenStok />}
-              {page === "apriori" && <AnalisisApriori />}
-              {page === "eoq" && <OptimasiEOQ />}
-              {page === "rekomendasi" && <RekomendasiPengadaan />}
-              {/* Transaksi & penopang (bukan menu utama) */}
+
+              {/* MENU 6, 7, 8 PENGGANTI BARU (DILENGKAPI FALLBACK ALIAS) */}
+              {(page === "purchase-order" || page === "apriori") && (
+                <PurchaseOrder />
+              )}
+              {(page === "retur-barang" || page === "eoq") && <ReturBarang />}
+              {(page === "stock-opname" || page === "rekomendasi") && (
+                <StockOpname />
+              )}
+
+              {/* TRANSAKSI OPERASIONAL & MUTASI */}
+              {page === "barang-masuk" && <StockTransaction mode="in" />}
+              {page === "barang-keluar" && <StockTransaction mode="out" />}
+              {page === "laporan" && (
+                <Reports onNavigate={navigate} initialFilter={historyFilter} />
+              )}
+
+              {/* ALAT BANTU / UTILITAS */}
               {page === "ar" && selectedProduct && (
                 <ARViewer
                   product={selectedProduct}
                   onBack={() => setPage("produk")}
                 />
               )}
-              {page === "barang-masuk" && <StockTransaction mode="in" />}
-              {page === "barang-keluar" && <StockTransaction mode="out" />}
               {page === "ai-asisten" && <AIAsisten onNavigate={navigate} />}
-              {page === "laporan" && (
-                <Reports onNavigate={navigate} initialFilter={historyFilter} />
-              )}
+              {page === "ai-intel" && <AIIntelligence onNavigate={navigate} />}
               {page === "bom-ai" && <BomAI onNavigate={navigate} />}
               {page === "ai-scan" && <AIScan />}
-              {page === "ai-intel" && <AIIntelligence onNavigate={navigate} />}
             </motion.div>
           </AnimatePresence>
         </main>

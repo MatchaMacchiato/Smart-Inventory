@@ -3,28 +3,28 @@ import { useAuth } from "../context/AuthContext";
 import Icon from "./Icon";
 
 const GROUPS = [
-  { title: "RUANG KERJA", items: [
-    ["dashboard", "Ringkasan", "grid", ["admin", "kasir", "gudang"]],
-    ["produk", "Katalog produk", "box", ["admin", "kasir", "gudang"]],
-    ["manajemen-stok", "Persediaan stok", "layers", ["admin", "kasir", "gudang"]],
-    ["barang-masuk", "Barang masuk", "down", ["admin", "gudang"]],
-    ["barang-keluar", "Barang keluar", "up", ["admin", "kasir"]],
-    ["keuangan", "Keuangan", "wallet", ["admin", "kasir"]],
-    ["laporan", "Laporan stok", "file", ["admin", "kasir", "gudang"]],
+  { title: "8 MENU UTAMA", items: [
+    ["kategori", "1. Master Kategori", "grid", ["admin", "gudang"]],
+    ["produk", "2. Master Produk", "box", ["admin", "kasir", "gudang"]],
+    ["supplier", "3. Master Supplier", "truck", ["admin", "gudang"]],
+    ["keuangan", "4. Keuangan & Kas", "wallet", ["admin", "kasir"]],
+    ["manajemen-stok", "5. Manajemen Stok", "layers", ["admin", "kasir", "gudang"]],
+    ["purchase-order", "6. Purchase Order (PO)", "po", ["admin", "gudang"]],
+    ["retur-barang", "7. Retur Barang", "retur", ["admin", "kasir", "gudang"]],
+    ["stock-opname", "8. Stock Opname", "opname", ["admin", "gudang"]],
   ]},
-  { title: "DATA & PENGADAAN", items: [
-    ["kategori", "Kategori", "grid", ["admin", "gudang"]],
-    ["supplier", "Supplier", "truck", ["admin", "gudang"]],
-    ["rekomendasi", "Rencana pengadaan", "file", ["admin", "gudang"]],
-    ["eoq", "Optimasi pembelian", "chart", ["admin", "gudang"]],
-    ["apriori", "Pola pembelian", "chart", ["admin", "kasir", "gudang"]],
+  { title: "OPERASIONAL TOKO", items: [
+    ["dashboard", "Dashboard Ringkasan", "grid", ["admin", "kasir", "gudang"]],
+    ["barang-masuk", "Penerimaan Barang", "down", ["admin", "gudang"]],
+    ["barang-keluar", "Penjualan & Kasir", "up", ["admin", "kasir"]],
+    ["laporan", "Laporan & Mutasi", "file", ["admin", "kasir", "gudang"]],
   ]},
-  { title: "ALAT BANTU", items: [
-    ["ai-asisten", "Asisten inventaris", "tool", ["admin", "kasir", "gudang"]],
-    ["ai-intel", "Analisis prediktif", "chart", ["admin", "kasir", "gudang"]],
-    ["bom-ai", "Estimasi material", "layers", ["admin", "kasir", "gudang"]],
-    ["ai-scan", "Pindai rak", "scan", ["admin", "gudang"]],
-    ["ar", "Penampil 3D", "box", ["admin", "kasir", "gudang"]],
+  { title: "ALAT BANTU / UTILITAS", items: [
+    ["ar", "Penampil AR 3D", "box", ["admin", "kasir", "gudang"]],
+    ["ai-asisten", "Asisten Tanya Jawab", "tool", ["admin", "kasir", "gudang"]],
+    ["ai-intel", "Analisis Prediktif", "chart", ["admin", "kasir", "gudang"]],
+    ["bom-ai", "Estimasi Material", "layers", ["admin", "kasir", "gudang"]],
+    ["ai-scan", "Pindai Rak / Barcode", "scan", ["admin", "gudang"]],
   ]},
 ];
 
