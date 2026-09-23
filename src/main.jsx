@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./styles/global.css";
+import "./styles/workspace.css";
 
 // Unregister any stale or rogue service workers on localhost to prevent cache intercept errors
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {

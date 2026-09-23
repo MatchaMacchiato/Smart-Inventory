@@ -3,11 +3,12 @@ import { useAuth } from "../context/AuthContext";
 import { useInventory } from "../context/InventoryContext";
 import { useMaster } from "../context/MasterContext";
 import { getCategoryTheme } from "../utils/categoryRules";
+import Icon from "./Icon";
 
 const TITLES = {
-  dashboard: "Dashboard",
+  dashboard: "Ringkasan",
   kategori: "Master Kategori",
-  produk: "Master Produk",
+  produk: "Katalog produk",
   supplier: "Master Supplier",
   keuangan: "Keuangan · Penagihan",
   "manajemen-stok": "Manajemen Stok",
@@ -34,56 +35,56 @@ const ALL_MENUS = [
   },
   {
     key: "kategori",
-    name: "1. Master Kategori",
+    name: "Master Kategori",
     desc: "Kelola kategori & aturan margin/lead time",
     icon: "fa-tags",
     cat: "Menu Utama",
   },
   {
     key: "produk",
-    name: "2. Master Produk",
+    name: "Master Produk",
     desc: "Katalog barang, QR code & 3D model",
     icon: "fa-box",
     cat: "Menu Utama",
   },
   {
     key: "supplier",
-    name: "3. Master Supplier",
+    name: "Master Supplier",
     desc: "Kontak vendor, nomor WhatsApp & lead time",
     icon: "fa-truck",
     cat: "Menu Utama",
   },
   {
     key: "keuangan",
-    name: "4. Keuangan · Penagihan",
+    name: "Keuangan · Penagihan",
     desc: "Pelunasan faktur, piutang & tagihan WA",
     icon: "fa-file-invoice-dollar",
     cat: "Menu Utama",
   },
   {
     key: "manajemen-stok",
-    name: "5. Manajemen Stok",
+    name: "Manajemen Stok",
     desc: "Posisi stok per kategori & restock",
     icon: "fa-warehouse",
     cat: "Menu Utama",
   },
   {
     key: "apriori",
-    name: "6. Analisis Apriori",
+    name: "Analisis Apriori",
     desc: "Pola asosiasi & bundling produk",
     icon: "fa-diagram-project",
     cat: "Menu Utama",
   },
   {
     key: "eoq",
-    name: "7. Optimasi EOQ",
+    name: "Optimasi EOQ",
     desc: "Kuantitas order optimal & Reorder Point",
     icon: "fa-calculator",
     cat: "Menu Utama",
   },
   {
     key: "rekomendasi",
-    name: "8. Rekomendasi PO",
+    name: "Rekomendasi PO",
     desc: "Draft Surat Pesanan & approval PO",
     icon: "fa-lightbulb",
     cat: "Menu Utama",
@@ -164,7 +165,7 @@ function timeAgo(isoString) {
   return `${days} hari lalu`;
 }
 
-export default function Topbar({ page, onNavigate, onSelectProduct }) {
+export default function Topbar({ page, onNavigate, onSelectProduct, menuOpen, onToggleMenu }) {
   const { user, logout } = useAuth();
   const { products = [], lowStock = [], history = [] } = useInventory() || {};
   const { categories = [], suppliers = [] } = useMaster() || {};
@@ -411,9 +412,10 @@ export default function Topbar({ page, onNavigate, onSelectProduct }) {
 
   return (
     <header className="topbar">
+      <button className="icon-btn mobile-menu" type="button" aria-label="Buka menu navigasi" aria-expanded={menuOpen} aria-controls="workspace-navigation" onClick={onToggleMenu}><Icon name="menu" size={19} /></button>
       <div className="topbar-left">
         <div className="breadcrumb">
-          {title} / <strong>{title}</strong>
+          <span>Ruang kerja</span><span>/</span><strong>{title}</strong>
         </div>
       </div>
 
@@ -435,7 +437,8 @@ export default function Topbar({ page, onNavigate, onSelectProduct }) {
         <input
           ref={searchInputRef}
           className="topbar-search-input"
-          placeholder="Cari menu, produk, SKU, supplier... (Ctrl+K)"
+          placeholder="Cari produk, menu, atau supplier…"
+          aria-label="Cari produk, menu, atau supplier"
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -484,7 +487,7 @@ export default function Topbar({ page, onNavigate, onSelectProduct }) {
               pointerEvents: "none",
             }}
           >
-            ⌘K
+            Ctrl K
           </span>
         )}
 

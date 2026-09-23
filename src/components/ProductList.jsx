@@ -9,6 +9,7 @@ import {
   suggestedCostFromPrice,
 } from "../utils/categoryRules";
 import Modal from "./Modal";
+import Icon from "./Icon";
 import { resolveProductImage, CATEGORY_IMAGES } from "../data/products";
 
 const EMPTY_FORM = {
@@ -75,6 +76,7 @@ function getSearchableText(p) {
 export default function ProductList({ onSelect }) {
   const { products, addProduct, updateProduct, deleteProduct } = useInventory();
   const { categories: masterCategories, suppliers = [] } = useMaster();
+  const [view, setView] = useState("table");
   const [filter, setFilter] = useState("");
   const [catFilter, setCatFilter] = useState(""); // '' = semua
   const [statusFilter, setStatusFilter] = useState(""); // '' = semua, 'kritis', 'menipis', 'aman'
@@ -378,7 +380,7 @@ export default function ProductList({ onSelect }) {
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">Data Produk</div>
+          <div className="eyebrow">PERSEDIAAN</div><h1 className="page-title">Katalog produk</h1>
           <div className="page-subtitle">
             Katalog barang toko listrik · {filtered.length} item
             {catFilter ? ` · Kategori ${catFilter}` : ""}
@@ -388,13 +390,14 @@ export default function ProductList({ onSelect }) {
           <button onClick={() => setShowBatchQR(true)} style={btnOutline}>
             <i className="fas fa-qrcode"></i> Cetak QR
           </button>
-          <button onClick={openAdd} style={btnPrimary}>
+          <button onClick={openAdd} className="button button-primary">
             <i className="fas fa-plus"></i> Tambah Produk
           </button>
         </div>
       </div>
 
-      {/* Modern Filter Toolbar */}
+      <div className="catalog-summary"><span><strong>{products.length}</strong> produk terdaftar</span><span><strong>{categories.length}</strong> kategori</span><span><strong>{products.filter(p => Number(p.stock) <= Number(p.min_stock || 0)).length}</strong> perlu perhatian</span></div>
+      {/* Product filters */}
       <div
         style={{
           background: "#fff",
@@ -414,7 +417,7 @@ export default function ProductList({ onSelect }) {
           }}
         >
           {/* Search Box */}
-          <div style={{ position: "relative", gridColumn: "1 / -1", minWidth: 260 }}>
+          <div style={{ position: "relative", gridColumn: "1 / -1", minWidth: 0 }}>
             <i
               className="fas fa-magnifying-glass"
               style={{
@@ -808,7 +811,13 @@ export default function ProductList({ onSelect }) {
         </div>
       )}
 
-      {/* Card grid — tampilan seperti sebelumnya */}
+      <div className="catalog-view-bar"><span><strong>{filtered.length}</strong> produk ditampilkan</span><div className="view-toggle" role="group" aria-label="Tampilan katalog"><button aria-pressed={view === "table"} onClick={() => setView("table")}><Icon name="file" size={14} />Tabel</button><button aria-pressed={view === "grid"} onClick={() => setView("grid")}><Icon name="grid" size={14} />Kartu</button></div></div>
+      {view === "table" && filtered.length > 0 && <div className="panel table-scroll"><table className="activity-table catalog-table"><thead><tr><th scope="col">Produk / SKU</th><th scope="col">Kategori</th><th scope="col">Supplier</th><th scope="col">Harga jual</th><th scope="col">Stok tersedia</th><th scope="col">Status</th><th scope="col">Tindakan</th></tr></thead><tbody>{filtered.map(p => <tr key={p.sku || p.id}>
+        <td><div className="catalog-product"><img src={resolveProductImage(p)} alt="" loading="lazy" /><div><button className="product-name-button" onClick={() => onSelect?.(p)}>{p.name}</button><small>{p.sku || "Tanpa SKU"}</small></div></div></td><td>{p.category}</td><td>{p.supplier || "—"}</td><td><strong>Rp {formatRp(p.price)}</strong></td><td><strong>{p.stock}</strong> {p.unit || "pcs"}<small>Minimum {p.min_stock || 0}</small></td><td><span className={"status-tag " + (Number(p.stock) <= Number(p.min_stock || 0) ? "out" : "")}>{Number(p.stock) === 0 ? "Habis" : Number(p.stock) <= Number(p.min_stock || 0) ? "Menipis" : "Tersedia"}</span></td>
+        <td><div className="catalog-actions"><button className="icon-btn" title="Lihat QR" aria-label={"QR " + p.name} onClick={() => setQrProduct(p)}><Icon name="scan" size={15} /></button><button className="icon-btn" title="Edit produk" aria-label={"Edit " + p.name} onClick={() => openEdit(p)}><i className="fas fa-pen" aria-hidden="true" /></button><button className="icon-btn" title="Hapus produk" aria-label={"Hapus " + p.name} onClick={() => del(p.id, p.name)}><i className="fas fa-trash" aria-hidden="true" /></button></div></td>
+      </tr>)}</tbody></table></div>}
+      {view === "grid" && <>
+
       <div
         style={{
           display: "grid",
@@ -1048,6 +1057,7 @@ export default function ProductList({ onSelect }) {
         })}
       </div>
 
+      </>}
       {filtered.length === 0 && (
         <div
           style={{

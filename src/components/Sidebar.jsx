@@ -1,210 +1,74 @@
+import { useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import Icon from "./Icon";
+
 const GROUPS = [
-  {
-    title: "8 MENU UTAMA",
-    items: [
-      {
-        key: "kategori",
-        label: "1. Master Kategori",
-        icon: "fa-tags",
-        roles: ["admin", "gudang"],
-      },
-      {
-        key: "produk",
-        label: "2. Master Produk",
-        icon: "fa-box",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "supplier",
-        label: "3. Master Supplier",
-        icon: "fa-truck",
-        roles: ["admin", "gudang"],
-      },
-      {
-        key: "keuangan",
-        label: "4. Keuangan",
-        icon: "fa-file-invoice-dollar",
-        roles: ["admin", "kasir"],
-      },
-      {
-        key: "manajemen-stok",
-        label: "5. Manajemen Stok",
-        icon: "fa-warehouse",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "apriori",
-        label: "6. Analisis Apriori",
-        icon: "fa-diagram-project",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "eoq",
-        label: "7. Optimasi EOQ",
-        icon: "fa-calculator",
-        roles: ["admin", "gudang"],
-      },
-      {
-        key: "rekomendasi",
-        label: "8. Rekomendasi PO",
-        icon: "fa-lightbulb",
-        roles: ["admin", "gudang"],
-      },
-    ],
-  },
-  {
-    title: "OPERASIONAL",
-    items: [
-      {
-        key: "dashboard",
-        label: "Dashboard",
-        icon: "fa-th-large",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "barang-masuk",
-        label: "Barang Masuk",
-        icon: "fa-arrow-down",
-        roles: ["admin", "gudang"],
-      },
-      {
-        key: "barang-keluar",
-        label: "Barang Keluar",
-        icon: "fa-arrow-up",
-        roles: ["admin", "kasir"],
-      },
-      {
-        key: "laporan",
-        label: "Laporan Stok",
-        icon: "fa-chart-bar",
-        roles: ["admin", "kasir", "gudang"],
-      },
-    ],
-  },
-  {
-    title: "TOOLS",
-    items: [
-      {
-        key: "ai-asisten",
-        label: "Asisten AI",
-        icon: "fa-robot",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "ai-intel",
-        label: "AI Intelligence",
-        icon: "fa-brain",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "bom-ai",
-        label: "BOM AI Material",
-        icon: "fa-magic",
-        roles: ["admin", "kasir", "gudang"],
-      },
-      {
-        key: "ai-scan",
-        label: "AI Scan Rak",
-        icon: "fa-camera",
-        roles: ["admin", "gudang"],
-      },
-      {
-        key: "ar",
-        label: "AR 3D Viewer",
-        icon: "fa-cube",
-        roles: ["admin", "kasir", "gudang"],
-      },
-    ],
-  },
+  { title: "RUANG KERJA", items: [
+    ["dashboard", "Ringkasan", "grid", ["admin", "kasir", "gudang"]],
+    ["produk", "Katalog produk", "box", ["admin", "kasir", "gudang"]],
+    ["manajemen-stok", "Persediaan stok", "layers", ["admin", "kasir", "gudang"]],
+    ["barang-masuk", "Barang masuk", "down", ["admin", "gudang"]],
+    ["barang-keluar", "Barang keluar", "up", ["admin", "kasir"]],
+    ["keuangan", "Keuangan", "wallet", ["admin", "kasir"]],
+    ["laporan", "Laporan stok", "file", ["admin", "kasir", "gudang"]],
+  ]},
+  { title: "DATA & PENGADAAN", items: [
+    ["kategori", "Kategori", "grid", ["admin", "gudang"]],
+    ["supplier", "Supplier", "truck", ["admin", "gudang"]],
+    ["rekomendasi", "Rencana pengadaan", "file", ["admin", "gudang"]],
+    ["eoq", "Optimasi pembelian", "chart", ["admin", "gudang"]],
+    ["apriori", "Pola pembelian", "chart", ["admin", "kasir", "gudang"]],
+  ]},
+  { title: "ALAT BANTU", items: [
+    ["ai-asisten", "Asisten inventaris", "tool", ["admin", "kasir", "gudang"]],
+    ["ai-intel", "Analisis prediktif", "chart", ["admin", "kasir", "gudang"]],
+    ["bom-ai", "Estimasi material", "layers", ["admin", "kasir", "gudang"]],
+    ["ai-scan", "Pindai rak", "scan", ["admin", "gudang"]],
+    ["ar", "Penampil 3D", "box", ["admin", "kasir", "gudang"]],
+  ]},
 ];
 
-import { useAuth } from "../context/AuthContext";
-
-export default function Sidebar({ page, onNavigate }) {
+export default function Sidebar({ page, onNavigate, open, onClose }) {
   const { user } = useAuth();
+  const sidebarRef = useRef(null);
   const role = user?.role || "admin";
-
-  return (
-    <aside className="sidebar">
-      <div className="sidebar-brand" style={{ padding: "16px", gap: "12px" }}>
-        <img
-          src="/logo-kdm.png"
-          alt="Logo"
-          style={{ height: "36px", objectFit: "contain" }}
-        />
-        <div className="sidebar-brand-text" style={{ fontSize: "15px" }}>
-          INVENTORY PRO
-        </div>
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    sidebarRef.current?.querySelector('button')?.focus();
+    const keydown = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key !== "Tab") return;
+      const buttons = sidebarRef.current?.querySelectorAll('button');
+      if (!buttons?.length) return;
+      const first = buttons[0], last = buttons[buttons.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", keydown);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", keydown); previous?.focus(); };
+  }, [open, onClose]);
+  return <>
+    {open && <button className="sidebar-backdrop" onClick={onClose} aria-label="Tutup navigasi" tabIndex={-1} />}
+    <aside id="workspace-navigation" ref={sidebarRef} className={`sidebar ${open ? "is-open" : ""}`} aria-label="Navigasi utama">
+      <div className="sidebar-brand">
+        <span className="brand-mark"><img src="/logo-kdm.png" alt="KDM" /></span>
+        <div className="sidebar-brand-text">Inventory<small>KEMILAU ABADI MAKMUR</small></div>
+        <button className="sidebar-close" onClick={onClose} aria-label="Tutup menu"><Icon name="close" size={19} /></button>
       </div>
-
+      <div className="workspace-label"><Icon name="box" size={19} /><span>Operasional toko<small>Persediaan & transaksi</small></span></div>
       <nav className="sidebar-nav">
-        {GROUPS.map((group) => {
-          const items = group.items.filter(
-            (i) => !i.roles || i.roles.includes(role),
-          );
+        {GROUPS.map(group => {
+          const items = group.items.filter(item => item[3].includes(role));
           if (!items.length) return null;
-          return (
-            <div key={group.title}>
-              <div className="nav-group-title">{group.title}</div>
-              {items.map((item, idx) => {
-                const active =
-                  page === item.key ||
-                  (item.key === "produk" && page === "ar") ||
-                  (item.key === "ar" && page === "ar");
-                return (
-                  <button
-                    key={`${group.title}-${item.key}-${idx}`}
-                    className={`nav-item ${active ? "active" : ""}`}
-                    onClick={() => onNavigate(item.key)}
-                    type="button"
-                  >
-                    <i className={`fas ${item.icon}`}></i>
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          );
+          return <div key={group.title}><div className="nav-group-title">{group.title}</div>
+            {items.map(([key, label, icon]) => <button key={key} type="button" className={`nav-item ${page === key ? "active" : ""}`} aria-current={page === key ? "page" : undefined} onClick={() => onNavigate(key)}><Icon name={icon} size={17} /><span>{label}</span>{page === key && <span className="nav-active-dot" />}</button>)}
+          </div>;
         })}
       </nav>
-
-      <div
-        style={{
-          padding: "12px 16px",
-          borderTop: "1px solid var(--border)",
-          fontSize: 11,
-          color: "var(--text-muted)",
-        }}
-      >
-        <div
-          style={{
-            fontWeight: 700,
-            color: "var(--navy)",
-            textTransform: "capitalize",
-          }}
-        >
-          {user?.name || "User"}
-        </div>
-        <div
-          style={{
-            textTransform: "capitalize",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "var(--success)",
-              display: "inline-block",
-            }}
-          ></span>
-          Role: {role}
-        </div>
-      </div>
+      <div className="sidebar-footer"><span className="sidebar-avatar">{(user?.name || "U").charAt(0)}</span><div><strong>{user?.name || "Pengguna"}</strong><small>{role} · Ruang kerja KDM</small></div></div>
     </aside>
-  );
+  </>;
 }

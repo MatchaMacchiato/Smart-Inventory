@@ -3,9 +3,12 @@ import { useInventory } from "../context/InventoryContext";
 import { REASON_LABEL, formatDateTimeFull } from "../data/products";
 import { getCategoryTheme } from "../utils/categoryRules";
 import Modal from "./Modal";
+import Icon from "./Icon";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard({ onNavigate }) {
-  const { stats, daily, history, source, products, lowStock } = useInventory();
+  const { stats, daily, history, source, products, lowStock, loading } = useInventory();
+  const { can } = useAuth();
   const [recent, setRecent] = useState([]);
   const [popup, setPopup] = useState(null);
 
@@ -70,430 +73,51 @@ export default function Dashboard({ onNavigate }) {
 
   const isProductPopup = popup?.filter === "low" || popup?.filter === "stock";
 
-  const kpis = [
-    {
-      label: "Total Produk",
-      value: stats.total_products,
-      sub: "→ Data Produk",
-      icon: "fa-cube",
-      cls: "kpi-blue",
-      go: "produk",
-    },
-    {
-      label: "Total Stok",
-      value: Number(stats.total_stock || 0).toLocaleString("id-ID"),
-      sub: "klik → detail",
-      icon: "fa-boxes",
-      cls: "kpi-violet",
-      pop: { title: "Semua Produk & Stok", filter: "stock" },
-    },
-    {
-      label: "Stok Menipis",
-      value: stats.low_stock_count,
-      sub: "klik → detail",
-      icon: "fa-exclamation-triangle",
-      cls: "kpi-red",
-      pop: { title: "Produk Stok Menipis", filter: "low" },
-    },
-    {
-      label: "Masuk Hari Ini",
-      value: Number(stats.stock_in_today || 0).toLocaleString("id-ID"),
-      sub: "klik → detail",
-      icon: "fa-arrow-down",
-      cls: "kpi-green",
-      pop: { title: "Barang Masuk Hari Ini", filter: "today_in" },
-    },
-    {
-      label: "Keluar Hari Ini",
-      value: Number(stats.stock_out_today || 0).toLocaleString("id-ID"),
-      sub: "klik → detail",
-      icon: "fa-arrow-up",
-      cls: "kpi-orange",
-      pop: { title: "Barang Keluar Hari Ini", filter: "today_out" },
-    },
-    {
-      label: "Total Barang Masuk",
-      value: Number(stats.stock_in || 0).toLocaleString("id-ID"),
-      sub: "klik → detail",
-      icon: "fa-download",
-      cls: "kpi-purple",
-      pop: { title: "Semua Barang Masuk", filter: "masuk" },
-    },
-    {
-      label: "Total Barang Keluar",
-      value: Number(stats.stock_out || 0).toLocaleString("id-ID"),
-      sub: "klik → detail",
-      icon: "fa-upload",
-      cls: "kpi-sky",
-      pop: { title: "Semua Barang Keluar", filter: "keluar" },
-    },
-    {
-      label: "Kategori",
-      value: stats.categories_count,
-      sub: "→ Data Produk",
-      icon: "fa-tags",
-      cls: "kpi-indigo",
-      go: "produk",
-    },
+  const formatNumber = (value) => Number(value || 0).toLocaleString("id-ID");
+  const maxDaily = Math.max(3, ...daily.flatMap(d => [Number(d.stock_in || 0), Number(d.stock_out || 0)]));
+  const chartIn = daily.reduce((sum, d) => sum + Number(d.stock_in || 0), 0);
+  const chartOut = daily.reduce((sum, d) => sum + Number(d.stock_out || 0), 0);
+  const today = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const metrics = [
+    { label: "Produk dalam katalog", value: stats.total_products, note: formatNumber(stats.categories_count) + " kategori produk", icon: "box", go: "produk" },
+    { label: "Total unit tersedia", value: stats.total_stock, note: "Seluruh persediaan tercatat", icon: "layers", filter: "stock", title: "Semua Produk & Stok" },
+    { label: "Stok perlu perhatian", value: lowStock.length, note: "Mencapai batas minimum", icon: "alert", filter: "low", title: "Produk Stok Menipis", attention: true },
+    { label: "Barang keluar hari ini", value: stats.stock_out_today, note: formatNumber(stats.stock_in_today) + " unit masuk hari ini", icon: "up", filter: "today_out", title: "Barang Keluar Hari Ini" },
   ];
 
-  const maxDaily = Math.max(
-    1,
-    ...daily.map((d) =>
-      Math.max(Number(d.stock_in || 0), Number(d.stock_out || 0)),
-    ),
-  );
-  const totalIn = Number(stats.stock_in || 0);
-  const totalOut = Number(stats.stock_out || 0);
-  const totalMove = Math.max(1, totalIn + totalOut);
-  const outPct = Math.round((totalOut / totalMove) * 100);
-  const donutStyle = useMemo(
-    () => ({
-      background: `conic-gradient(#0056b3 0% ${100 - outPct}%, #EA580C ${100 - outPct}% 100%)`,
-    }),
-    [outPct],
-  );
-
   return (
-    <div>
+    <div className="dashboard-page">
       <div className="page-header">
-        <div>
-          <div className="page-title">Dashboard</div>
-          <div className="page-subtitle">
-            <i
-              className="fas fa-circle"
-              style={{
-                color: source === "api+local" ? "#059669" : "#FF7300",
-                fontSize: 8,
-                marginRight: 6,
-              }}
-            ></i>
-            {source === "api+local" ? "Live MySQL" : "Data Lokal"} — data
-            real-time · klik KPI untuk detail
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button
-            type="button"
-            className="badge-pill"
-            style={{
-              border: "1px solid var(--border)",
-              background: "#fff",
-              color: "var(--text-secondary)",
-              cursor: "pointer",
-            }}
-            onClick={() => onNavigate("laporan")}
-          >
-            <i className="fas fa-chart-line"></i> Laporan
-          </button>
-          <button
-            type="button"
-            className="badge-pill"
-            style={{
-              border: "none",
-              background: "var(--success)",
-              color: "#fff",
-              cursor: "pointer",
-            }}
-            onClick={() => onNavigate("barang-masuk")}
-          >
-            <i className="fas fa-plus"></i> Barang Masuk
-          </button>
+        <div><div className="eyebrow">OPERASIONAL TOKO</div><h1 className="page-title">Ringkasan inventaris</h1><p className="page-subtitle">Pantau persediaan dan pergerakan barang toko Anda.</p></div>
+        <div className="header-actions">
+          <button className="button" onClick={() => onNavigate("laporan")}><Icon name="file" size={16} />Lihat laporan</button>
+          {can("barang-masuk.manage") && <button className="button button-primary" onClick={() => onNavigate("barang-masuk")}><Icon name="plus" size={16} />Barang masuk</button>}
+          {!can("barang-masuk.manage") && can("barang-keluar.manage") && <button className="button button-primary" onClick={() => onNavigate("barang-keluar")}><Icon name="plus" size={16} />Barang keluar</button>}
         </div>
       </div>
-
-      <div className="section-label">
-        <h2>Ikhtisar Performa Sistem</h2>
+      <div className="overview-context"><strong>{today}</strong><span className={"data-state " + (source !== "local" ? "connected" : "")} role="status">{loading ? "Memuat persediaan…" : source === "local" ? "Data lokal · tersimpan di perangkat" : "Data terhubung · termasuk catatan lokal"}</span></div>
+      <div className="metrics-grid">{metrics.map(metric => <button key={metric.label} className={"metric " + (metric.attention ? "metric-attention" : "")} onClick={() => metric.go ? onNavigate(metric.go) : setPopup({ title: metric.title, filter: metric.filter })}>
+        <span className="metric-top">{metric.label}<Icon name={metric.icon} size={18} /></span><strong className="metric-value">{formatNumber(metric.value)}</strong><span className="metric-bottom">{metric.note}<Icon name="arrow" size={13} /></span>
+      </button>)}</div>
+      <div className="dashboard-grid">
+        <section className="panel" aria-label="Pergerakan stok">
+          <div className="panel-head"><div><h3>Pergerakan stok</h3><p>Barang masuk dan keluar dalam {daily.length} hari terakhir</p></div><div className="chart-legend"><span><b />Masuk</span><span><b />Keluar</span></div></div>
+          <div className="movement-totals"><button onClick={() => setPopup({ title: "Semua Barang Masuk", filter: "masuk" })}><small>Barang masuk · periode grafik</small><strong>{formatNumber(chartIn)}<span>unit</span></strong></button><button onClick={() => setPopup({ title: "Semua Barang Keluar", filter: "keluar" })}><small>Barang keluar · periode grafik</small><strong>{formatNumber(chartOut)}<span>unit</span></strong></button></div>
+          <div className="chart-area"><div className="chart-with-axis"><div className="chart-axis" aria-hidden="true">{[1, 2 / 3, 1 / 3, 0].map(n => <span key={n}>{formatNumber(Math.round(maxDaily * n))}</span>)}</div><div className="bar-chart" role="img" aria-label={daily.map(d => d.date + ': ' + d.stock_in + ' masuk, ' + d.stock_out + ' keluar').join('; ')}>{daily.map(d => <div key={d.date} className="bar-col"><div className="bar-pair"><div className="bar in" title={formatNumber(d.stock_in) + " unit masuk"} style={{ height: (Number(d.stock_in || 0) / maxDaily * 100) + "%" }} /><div className="bar out" title={formatNumber(d.stock_out) + " unit keluar"} style={{ height: (Number(d.stock_out || 0) / maxDaily * 100) + "%" }} /></div><span className="bar-label">{new Date(d.date + "T12:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</span></div>)}</div></div></div>
+          <div className="panel-foot"><span>{chartIn + chartOut ? "Jumlah unit berdasarkan riwayat transaksi" : "Belum ada pergerakan pada periode ini"}</span><button className="button-link" onClick={() => onNavigate("laporan")}>Detail transaksi<Icon name="arrow" size={13} /></button></div>
+        </section>
+        <section className="panel" aria-label="Stok perlu perhatian"><div className="panel-head"><div><h3>Perlu perhatian</h3><p>Prioritaskan produk di batas minimum</p></div><span className="count-badge">{lowStock.length} produk</span></div>
+          <div className="attention-list">{lowStock.slice(0, 4).map(p => <div className="attention-item" key={p.id}><span className="product-symbol"><Icon name="box" size={17} /></span><div className="attention-name"><strong title={p.name}>{p.name}</strong><small>{p.sku || p.category}</small></div><div className="stock-quantity">{formatNumber(p.stock)} <span>{p.unit || "pcs"}</span><small>Min. {formatNumber(p.min_stock)}</small></div></div>)}</div>
+          {!lowStock.length && <div className="empty-state"><Icon name="check" />{loading ? "Memuat status persediaan…" : "Tidak ada produk di bawah batas minimum."}</div>}
+          <div className="panel-foot"><span>Diurutkan berdasarkan kekurangan stok</span><button className="button-link" onClick={() => setPopup({ title: "Produk Stok Menipis", filter: "low" })}>Lihat semua<Icon name="arrow" size={13} /></button></div>
+        </section>
       </div>
-      <div className="kpi-grid">
-        {kpis.map((k) => (
-          <button
-            key={k.label}
-            type="button"
-            className={`kpi-card ${k.cls}`}
-            onClick={() => {
-              if (k.go) onNavigate(k.go);
-              if (k.pop) setPopup(k.pop);
-            }}
-            style={{
-              cursor: "pointer",
-              textAlign: "left",
-              border: "none",
-              width: "100%",
-              font: "inherit",
-            }}
-          >
-            <div className="kpi-icon">
-              <i className={`fas ${k.icon}`}></i>
-            </div>
-            <div className="kpi-label">{k.label}</div>
-            <div className="kpi-value">{k.value}</div>
-            <div className="kpi-sub">{k.sub}</div>
-          </button>
-        ))}
-      </div>
-
-      <div className="section-label">
-        <h2>Akses Cepat</h2>
-      </div>
-      <div className="quick-grid">
-        <button
-          className="quick-card"
-          type="button"
-          onClick={() => onNavigate("produk")}
-        >
-          <div
-            className="quick-icon"
-            style={{ background: "rgba(0,86,179,0.09)", color: "#0056b3" }}
-          >
-            <i className="fas fa-plus"></i>
-          </div>
-          <div>
-            <h4>+ Tambah Produk</h4>
-            <p>Input barang baru ke katalog</p>
-          </div>
-        </button>
-        <button
-          className="quick-card"
-          type="button"
-          onClick={() => onNavigate("barang-masuk")}
-        >
-          <div
-            className="quick-icon"
-            style={{ background: "rgba(5,150,105,0.1)", color: "#059669" }}
-          >
-            <i className="fas fa-arrow-down"></i>
-          </div>
-          <div>
-            <h4>+ Barang Masuk</h4>
-            <p>Manual / scan barcode restock</p>
-          </div>
-        </button>
-        <button
-          className="quick-card"
-          type="button"
-          onClick={() => onNavigate("barang-keluar")}
-        >
-          <div
-            className="quick-icon"
-            style={{ background: "rgba(234,88,12,0.12)", color: "#EA580C" }}
-          >
-            <i className="fas fa-arrow-up"></i>
-          </div>
-          <div>
-            <h4>Barang Keluar</h4>
-            <p>Manual / scan barcode keluar</p>
-          </div>
-        </button>
-        <button
-          className="quick-card"
-          type="button"
-          onClick={() => onNavigate("ai-asisten")}
-        >
-          <div
-            className="quick-icon"
-            style={{ background: "rgba(124,58,237,0.1)", color: "#7C3AED" }}
-          >
-            <i className="fas fa-robot"></i>
-          </div>
-          <div>
-            <h4>Asisten AI</h4>
-            <p>Rekomendasi stok &amp; analitik</p>
-          </div>
-        </button>
-      </div>
-
-      <div className="section-label">
-        <h2>Visualisasi Data Aktual</h2>
-      </div>
-      <div className="panel-grid">
-        <div className="panel">
-          <div className="panel-head">
-            <h3>Alur Transaksi {daily.length} Hari</h3>
-            <button
-              type="button"
-              className="badge-pill"
-              style={{ border: "none", cursor: "pointer" }}
-              onClick={() => onNavigate("laporan")}
-            >
-              STATISTIK →
-            </button>
-          </div>
-          <div className="panel-body">
-            <div className="bar-chart">
-              {daily.map((d, i) => (
-                <div className="bar-col" key={d.date || i}>
-                  <div className="bar-pair">
-                    <div
-                      className="bar in"
-                      style={{
-                        height: `${(Number(d.stock_in || 0) / maxDaily) * 100}%`,
-                      }}
-                      title={`Masuk: ${d.stock_in}`}
-                    />
-                    <div
-                      className="bar out"
-                      style={{
-                        height: `${(Number(d.stock_out || 0) / maxDaily) * 100}%`,
-                      }}
-                      title={`Keluar: ${d.stock_out}`}
-                    />
-                  </div>
-                  <div className="bar-label">
-                    {d.date
-                      ? new Date(d.date).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                        })
-                      : ""}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="legend-row">
-              <span>
-                <span
-                  className="legend-dot"
-                  style={{ background: "#0056b3" }}
-                ></span>
-                Masuk ({totalIn})
-              </span>
-              <span>
-                <span
-                  className="legend-dot"
-                  style={{ background: "#EA580C" }}
-                ></span>
-                Keluar ({totalOut})
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panel-head">
-            <h3>Proporsi Masuk/Keluar</h3>
-            <button
-              type="button"
-              className="badge-pill"
-              style={{ border: "none", cursor: "pointer" }}
-              onClick={() => onNavigate("laporan")}
-            >
-              DETAIL →
-            </button>
-          </div>
-          <div className="panel-body">
-            <div className="donut-wrap">
-              <div className="donut" style={donutStyle}>
-                <div className="donut-hole">
-                  <strong>{outPct}%</strong>
-                  <span>Keluar</span>
-                </div>
-              </div>
-              <div className="donut-legend">
-                <div className="donut-legend-item">
-                  <div className="left">
-                    <span
-                      className="legend-dot"
-                      style={{ background: "#0056b3" }}
-                    ></span>
-                    Masuk
-                  </div>
-                  <strong>{totalIn}</strong>
-                </div>
-                <div className="donut-legend-item">
-                  <div className="left">
-                    <span
-                      className="legend-dot"
-                      style={{ background: "#EA580C" }}
-                    ></span>
-                    Keluar
-                  </div>
-                  <strong>{totalOut}</strong>
-                </div>
-                <div className="donut-legend-item">
-                  <div className="left">
-                    <span
-                      className="legend-dot"
-                      style={{ background: "#059669" }}
-                    ></span>
-                    Net
-                  </div>
-                  <strong
-                    style={{
-                      color: totalIn - totalOut >= 0 ? "#059669" : "#DC2626",
-                    }}
-                  >
-                    {totalIn - totalOut >= 0 ? "+" : ""}
-                    {totalIn - totalOut}
-                  </strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="panel">
-        <div className="panel-head">
-          <h3>Aktivitas Stok Terbaru</h3>
-          <button
-            type="button"
-            onClick={() => onNavigate("laporan")}
-            style={{
-              border: "none",
-              background: "none",
-              color: "#0056b3",
-              fontWeight: 700,
-              fontSize: 12,
-              cursor: "pointer",
-            }}
-          >
-            Lihat Semua →
-          </button>
-        </div>
-        <div className="panel-body" style={{ paddingTop: 4, paddingBottom: 8 }}>
-          <div className="activity-list">
-            {recent.map((h, i) => {
-              const isIn = h.change > 0;
-              const dt = formatDateTimeFull(h.created_at);
-              return (
-                <div className="activity-row" key={h.id || i}>
-                  <div className={`activity-icon ${isIn ? "in" : "out"}`}>
-                    <i
-                      className={`fas ${isIn ? "fa-arrow-down" : "fa-arrow-up"}`}
-                    ></i>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: 13.5,
-                        fontWeight: 700,
-                        color: "#002a5c",
-                      }}
-                    >
-                      {h.product_name}
-                    </div>
-                    <div style={{ fontSize: 11.5, color: "#64748B" }}>
-                      {REASON_LABEL[h.reason] || h.reason} · {dt.hari},{" "}
-                      {dt.tanggal} · {dt.jam}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      fontWeight: 800,
-                      color: isIn ? "#059669" : "#DC2626",
-                      fontSize: 14,
-                    }}
-                  >
-                    {isIn ? "+" : ""}
-                    {h.change}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <section className="panel" aria-label="Transaksi terbaru"><div className="panel-head"><div><h3>Aktivitas terbaru</h3><p>Riwayat penerimaan dan pengeluaran barang</p></div><button className="button-link" onClick={() => onNavigate("laporan")}>Semua aktivitas<Icon name="arrow" size={13} /></button></div>
+        <div className="table-scroll"><table className="activity-table"><thead><tr><th scope="col">Produk</th><th scope="col">Jenis transaksi</th><th scope="col">Jumlah</th><th scope="col">Keterangan</th><th scope="col">Waktu</th></tr></thead><tbody>{recent.map((h, i) => { const isIn = Number(h.change) > 0; const dt = formatDateTimeFull(h.created_at); return <tr key={h.id || i}><td><strong>{h.product_name}</strong><small>{h.category || "Persediaan toko"}</small></td><td><span className={"status-tag " + (isIn ? "" : "out")}><Icon name={isIn ? "down" : "up"} size={12} />{isIn ? "Barang masuk" : "Barang keluar"}</span></td><td><strong>{isIn ? "+" : ""}{formatNumber(h.change)}</strong></td><td>{REASON_LABEL[h.reason] || h.reason || "—"}</td><td>{dt.tanggal}<small>{dt.jam}</small></td></tr>; })}</tbody></table></div>
+        {!recent.length && <div className="empty-state"><Icon name="clock" />Belum ada aktivitas. Transaksi yang dicatat akan muncul di sini.</div>}
+        <div className="panel-foot"><span>Menampilkan {recent.length} dari {formatNumber(history.length)} transaksi</span><span>Riwayat stok</span></div>
+      </section>
+      <footer className="workspace-footer"><span>KDM Inventory · PT Kemilau Abadi Makmur</span><span>Ruang kerja operasional</span></footer>
 
       {/* ———— POPUP DETAIL KPI (per kategori) ———— */}
       <Modal isOpen={!!popup} onClose={() => setPopup(null)} size="lg">

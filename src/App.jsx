@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
@@ -45,6 +45,8 @@ function MainApp() {
   const [page, setPage] = useState("dashboard");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [historyFilter, setHistoryFilter] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   if (authLoading) {
     return (
@@ -67,6 +69,8 @@ function MainApp() {
   if (!user) return <LoginPage />;
 
   const navigate = (key) => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "instant" });
     setHistoryFilter(null);
     if (key === "ar") {
       if (!selectedProduct) {
@@ -84,23 +88,26 @@ function MainApp() {
   };
 
   const showHistory = (filter) => {
-    setHistoryFilter(filter);
     navigate("laporan");
+    setHistoryFilter(filter);
   };
 
   return (
     <div className="app-shell">
-      <Sidebar page={page} onNavigate={navigate} />
+      <a className="skip-link" href="#main-content">Lewati ke konten</a>
+      <Sidebar page={page} onNavigate={navigate} open={menuOpen} onClose={closeMenu} />
       <div className="main-area">
         <Topbar
           page={page}
+          menuOpen={menuOpen}
+          onToggleMenu={() => setMenuOpen(open => !open)}
           onNavigate={navigate}
           onSelectProduct={(p) => {
             setSelectedProduct(p);
             setPage("ar");
           }}
         />
-        <main className="content-wrap">
+        <main id="main-content" className="content-wrap" tabIndex={-1}>
           <AnimatePresence mode="wait">
             <motion.div
               key={page}
