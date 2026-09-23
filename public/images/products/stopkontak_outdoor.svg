@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgOut" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </radialGradient>
+    <linearGradient id="bodyOut" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="coverOut" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.35"/>
+    </linearGradient>
+    <filter id="outShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgOut)"/>
+  
+  <!-- Outer Weatherproof Grey Box -->
+  <rect x="90" y="80" width="320" height="340" rx="28" fill="url(#bodyOut)" stroke="#334155" stroke-width="4" filter="url(#outShadow)"/>
+  
+  <!-- Rubber Gasket Seal Rim -->
+  <rect x="110" y="100" width="280" height="300" rx="20" fill="#0f172a" stroke="#0284c7" stroke-width="2"/>
+  
+  <!-- Internal Socket (seen through cover) -->
+  <circle cx="250" cy="240" r="60" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <circle cx="250" cy="240" r="52" fill="#ffffff"/>
+  <rect x="245" y="192" width="10" height="12" rx="2" fill="#d97706"/>
+  <rect x="245" y="276" width="10" height="12" rx="2" fill="#d97706"/>
+  <ellipse cx="232" cy="240" rx="6" ry="5" fill="#0f172a"/>
+  <ellipse cx="268" cy="240" rx="6" ry="5" fill="#0f172a"/>
+
+  <!-- Smoked Transparent Waterproof Flip Cover -->
+  <rect x="110" y="100" width="280" height="300" rx="20" fill="url(#coverOut)" stroke="#e0f2fe" stroke-width="2"/>
+  
+  <!-- Top Hinge -->
+  <rect x="180" y="85" width="140" height="18" rx="8" fill="#64748b" stroke="#334155" stroke-width="1.5"/>
+  
+  <!-- Bottom Locking Latch / Snap Lock -->
+  <rect x="220" y="385" width="60" height="24" rx="6" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+  
+  <!-- IP66 Rating Badge -->
+  <rect x="130" y="120" width="65" height="24" rx="6" fill="#0f172a" fill-opacity="0.7"/>
+  <text x="162" y="136" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">IP66</text>
+  
+  <text x="250" y="350" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="1">WEATHERPROOF</text>
+  <text x="250" y="368" font-family="Arial, sans-serif" font-size="10" fill="#cbd5e1" text-anchor="middle">WATER &amp; DUST RESISTANT</text>
+</svg>

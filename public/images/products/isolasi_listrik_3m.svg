@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgIso" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="tapeRoll" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <radialGradient id="coreCard" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="70%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </radialGradient>
+    <filter id="isoShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgIso)"/>
+  
+  <!-- Outer Vinyl Tape Roll -->
+  <g filter="url(#isoShadow)">
+    <circle cx="250" cy="250" r="140" fill="url(#tapeRoll)" stroke="#1e293b" stroke-width="3"/>
+    
+    <!-- Glossy Reflection Arc -->
+    <path d="M 150,150 A 140,140 0 0,1 350,150" stroke="#64748b" stroke-width="6" fill="none" opacity="0.3"/>
+    
+    <!-- Cardboard Core Ring -->
+    <circle cx="250" cy="250" r="70" fill="url(#coreCard)" stroke="#a16207" stroke-width="3"/>
+    
+    <!-- Center Hole -->
+    <circle cx="250" cy="250" r="50" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  </g>
+
+  <!-- 3M Brand on Core -->
+  <text x="250" y="240" font-family="'Arial Black', Impact, sans-serif" font-size="28" font-weight="900" fill="#dc2626" text-anchor="middle" letter-spacing="-1">3M</text>
+  <text x="250" y="260" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="bold" fill="#854d0e" text-anchor="middle">Scotch</text>
+  <text x="250" y="275" font-family="Arial, sans-serif" font-size="8" fill="#854d0e" text-anchor="middle">Super 33+ Vinyl</text>
+
+  <text x="250" y="420" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a" text-anchor="middle">ISOLASI LISTRIK PVC 10m</text>
+  <text x="250" y="438" font-family="Arial, sans-serif" font-size="10" fill="#64748b" text-anchor="middle">Tahan Panas 105°C · Tegangan 600V</text>
+</svg>

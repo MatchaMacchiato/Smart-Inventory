@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgLed10" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0fdf4"/>
+    </radialGradient>
+    <radialGradient id="bulbDome10" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </radialGradient>
+    <linearGradient id="bodyLamp" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="metalThread" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="30%" stop-color="#f1f5f9"/>
+      <stop offset="70%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <filter id="lampShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgLed10)"/>
+  
+  <g filter="url(#lampShadow)">
+    <!-- Bulb Glass Globe Dome -->
+    <path d="M 160,200 C 140,110 200,60 250,60 C 300,60 360,110 340,200 C 330,230 305,255 295,280 L 205,280 C 195,255 170,230 160,200 Z" fill="url(#bulbDome10)" stroke="#cbd5e1" stroke-width="1.5"/>
+    
+    <!-- White Thermal Plastic Heat Sink Body -->
+    <path d="M 205,280 L 295,280 L 285,350 L 215,350 Z" fill="url(#bodyLamp)" stroke="#cbd5e1" stroke-width="1.5"/>
+    
+    <!-- Metallic E27 Screw Thread -->
+    <rect x="220" y="350" width="60" height="12" rx="4" fill="url(#metalThread)"/>
+    <rect x="220" y="364" width="60" height="12" rx="4" fill="url(#metalThread)"/>
+    <rect x="220" y="378" width="60" height="12" rx="4" fill="url(#metalThread)"/>
+    
+    <!-- Contact Foot Solder Point -->
+    <path d="M 235,390 L 265,390 L 255,405 L 245,405 Z" fill="#475569"/>
+  </g>
+
+  <!-- Philips Branding & Specs -->
+  <text x="250" y="310" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="900" fill="#0056b3" text-anchor="middle" letter-spacing="1">PHILIPS</text>
+  <text x="250" y="326" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#059669" text-anchor="middle">LED 10W · 6500K COOL DAYLIGHT</text>
+  <text x="250" y="340" font-family="Arial, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">1020 Lumen · E27 Base</text>
+</svg>

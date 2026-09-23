@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgLed20" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fffbeb"/>
+    </radialGradient>
+    <radialGradient id="bulbDome20" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </radialGradient>
+    <linearGradient id="bodyLamp20" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="metalThread20" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="30%" stop-color="#f1f5f9"/>
+      <stop offset="70%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <filter id="lampShadow20" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#b45309" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgLed20)"/>
+  
+  <g filter="url(#lampShadow20)">
+    <!-- Larger T-Bulb High-Watt Dome -->
+    <path d="M 145,190 C 130,90 200,50 250,50 C 300,50 370,90 355,190 C 345,230 315,255 305,280 L 195,280 C 185,255 155,230 145,190 Z" fill="url(#bulbDome20)" stroke="#fcd34d" stroke-width="1.5"/>
+    
+    <!-- Heat Sink Body with Ribs -->
+    <path d="M 195,280 L 305,280 L 290,355 L 210,355 Z" fill="url(#bodyLamp20)" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="225" y1="285" x2="222" y2="350" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="275" y1="285" x2="278" y2="350" stroke="#cbd5e1" stroke-width="1"/>
+
+    <!-- Metallic E27 Screw Base -->
+    <rect x="220" y="355" width="60" height="12" rx="4" fill="url(#metalThread20)"/>
+    <rect x="220" y="369" width="60" height="12" rx="4" fill="url(#metalThread20)"/>
+    <rect x="220" y="383" width="60" height="12" rx="4" fill="url(#metalThread20)"/>
+    
+    <path d="M 235,395 L 265,395 L 255,410 L 245,410 Z" fill="#475569"/>
+  </g>
+
+  <!-- Philips Branding & Specs -->
+  <text x="250" y="312" font-family="'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="900" fill="#0056b3" text-anchor="middle" letter-spacing="1">PHILIPS</text>
+  <text x="250" y="328" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#d97706" text-anchor="middle">LED 20W · 3000K WARM WHITE</text>
+  <text x="250" y="342" font-family="Arial, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">2350 Lumen · Bright Warm Glow</text>
+</svg>

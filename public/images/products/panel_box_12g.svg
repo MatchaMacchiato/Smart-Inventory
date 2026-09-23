@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgP12" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="metalBox12" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <linearGradient id="acrylicDoor12" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="panel12Shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgP12)"/>
+  
+  <!-- Outer Wide Metal Box Frame -->
+  <rect x="60" y="90" width="380" height="320" rx="16" fill="url(#metalBox12)" stroke="#334155" stroke-width="3" filter="url(#panel12Shadow)"/>
+  
+  <rect x="80" y="115" width="340" height="270" rx="10" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+  <rect x="90" y="215" width="320" height="20" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/>
+  
+  <!-- 12 MCB Units Drawn in line -->
+  <g transform="translate(100, 165)">
+    <!-- 12 slots -->
+    <rect x="0" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="5" y="50" width="13" height="20" rx="2" fill="#f97316"/>
+    
+    <rect x="25" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="30" y="50" width="13" height="20" rx="2" fill="#f97316"/>
+    
+    <rect x="50" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="55" y="50" width="13" height="20" rx="2" fill="#f97316"/>
+    
+    <rect x="75" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="80" y="50" width="13" height="20" rx="2" fill="#f97316"/>
+
+    <rect x="100" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="105" y="50" width="13" height="20" rx="2" fill="#2563eb"/>
+    
+    <rect x="125" y="0" width="23" height="120" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+    <rect x="130" y="50" width="13" height="20" rx="2" fill="#2563eb"/>
+
+    <!-- Blanks / Spares -->
+    <rect x="150" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+    <rect x="175" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+    <rect x="200" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+    <rect x="225" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+    <rect x="250" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+    <rect x="275" y="0" width="23" height="120" rx="3" fill="#e2e8f0" stroke="#cbd5e1"/>
+  </g>
+
+  <!-- Smoked Transparent Front Door -->
+  <rect x="75" y="110" width="350" height="280" rx="12" fill="url(#acrylicDoor12)" stroke="#7dd3fc" stroke-width="2"/>
+  
+  <circle cx="410" cy="250" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+
+  <text x="250" y="365" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">PANEL BOX 12 GROUP DISTRIBUTION</text>
+</svg>

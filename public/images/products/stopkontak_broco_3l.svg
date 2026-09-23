@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgSK3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="plateSK3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <radialGradient id="cup3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="70%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </radialGradient>
+    <filter id="skShadow3" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgSK3)"/>
+  
+  <rect x="40" y="130" width="420" height="240" rx="26" fill="url(#plateSK3)" stroke="#cbd5e1" stroke-width="2" filter="url(#skShadow3)"/>
+  
+  <!-- Socket 1 -->
+  <g transform="translate(115, 240)">
+    <circle cx="0" cy="0" r="50" fill="url(#cup3)" stroke="#94a3b8" stroke-width="1.8"/>
+    <circle cx="0" cy="0" r="44" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+    <rect x="-5" y="-42" width="10" height="12" rx="2" fill="#d97706"/>
+    <rect x="-5" y="30" width="10" height="12" rx="2" fill="#d97706"/>
+    <ellipse cx="-16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <ellipse cx="16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+  </g>
+
+  <!-- Socket 2 -->
+  <g transform="translate(250, 240)">
+    <circle cx="0" cy="0" r="50" fill="url(#cup3)" stroke="#94a3b8" stroke-width="1.8"/>
+    <circle cx="0" cy="0" r="44" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+    <rect x="-5" y="-42" width="10" height="12" rx="2" fill="#d97706"/>
+    <rect x="-5" y="30" width="10" height="12" rx="2" fill="#d97706"/>
+    <ellipse cx="-16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <ellipse cx="16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+  </g>
+
+  <!-- Socket 3 -->
+  <g transform="translate(385, 240)">
+    <circle cx="0" cy="0" r="50" fill="url(#cup3)" stroke="#94a3b8" stroke-width="1.8"/>
+    <circle cx="0" cy="0" r="44" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+    <rect x="-5" y="-42" width="10" height="12" rx="2" fill="#d97706"/>
+    <rect x="-5" y="30" width="10" height="12" rx="2" fill="#d97706"/>
+    <ellipse cx="-16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <ellipse cx="16" cy="0" rx="5.5" ry="4.5" fill="#1e293b"/>
+    <circle cx="0" cy="0" r="3.5" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+  </g>
+
+  <text x="250" y="335" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="2">BROCO</text>
+  <text x="250" y="355" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8" text-anchor="middle">TRIPLE SOCKET ARDE · 16A 250V~</text>
+</svg>

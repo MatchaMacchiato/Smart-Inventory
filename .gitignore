@@ -27,3 +27,9 @@ build/
 # Logs
 logs
 *.log
+
+# Backups & Temporary files
+*.backup*
+*.bak
+*.old
+*.orig

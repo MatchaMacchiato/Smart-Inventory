@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgG" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f5f7fb"/>
+    </radialGradient>
+    <linearGradient id="plateG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="rockerG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#f8fafc"/>
+      <stop offset="55%" stop-color="#edf2f7"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <filter id="plateShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="btnShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgG)"/>
+  
+  <!-- Outer Faceplate -->
+  <rect x="70" y="70" width="360" height="360" rx="36" fill="url(#plateG)" stroke="#cbd5e1" stroke-width="2" filter="url(#plateShadow)"/>
+  
+  <!-- Mounting Screws -->
+  <circle cx="250" cy="105" r="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="244" y1="105" x2="256" y2="105" stroke="#64748b" stroke-width="2"/>
+  <circle cx="250" cy="395" r="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="244" y1="395" x2="256" y2="395" stroke="#64748b" stroke-width="2"/>
+
+  <!-- Inner Bezel Frame -->
+  <rect x="110" y="140" width="280" height="220" rx="16" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  
+  <!-- 3 Rockers -->
+  <!-- Rocker 1 -->
+  <g filter="url(#btnShadow)">
+    <rect x="125" y="155" width="70" height="190" rx="10" fill="url(#rockerG)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <line x1="130" y1="245" x2="190" y2="245" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.6"/>
+    <polygon points="160,185 153,195 167,195" fill="#94a3b8"/>
+    <circle cx="160" cy="315" r="3" fill="#cbd5e1"/>
+  </g>
+  
+  <!-- Rocker 2 -->
+  <g filter="url(#btnShadow)">
+    <rect x="215" y="155" width="70" height="190" rx="10" fill="url(#rockerG)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <line x1="220" y1="245" x2="280" y2="245" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.6"/>
+    <polygon points="250,185 243,195 257,195" fill="#94a3b8"/>
+    <circle cx="250" cy="315" r="3" fill="#cbd5e1"/>
+  </g>
+  
+  <!-- Rocker 3 -->
+  <g filter="url(#btnShadow)">
+    <rect x="305" y="155" width="70" height="190" rx="10" fill="url(#rockerG)" stroke="#cbd5e1" stroke-width="1.2"/>
+    <line x1="310" y1="245" x2="370" y2="245" stroke="#94a3b8" stroke-width="1" stroke-opacity="0.6"/>
+    <polygon points="340,185 333,195 347,195" fill="#94a3b8"/>
+    <circle cx="340" cy="315" r="3" fill="#cbd5e1"/>
+  </g>
+  
+  <!-- Brand Marking -->
+  <text x="250" y="380" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="2">BROCO</text>
+  <text x="250" y="415" font-family="Arial, sans-serif" font-size="9" fill="#94a3b8" text-anchor="middle">SNI 04-6203.1 · 10AX 250V~</text>
+</svg>

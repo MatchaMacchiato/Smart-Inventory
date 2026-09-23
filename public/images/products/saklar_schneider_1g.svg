@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgS" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="schneiderG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <filter id="schPlateShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgS)"/>
+  
+  <!-- Modern Sleek Bezel-less Switch Body -->
+  <rect x="75" y="75" width="350" height="350" rx="20" fill="url(#schneiderG)" stroke="#e2e8f0" stroke-width="2" filter="url(#schPlateShadow)"/>
+  
+  <!-- Full Flat Rocker Face -->
+  <rect x="85" y="85" width="330" height="330" rx="14" fill="#ffffff" stroke="#f1f5f9" stroke-width="1"/>
+  
+  <!-- Subtle Pivot Line -->
+  <line x1="90" y1="250" x2="410" y2="250" stroke="#f1f5f9" stroke-width="2"/>
+  
+  <!-- Schneider Iconic Green Indicator Strip -->
+  <rect x="220" y="380" width="60" height="6" rx="3" fill="#009E4D"/>
+  
+  <!-- Schneider Electric Branding -->
+  <text x="250" y="140" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#009E4D" text-anchor="middle" letter-spacing="1">Schneider</text>
+  <text x="250" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="500" fill="#64748b" text-anchor="middle">Electric</text>
+  
+  <text x="250" y="270" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#94a3b8" text-anchor="middle">16AX 250V~ 1-GANG</text>
+</svg>

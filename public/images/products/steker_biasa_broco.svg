@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgStkB" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="plugBodyB" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="brassPinB" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#a16207"/>
+    </linearGradient>
+    <filter id="plugShadowB" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgStkB)"/>
+  
+  <!-- Cable Entry -->
+  <path d="M 235,80 L 265,80 L 260,150 L 240,150 Z" fill="#94a3b8"/>
+
+  <!-- Compact Oval Plug Body -->
+  <g filter="url(#plugShadowB)">
+    <rect x="170" y="140" width="160" height="180" rx="40" fill="url(#plugBodyB)" stroke="#94a3b8" stroke-width="2"/>
+    <circle cx="250" cy="230" r="7" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="245" y1="230" x2="255" y2="230" stroke="#334155" stroke-width="2"/>
+  </g>
+
+  <!-- Two 2-Pin Prongs -->
+  <rect x="205" y="320" width="18" height="65" rx="5" fill="url(#brassPinB)" stroke="#854d0e" stroke-width="1"/>
+  <rect x="277" y="320" width="18" height="65" rx="5" fill="url(#brassPinB)" stroke="#854d0e" stroke-width="1"/>
+
+  <text x="250" y="195" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="2">BROCO</text>
+  <text x="250" y="275" font-family="Arial, sans-serif" font-size="9" fill="#94a3b8" text-anchor="middle">6A 250V~ NON-ARDE</text>
+</svg>

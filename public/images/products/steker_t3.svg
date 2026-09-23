@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgT" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="bodyT" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <filter id="tShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgT)"/>
+  
+  <!-- T-Shape Adapter Body -->
+  <g filter="url(#tShadow)">
+    <path d="M 120,130 L 380,130 Q 410,130 410,160 L 410,240 Q 410,260 380,260 L 310,260 L 310,380 Q 310,400 280,400 L 220,400 Q 190,400 190,380 L 190,260 L 120,260 Q 90,260 90,240 L 90,160 Q 90,130 120,130 Z" fill="url(#bodyT)" stroke="#94a3b8" stroke-width="2"/>
+  </g>
+
+  <!-- Front Socket Center -->
+  <circle cx="250" cy="200" r="50" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <rect x="246" y="156" width="8" height="10" rx="2" fill="#d97706"/>
+  <rect x="246" y="234" width="8" height="10" rx="2" fill="#d97706"/>
+  <ellipse cx="236" cy="200" rx="5.5" ry="4.5" fill="#1e293b"/>
+  <ellipse cx="264" cy="200" rx="5.5" ry="4.5" fill="#1e293b"/>
+
+  <!-- Left Outlet Slots -->
+  <ellipse cx="120" cy="190" rx="5" ry="8" fill="#1e293b"/>
+  <ellipse cx="120" cy="210" rx="5" ry="8" fill="#1e293b"/>
+
+  <!-- Right Outlet Slots -->
+  <ellipse cx="380" cy="190" rx="5" ry="8" fill="#1e293b"/>
+  <ellipse cx="380" cy="210" rx="5" ry="8" fill="#1e293b"/>
+
+  <text x="250" y="340" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#64748b" text-anchor="middle">STEKER T</text>
+  <text x="250" y="360" font-family="Arial, sans-serif" font-size="9" fill="#94a3b8" text-anchor="middle">3-CABANG · 10A 250V~</text>
+</svg>

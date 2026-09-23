@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgSchSK" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </radialGradient>
+    <linearGradient id="plateSchSK" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <filter id="schSKShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgSchSK)"/>
+  
+  <rect x="65" y="90" width="370" height="320" rx="20" fill="url(#plateSchSK)" stroke="#e2e8f0" stroke-width="2" filter="url(#schSKShadow)"/>
+  
+  <!-- Left Socket -->
+  <g transform="translate(160, 235)">
+    <circle cx="0" cy="0" r="58" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <circle cx="0" cy="0" r="50" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="-5" y="-48" width="10" height="12" rx="2" fill="#d97706"/>
+    <rect x="-5" y="36" width="10" height="12" rx="2" fill="#d97706"/>
+    <ellipse cx="-18" cy="0" rx="6" ry="5" fill="#0f172a"/>
+    <ellipse cx="18" cy="0" rx="6" ry="5" fill="#0f172a"/>
+  </g>
+
+  <!-- Right Socket -->
+  <g transform="translate(340, 235)">
+    <circle cx="0" cy="0" r="58" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <circle cx="0" cy="0" r="50" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="-5" y="-48" width="10" height="12" rx="2" fill="#d97706"/>
+    <rect x="-5" y="36" width="10" height="12" rx="2" fill="#d97706"/>
+    <ellipse cx="-18" cy="0" rx="6" ry="5" fill="#0f172a"/>
+    <ellipse cx="18" cy="0" rx="6" ry="5" fill="#0f172a"/>
+  </g>
+
+  <!-- Branding -->
+  <text x="250" y="140" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#009E4D" text-anchor="middle">Schneider</text>
+  <text x="250" y="156" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Electric</text>
+  <text x="250" y="360" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#94a3b8" text-anchor="middle">16A 250V~ 2-GANG SOCKET</text>
+</svg>
