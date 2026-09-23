@@ -16,6 +16,7 @@ import {
   resolveProductImage,
   resolveModelUrl,
 } from "../data/products";
+import { supabase } from "../lib/supabase";
 
 const InventoryContext = createContext(null);
 
@@ -296,6 +297,20 @@ export function InventoryProvider({ children }) {
           );
         });
         got = true;
+      }
+      if (!got) {
+        supabase
+          .from("products")
+          .select("*")
+          .then(({ data: sbProducts }) => {
+            if (alive && sbProducts && sbProducts.length) {
+              setProducts((prev) =>
+                mergeProducts(sbProducts, prev.length ? prev : INITIAL_PRODUCTS),
+              );
+              setSource("supabase+local");
+            }
+          })
+          .catch(() => {});
       }
       setSource(got ? "api+local" : "local");
       setLoading(false);

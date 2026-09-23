@@ -40,7 +40,8 @@ export default function LoginPage({ onLogin }) {
       await login(email, password);
     } catch (err) {
       setError(
-        err.response?.data?.errors?.email?.[0] ||
+        err.message ||
+          err.response?.data?.errors?.email?.[0] ||
           err.response?.data?.message ||
           "Login gagal. Coba lagi.",
       );
