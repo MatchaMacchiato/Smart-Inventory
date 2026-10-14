@@ -10,6 +10,8 @@ import {
 } from "../utils/categoryRules";
 import Modal from "./Modal";
 import { resolveProductImage, CATEGORY_IMAGES } from "../data/products";
+import PriceCalculatorModal from "./PriceCalculatorModal";
+import BatchPriceTagModal from "./BatchPriceTagModal";
 
 const EMPTY_FORM = {
   name: "",
@@ -84,6 +86,8 @@ export default function ProductList({ onSelect }) {
 
   const [qrProduct, setQrProduct] = useState(null);
   const [showBatchQR, setShowBatchQR] = useState(false);
+  const [priceCalcProduct, setPriceCalcProduct] = useState(null);
+  const [showBatchPriceTag, setShowBatchPriceTag] = useState(false);
   const [formModal, setFormModal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editId, setEditId] = useState(null);
@@ -385,6 +389,9 @@ export default function ProductList({ onSelect }) {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button onClick={() => setShowBatchPriceTag(true)} style={btnOutline}>
+            <i className="fas fa-tag"></i> Cetak Label Harga (Rak)
+          </button>
           <button onClick={() => setShowBatchQR(true)} style={btnOutline}>
             <i className="fas fa-qrcode"></i> Cetak QR
           </button>
@@ -976,12 +983,32 @@ export default function ProductList({ onSelect }) {
                   }}
                 >
                   <div>
+                    {p.base_price && Number(p.base_price) > price && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
+                        <span style={{ fontSize: 10.5, color: "#94A3B8", textDecoration: "line-through" }}>
+                          Rp {Number(p.base_price).toLocaleString("id-ID")}
+                        </span>
+                        {p.discount_formula && (
+                          <span
+                            style={{
+                              fontSize: 9,
+                              fontWeight: 800,
+                              background: "#DC2626",
+                              color: "#fff",
+                              padding: "1px 5px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            DISC {p.discount_formula}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div style={{ fontWeight: 700, fontSize: 15 }}>
                       Rp {price.toLocaleString("id-ID")}
                     </div>
                     <div style={{ fontSize: 11, color: "#64748B" }}>
-                      HPP Rp {cost.toLocaleString("id-ID")} · Margin {marginPct}
-                      %
+                      HPP Rp {cost.toLocaleString("id-ID")} · Margin {marginPct}%
                     </div>
                   </div>
                   <span
@@ -999,10 +1026,43 @@ export default function ProductList({ onSelect }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    setPriceCalcProduct(p);
+                  }}
+                  style={{
+                    flex: 1.3,
+                    padding: "7px 8px",
+                    border: "1px solid #0056b3",
+                    borderRadius: 8,
+                    background: "rgba(0,86,179,0.06)",
+                    color: "#0056b3",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 5,
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#0056b3";
+                    e.currentTarget.style.color = "#fff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(0,86,179,0.06)";
+                    e.currentTarget.style.color = "#0056b3";
+                  }}
+                  title="Edit harga, hitung diskon bertingkat (25%+10%) & cetak label harga"
+                >
+                  <i className="fas fa-tag"></i> Edit Harga
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onSelect?.(p);
                   }}
                   style={{
-                    flex: 1,
+                    flex: 0.9,
                     padding: "7px 0",
                     border: "none",
                     borderRadius: 8,
@@ -1021,6 +1081,7 @@ export default function ProductList({ onSelect }) {
                     setQrProduct(p);
                   }}
                   style={iconBtn("#0056b3")}
+                  title="Cetak QR Code"
                 >
                   <i className="fas fa-qrcode"></i>
                 </button>
@@ -1030,6 +1091,7 @@ export default function ProductList({ onSelect }) {
                     openEdit(p);
                   }}
                   style={iconBtn("#FF7300")}
+                  title="Edit Produk Lengkap"
                 >
                   <i className="fas fa-edit"></i>
                 </button>
@@ -1039,6 +1101,7 @@ export default function ProductList({ onSelect }) {
                     del(p.id, p.name);
                   }}
                   style={iconBtn("#DC2626")}
+                  title="Hapus Produk"
                 >
                   <i className="fas fa-trash"></i>
                 </button>
@@ -1769,6 +1832,27 @@ export default function ProductList({ onSelect }) {
           </div>
         </div>
       </Modal>
+
+      {/* Modal Kalkulator & Edit Harga Produk */}
+      {priceCalcProduct && (
+        <PriceCalculatorModal
+          isOpen={!!priceCalcProduct}
+          onClose={() => setPriceCalcProduct(null)}
+          product={priceCalcProduct}
+          onSavePrice={(productId, newPrice, priceMeta) => {
+            updateProduct(productId, { price: newPrice, ...priceMeta });
+          }}
+        />
+      )}
+
+      {/* Modal Cetak Label Rak Kolektif (Batch) */}
+      {showBatchPriceTag && (
+        <BatchPriceTagModal
+          isOpen={showBatchPriceTag}
+          onClose={() => setShowBatchPriceTag(false)}
+          products={filtered}
+        />
+      )}
     </div>
   );
 }
