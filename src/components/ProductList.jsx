@@ -10,8 +10,14 @@ import {
 } from "../utils/categoryRules";
 import Modal from "./Modal";
 import { resolveProductImage, CATEGORY_IMAGES } from "../data/products";
-import PriceCalculatorModal from "./PriceCalculatorModal";
-import BatchPriceTagModal from "./BatchPriceTagModal";
+import {
+  calculateMultiDiscount,
+  parseDiscountExpr,
+  formatDiscountFormula,
+  PRESET_DISCOUNTS,
+  ROUNDING_OPTIONS,
+  printSinglePriceTag,
+} from "../utils/priceCalculator";
 
 const EMPTY_FORM = {
   name: "",
@@ -23,6 +29,9 @@ const EMPTY_FORM = {
   unit: "pcs",
   supplier: "",
   image_url: "",
+  base_price: "",
+  discount_formula: "",
+  rounding_mode: "1000",
 };
 
 const ICONS = {
@@ -86,11 +95,26 @@ export default function ProductList({ onSelect }) {
 
   const [qrProduct, setQrProduct] = useState(null);
   const [showBatchQR, setShowBatchQR] = useState(false);
-  const [priceCalcProduct, setPriceCalcProduct] = useState(null);
-  const [showBatchPriceTag, setShowBatchPriceTag] = useState(false);
   const [formModal, setFormModal] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editId, setEditId] = useState(null);
+
+  // State kalkulator diskon di dalam menu Edit Produk
+  const [showDiscountCalc, setShowDiscountCalc] = useState(false);
+  const [calcBasePrice, setCalcBasePrice] = useState("");
+  const [calcDiscountExpr, setCalcDiscountExpr] = useState("");
+  const [calcRounding, setCalcRounding] = useState("1000");
+
+  const activeCalcResult = useMemo(() => {
+    const { d1, d2, d3 } = parseDiscountExpr(calcDiscountExpr);
+    return calculateMultiDiscount({
+      basePrice: Number(calcBasePrice) || 0,
+      d1,
+      d2,
+      d3,
+      rounding: calcRounding,
+    });
+  }, [calcBasePrice, calcDiscountExpr, calcRounding]);
 
   const activeMasterCats = useMemo(
     () => (masterCategories || []).filter((c) => c.active !== false),
@@ -243,6 +267,10 @@ export default function ProductList({ onSelect }) {
     const rule = findCategory(masterCategories, catName);
     const base = { ...EMPTY_FORM, category: catName, image_url: "" };
     setForm(applyCategoryToForm(base, rule));
+    setCalcBasePrice("");
+    setCalcDiscountExpr("");
+    setCalcRounding("1000");
+    setShowDiscountCalc(false);
     setFormModal("add");
     setEditId(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -267,6 +295,10 @@ export default function ProductList({ onSelect }) {
   };
 
   const openEdit = (p) => {
+    const pBase = p.base_price || p.price;
+    const pFormula = p.discount_formula || "";
+    const pRounding = p.rounding_mode || "1000";
+
     setForm({
       name: p.name,
       category: p.category,
@@ -277,7 +309,21 @@ export default function ProductList({ onSelect }) {
       unit: p.unit || "pcs",
       supplier: p.supplier || "",
       image_url: p.image_url || p.image || "",
+      base_price: pBase,
+      discount_formula: pFormula,
+      rounding_mode: pRounding,
     });
+
+    setCalcBasePrice(String(pBase || ""));
+    setCalcDiscountExpr(
+      pFormula
+        ? pFormula.replace(/%/g, "").replace(/\s*\+\s*/g, "+")
+        : ""
+    );
+    setCalcRounding(pRounding);
+    // Buka otomatis kalkulator diskon saat edit produk
+    setShowDiscountCalc(true);
+
     setFormModal("edit");
     setEditId(p.id);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -353,6 +399,9 @@ export default function ProductList({ onSelect }) {
     const payload = {
       ...form,
       price,
+      base_price: form.base_price ? Number(form.base_price) : price,
+      discount_formula: form.discount_formula || "",
+      rounding_mode: form.rounding_mode || "1000",
       cost:
         cost ||
         (rule
@@ -373,6 +422,24 @@ export default function ProductList({ onSelect }) {
     setFormModal(null);
   };
 
+  // Handler cetak label harga rak langsung dari modal edit produk
+  const handlePrintPriceTagFromEdit = () => {
+    const editObj = products.find((p) => p.id === editId) || {};
+    printSinglePriceTag({
+      product: {
+        id: editId,
+        name: form.name,
+        category: form.category,
+        sku: form.sku || editObj.sku || `SKU-${editId}`,
+        supplier: form.supplier,
+        unit: form.unit,
+      },
+      basePrice: form.base_price || form.price,
+      finalPrice: form.price,
+      discountFormula: form.discount_formula,
+    });
+  };
+
   const del = (id, name) => {
     if (!confirm(`Hapus produk "${name}"?`)) return;
     deleteProduct(id);
@@ -389,9 +456,6 @@ export default function ProductList({ onSelect }) {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button onClick={() => setShowBatchPriceTag(true)} style={btnOutline}>
-            <i className="fas fa-tag"></i> Cetak Label Harga (Rak)
-          </button>
           <button onClick={() => setShowBatchQR(true)} style={btnOutline}>
             <i className="fas fa-qrcode"></i> Cetak QR
           </button>
@@ -1026,43 +1090,10 @@ export default function ProductList({ onSelect }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setPriceCalcProduct(p);
-                  }}
-                  style={{
-                    flex: 1.3,
-                    padding: "7px 8px",
-                    border: "1px solid #0056b3",
-                    borderRadius: 8,
-                    background: "rgba(0,86,179,0.06)",
-                    color: "#0056b3",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 5,
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#0056b3";
-                    e.currentTarget.style.color = "#fff";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "rgba(0,86,179,0.06)";
-                    e.currentTarget.style.color = "#0056b3";
-                  }}
-                  title="Edit harga, hitung diskon bertingkat (25%+10%) & cetak label harga"
-                >
-                  <i className="fas fa-tag"></i> Edit Harga
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
                     onSelect?.(p);
                   }}
                   style={{
-                    flex: 0.9,
+                    flex: 1,
                     padding: "7px 0",
                     border: "none",
                     borderRadius: 8,
@@ -1091,7 +1122,7 @@ export default function ProductList({ onSelect }) {
                     openEdit(p);
                   }}
                   style={iconBtn("#FF7300")}
-                  title="Edit Produk Lengkap"
+                  title="Edit Produk"
                 >
                   <i className="fas fa-edit"></i>
                 </button>
@@ -1408,6 +1439,245 @@ export default function ProductList({ onSelect }) {
                   )}
                 </div>
 
+                {/* Fitur Diskon Bertingkat & Pembulatan Otomatis (Embedded di Menu Edit) */}
+                <div
+                  style={{
+                    gridColumn: "1 / -1",
+                    background: "#F8FAFC",
+                    border: "1px solid #CBD5E1",
+                    borderRadius: 12,
+                    padding: 14,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      userSelect: "none",
+                    }}
+                    onClick={() => setShowDiscountCalc((v) => !v)}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 8,
+                          background: "rgba(0,86,179,0.1)",
+                          color: "#0056b3",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 15,
+                        }}
+                      >
+                        <i className="fas fa-calculator"></i>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>
+                          Kalkulator Diskon Bertingkat & Pembulatan Otomatis ke Atas
+                        </div>
+                        <div style={{ fontSize: 11, color: "#64748B" }}>
+                          Misal: 16.700 disc 25%+10% = 11.272 → dibulatkan ke atas jadi 12.000
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        color: "#0056b3",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      {showDiscountCalc ? "Tutup" : "Buka Kalkulator"}
+                      <i className={`fas fa-chevron-${showDiscountCalc ? "up" : "down"}`}></i>
+                    </span>
+                  </div>
+
+                  {showDiscountCalc && (
+                    <div style={{ marginTop: 14, borderTop: "1px dashed #CBD5E1", paddingTop: 14 }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                          gap: 12,
+                          marginBottom: 12,
+                        }}
+                      >
+                        {/* Pricelist / Base Price */}
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: "#475569",
+                              display: "block",
+                              marginBottom: 4,
+                            }}
+                          >
+                            Harga Pricelist / Dasar (Rp)
+                          </label>
+                          <input
+                            type="number"
+                            value={calcBasePrice}
+                            onChange={(e) => setCalcBasePrice(e.target.value)}
+                            placeholder="Contoh: 16700"
+                            style={inputStyle}
+                          />
+                        </div>
+
+                        {/* Discount formula input */}
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: "#475569",
+                              display: "block",
+                              marginBottom: 4,
+                            }}
+                          >
+                            Diskon Bertingkat (%)
+                          </label>
+                          <input
+                            type="text"
+                            value={calcDiscountExpr}
+                            onChange={(e) => setCalcDiscountExpr(e.target.value)}
+                            placeholder="Contoh: 25+10"
+                            style={inputStyle}
+                          />
+                        </div>
+
+                        {/* Rounding option */}
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: "#475569",
+                              display: "block",
+                              marginBottom: 4,
+                            }}
+                          >
+                            Aturan Pembulatan
+                          </label>
+                          <select
+                            value={calcRounding}
+                            onChange={(e) => setCalcRounding(e.target.value)}
+                            style={inputStyle}
+                          >
+                            {ROUNDING_OPTIONS.map((opt) => (
+                              <option key={opt.id} value={opt.id}>
+                                {opt.label} ({opt.desc})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Preset Chips */}
+                      <div style={{ marginBottom: 12 }}>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#64748B", marginBottom: 6 }}>
+                          Preset Cepat Diskon:
+                        </div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          {PRESET_DISCOUNTS.map((preset) => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => setCalcDiscountExpr(preset.expr)}
+                              style={{
+                                padding: "4px 10px",
+                                borderRadius: 6,
+                                border: calcDiscountExpr === preset.expr ? "1px solid #0056b3" : "1px solid #CBD5E1",
+                                background: calcDiscountExpr === preset.expr ? "#EFF6FF" : "#fff",
+                                color: calcDiscountExpr === preset.expr ? "#0056b3" : "#334155",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Live Calculation Preview Card */}
+                      {Number(calcBasePrice) > 0 && (
+                        <div
+                          style={{
+                            background: "#fff",
+                            border: "1.5px solid #0056b3",
+                            borderRadius: 10,
+                            padding: 12,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: 12,
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontSize: 11, color: "#64748B" }}>
+                              Pricelist: <b>Rp {Number(calcBasePrice).toLocaleString("id-ID")}</b>
+                              {activeCalcResult.effectivePct > 0 && (
+                                <span style={{ marginLeft: 8, color: "#DC2626", fontWeight: 700 }}>
+                                  Diskon {formatDiscountFormula(activeCalcResult.p1, activeCalcResult.p2, activeCalcResult.p3)} (-Rp {Math.round(activeCalcResult.totalCut).toLocaleString("id-ID")})
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 12, color: "#334155", marginTop: 2 }}>
+                              Harga eksak setelah diskon: <b>Rp {activeCalcResult.rawPrice.toLocaleString("id-ID", { maximumFractionDigits: 1 })}</b>
+                            </div>
+                            <div style={{ fontSize: 14, color: "#0F172A", marginTop: 4 }}>
+                              Dibulatkan ke atas:{" "}
+                              <span style={{ fontSize: 18, fontWeight: 900, color: "#0056b3" }}>
+                                Rp {activeCalcResult.roundedPrice.toLocaleString("id-ID")}
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm((prev) => ({
+                                ...prev,
+                                price: activeCalcResult.roundedPrice,
+                                base_price: Number(calcBasePrice),
+                                discount_formula: formatDiscountFormula(activeCalcResult.p1, activeCalcResult.p2, activeCalcResult.p3),
+                                rounding_mode: calcRounding,
+                              }));
+                            }}
+                            style={{
+                              padding: "8px 16px",
+                              background: "#0056b3",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: 8,
+                              fontSize: 12,
+                              fontWeight: 700,
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              boxShadow: "0 2px 6px rgba(0,86,179,0.25)",
+                            }}
+                          >
+                            <i className="fas fa-check"></i>
+                            Terapkan ke Harga Jual (Rp {activeCalcResult.roundedPrice.toLocaleString("id-ID")})
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <label
                     style={{
@@ -1691,18 +1961,47 @@ export default function ProductList({ onSelect }) {
               </div>
             </div>
 
-            <div className="modal-footer">
-              <button
-                type="button"
-                onClick={() => setFormModal(null)}
-                style={btnGhost}
-              >
-                Batal
-              </button>
-              <button type="button" onClick={saveForm} style={btnPrimary}>
-                <i className="fas fa-check"></i>
-                {formModal === "add" ? "Tambah Produk" : "Simpan Perubahan"}
-              </button>
+            <div
+              className="modal-footer"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 10,
+              }}
+            >
+              <div>
+                {formModal === "edit" && (
+                  <button
+                    type="button"
+                    onClick={handlePrintPriceTagFromEdit}
+                    style={{
+                      ...btnOutline,
+                      borderColor: "#0056b3",
+                      color: "#0056b3",
+                      background: "rgba(0,86,179,0.05)",
+                      fontSize: 12,
+                    }}
+                    title="Cetak label harga / price tag rak untuk produk ini"
+                  >
+                    <i className="fas fa-print"></i> Cetak Label Harga (Rak)
+                  </button>
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => setFormModal(null)}
+                  style={btnGhost}
+                >
+                  Batal
+                </button>
+                <button type="button" onClick={saveForm} style={btnPrimary}>
+                  <i className="fas fa-check"></i>
+                  {formModal === "add" ? "Tambah Produk" : "Simpan Perubahan"}
+                </button>
+              </div>
             </div>
           </>
         )}
@@ -1832,27 +2131,6 @@ export default function ProductList({ onSelect }) {
           </div>
         </div>
       </Modal>
-
-      {/* Modal Kalkulator & Edit Harga Produk */}
-      {priceCalcProduct && (
-        <PriceCalculatorModal
-          isOpen={!!priceCalcProduct}
-          onClose={() => setPriceCalcProduct(null)}
-          product={priceCalcProduct}
-          onSavePrice={(productId, newPrice, priceMeta) => {
-            updateProduct(productId, { price: newPrice, ...priceMeta });
-          }}
-        />
-      )}
-
-      {/* Modal Cetak Label Rak Kolektif (Batch) */}
-      {showBatchPriceTag && (
-        <BatchPriceTagModal
-          isOpen={showBatchPriceTag}
-          onClose={() => setShowBatchPriceTag(false)}
-          products={filtered}
-        />
-      )}
     </div>
   );
 }
